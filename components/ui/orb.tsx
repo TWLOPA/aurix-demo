@@ -21,7 +21,8 @@ export interface OrbProps {
   className?: string
 }
 
-const noise3D = createNoise3D()
+// Fix import for Next.js environment
+const noise3D = typeof createNoise3D === 'function' ? createNoise3D() : null
 
 function OrbGeometry({
   colors = ["#CADCFC", "#A0B9D1"],
@@ -248,4 +249,3 @@ export function Orb({ className, ...props }: OrbProps) {
     </div>
   )
 }
-
