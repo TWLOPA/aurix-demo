@@ -15,7 +15,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Note: SUPABASE_SERVICE_KEY should be in .env.local and NOT exposed to client
 export const supabaseAdmin = createClient(
   supabaseUrl,
-  process.env.SUPABASE_SERVICE_KEY || '', 
+  process.env.SUPABASE_SERVICE_KEY || 'placeholder-service-key', 
   {
     auth: {
       autoRefreshToken: false,
