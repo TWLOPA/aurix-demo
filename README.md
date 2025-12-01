@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AURIX - Voice AI Customer Success Platform
 
-## Getting Started
+A real-time voice AI customer success agent demonstration platform built with Next.js, ElevenLabs, Anthropic Claude, and Supabase.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 🎙️ **Real-time voice AI conversations** powered by ElevenLabs
+- 🧠 **Live agent thinking visualization** - See entity extraction, SQL generation, and decision-making
+- 📊 **Database query visualization** - Watch SQL queries execute in real-time
+- 📱 **Action tracking** - See automated SMS, email, and CRM updates
+- 💾 **CRM integration** - All interactions logged and searchable
+- 📱 **Fully responsive** - Works on desktop, tablet, and mobile
+
+## Tech Stack
+
+- **Frontend:** Next.js 14, TypeScript, Tailwind CSS, shadcn/ui
+- **Voice AI:** ElevenLabs Conversational AI
+- **NLP:** Anthropic Claude (Sonnet 3.5)
+- **Database:** Supabase (PostgreSQL + Real-time)
+- **Deployment:** Vercel
+
+## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm (or npm)
+- Supabase account
+- ElevenLabs API key
+- Anthropic API key
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/TWLOPA/aurix-demo.git
+   cd aurix-demo
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your API keys
+   ```
+
+4. Set up Supabase:
+   - Create a new project at supabase.com
+   - Run the SQL schema from `/supabase/schema.sql`
+   - Copy your project URL and keys to `.env.local`
+
+5. Run development server:
+   ```bash
+   pnpm dev
+   ```
+
+6. Open http://localhost:3000
+
+## Project Structure
+
+```
+aurix/
+├── app/                    # Next.js app router
+│   ├── api/               # API routes
+│   ├── crm/               # CRM view page
+│   └── page.tsx           # Main demo page
+├── components/            # React components
+│   ├── panels/           # Demo panels (Conversation, Agent Brain, etc.)
+│   └── ui/               # shadcn/ui components
+├── lib/                   # Utilities
+│   ├── supabase/         # Supabase client & queries
+│   └── services/         # API integrations (Claude, etc.)
+├── hooks/                 # React hooks
+└── types/                 # TypeScript types
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Demo Flow
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Click "Start Demo Call"
+2. Simulated conversation begins (Order #417 inquiry)
+3. Watch real-time visualization:
+   - **Left Panel:** Conversation transcript
+   - **Right Panel:** Agent brain (thinking, querying, actions)
+4. See complete interaction logged in CRM view
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Variables
 
-## Learn More
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_KEY=your_service_key
 
-To learn more about Next.js, take a look at the following resources:
+# ElevenLabs
+NEXT_PUBLIC_ELEVENLABS_API_KEY=your_key
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Anthropic
+ANTHROPIC_API_KEY=your_key
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+Deploy to Vercel:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+vercel deploy
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Or use the Vercel dashboard to import from GitHub.
+
+## License
+
+MIT
+
+## Contact
+
+Built by Tom for ElevenLabs FDE-S role application
