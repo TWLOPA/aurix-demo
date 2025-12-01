@@ -44,19 +44,16 @@ function GeomorphScene({
   
   // Create geometry and cache original positions
   const { geometry, originalPositions } = useMemo(() => {
-    // Use detail=16 (128/8) as requested, though 16 is very high for IcosahedronGeometry
-    // Standard THREE.IcosahedronGeometry detail is usually 0-5. 
-    // 16 subdivisions might be too heavy. Let's try detail=4 for a good balance or 5.
-    // The vanilla code said `new THREE.IcosahedronGeometry(1, geomDetail / 8)` where geomDetail=128.
-    // 128/8 = 16. Let's stick to something reasonable like 4 which gives plenty of vertices.
-    const geo = new THREE.IcosahedronGeometry(1, 4)
+    // Increased detail to 10 for "Ex Machina" dense mesh look
+    // This creates a very tight, high-fidelity wireframe grid
+    const geo = new THREE.IcosahedronGeometry(1, 10)
     const pos = geo.attributes.position.array.slice()
     return { geometry: geo, originalPositions: pos }
   }, [])
 
   // Particle system
   const { particleGeometry, particleVelocities, particleOriginalDistances } = useMemo(() => {
-    const count = 600
+    const count = 800 // Increased particle count for density
     const geo = new THREE.BufferGeometry()
     const positions = new Float32Array(count * 3)
     const velocities = []
@@ -168,7 +165,7 @@ function GeomorphScene({
     if (particlesRef.current) {
       const pPositions = particleGeometry.attributes.position.array as Float32Array
       
-      for (let i = 0; i < 600; i++) {
+      for (let i = 0; i < 800; i++) {
         const i3 = i * 3
         let x = pPositions[i3]
         let y = pPositions[i3 + 1]
@@ -207,16 +204,17 @@ function GeomorphScene({
         <meshBasicMaterial 
           color={primaryColor}
           wireframe={true}
-          wireframeLinewidth={1}
+          transparent={true}
+          opacity={0.15} // Low opacity for subtle "skin" look
         />
       </mesh>
       <points ref={particlesRef} geometry={particleGeometry}>
         <pointsMaterial 
           color={primaryColor}
-          size={0.02} // Adjusted size for R3F scale
+          size={0.015} // Smaller, finer particles
           sizeAttenuation={true}
           transparent={true}
-          opacity={0.6}
+          opacity={0.4}
         />
       </points>
     </>
