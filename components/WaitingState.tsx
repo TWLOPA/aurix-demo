@@ -3,6 +3,17 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Phone, Loader2 } from 'lucide-react'
+import dynamic from 'next/dynamic'
+
+// Dynamically import Orb to avoid SSR issues with Three.js/Canvas
+const Orb = dynamic(() => import('@/components/ui/orb').then(mod => mod.Orb), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center bg-orix-accent/10 rounded-full">
+      <div className="w-32 h-32 bg-orix-accent/20 rounded-full animate-pulse" />
+    </div>
+  )
+})
 
 interface WaitingStateProps {
   onCallStart: (callSid: string) => void
@@ -37,13 +48,14 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-orix-dark via-slate-900 to-orix-dark p-8">
-      <div className="text-center space-y-8 max-w-lg">
-        {/* Animated Phone Icon */}
-        <div className="relative">
-          <div className="w-40 h-40 bg-orix-accent/10 rounded-full flex items-center justify-center mx-auto animate-pulse-slow">
-            <div className="w-32 h-32 bg-orix-accent/20 rounded-full flex items-center justify-center">
-              <Phone className="w-16 h-16 text-orix-accent" />
-            </div>
+      <div className="text-center space-y-8 max-w-lg w-full">
+        {/* ElevenLabs Orb Hero Visual */}
+        <div className="relative flex justify-center items-center h-64 w-full">
+          <div className="w-64 h-64">
+            <Orb 
+              agentState={loading ? "listening" : "thinking"} 
+              colors={['#3b82f6', '#8b5cf6']}
+            />
           </div>
         </div>
 
@@ -110,4 +122,3 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
     </div>
   )
 }
-
