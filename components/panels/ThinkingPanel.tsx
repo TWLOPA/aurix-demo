@@ -5,7 +5,7 @@ import { CheckCircle2, Clock, AlertCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { memo } from 'react'
 
-export const ThinkingPanel = memo(function ThinkingPanel({ data }: { data: any }) {
+export const ThinkingPanel = memo(function ThinkingPanel({ data }: { data: Record<string, any> }) {
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
       case 'positive': return 'bg-green-500/10 text-green-400 border-green-500/20'

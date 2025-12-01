@@ -33,12 +33,12 @@ If a field cannot be determined, use null.`
   try {
     return JSON.parse(cleaned)
   } catch (e) {
-    console.error("Failed to parse entities JSON", cleaned)
+    console.error("Failed to parse entities JSON", cleaned, e)
     return {}
   }
 }
 
-export async function generateSQL(entities: any) {
+export async function generateSQL(entities: Record<string, any>) {
   const prompt = `Generate a SQLite query for this customer request.
 Extracted information:
 ${JSON.stringify(entities, null, 2)}
@@ -69,7 +69,7 @@ Example queries:
   return sql
 }
 
-export async function formatResponse(results: any, entities: any) {
+export async function formatResponse(results: Record<string, any>, entities: Record<string, any>) {
   const prompt = `Format a natural customer service response.
 Customer question context:
 ${JSON.stringify(entities, null, 2)}

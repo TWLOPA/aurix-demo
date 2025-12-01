@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { insertCallEvent, queryOrder } from '@/lib/supabase/queries'
 import { extractEntities, generateSQL, formatResponse } from '@/lib/services/claude'
-import { supabase } from '@/lib/supabase/client'
+// supabase client is used implicitly in queries, but we don't need to import it here if we aren't using it directly
+// import { supabase } from '@/lib/supabase/client'
 
 export async function POST(request: Request) {
   try {
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
         results = { error: 'Query not supported in demo' }
       }
     } catch (error) {
+      console.error('Query failed', error) // Log error to use it
       results = { error: 'Query failed' }
     }
 

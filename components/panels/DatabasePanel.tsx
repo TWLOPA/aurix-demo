@@ -8,8 +8,8 @@ export const DatabasePanel = memo(function DatabasePanel({
   query, 
   results 
 }: { 
-  query?: any
-  results?: any 
+  query?: Record<string, any>
+  results?: Record<string, any>
 }) {
   return (
     <Card className="bg-slate-800 border-slate-700 animate-slide-up">

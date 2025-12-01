@@ -6,7 +6,7 @@ import { ConversationPanel } from '@/components/panels/ConversationPanel'
 import { AgentBrainPanel } from '@/components/panels/AgentBrainPanel'
 import { MobileTabs } from '@/components/MobileTabs'
 import { useCallEvents } from '@/hooks/useCallEvents'
-import { Phone, ExternalLink } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 

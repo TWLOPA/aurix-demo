@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle2, MessageSquare, Database, Mail, Bell } from 'lucide-react'
 import { memo } from 'react'
 
-export const ActionsPanel = memo(function ActionsPanel({ actions }: { actions: any[] }) {
+export const ActionsPanel = memo(function ActionsPanel({ actions }: { actions: Record<string, any>[] }) {
   const getActionIcon = (type: string) => {
     switch (type) {
       case 'sms':
