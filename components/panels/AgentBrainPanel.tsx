@@ -64,14 +64,12 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
       {/* Agent Header & Orb - Fixed Top */}
       <div className="border-b border-neutral-200 bg-background p-6 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
-           {/* ElevenLabs Orb (Styled Container - Small) */}
-          <div className="bg-muted relative h-16 w-16 rounded-full p-1 shadow-[inset_0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)]">
-            <div className="bg-background h-full w-full overflow-hidden rounded-full shadow-[inset_0_0_12px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_0_12px_rgba(0,0,0,0.3)]">
-               <Orb 
-                agentState={getOrbState()} 
-                colors={['#3b82f6', '#8b5cf6']}
-              />
-            </div>
+           {/* Floating Geomorph Orb - Small (No Container) */}
+          <div className="w-16 h-16">
+             <Orb 
+              agentState={getOrbState()} 
+              colors={['#000000', '#000000']}
+            />
           </div>
 
           <div>
