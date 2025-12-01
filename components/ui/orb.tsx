@@ -22,7 +22,14 @@ export interface OrbProps {
 }
 
 // Fix import for Next.js environment
-const noise3D = typeof createNoise3D === 'function' ? createNoise3D() : null
+let noise3D: any = null
+if (typeof createNoise3D === 'function') {
+  try {
+    noise3D = createNoise3D()
+  } catch (e) {
+    console.warn('Failed to create noise3D', e)
+  }
+}
 
 function OrbGeometry({
   colors = ["#CADCFC", "#A0B9D1"],
@@ -205,7 +212,9 @@ function OrbGeometry({
             vUv = uv;
             vNormal = normal;
             
+            // Correctly use the simplex noise function
             float noise = snoise(vec3(normal * uNoiseScale + uTime * 0.5));
+            
             vDisplacement = noise;
             
             vec3 newPosition = position + normal * (noise * uDeformation);
