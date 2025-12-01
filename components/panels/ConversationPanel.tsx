@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { CallEvent } from '@/types'
-import { User, Bot, Loader2 } from 'lucide-react'
+import { User, Bot, Loader2, MessageSquare } from 'lucide-react'
 
 interface ConversationPanelProps {
   events: CallEvent[]
@@ -21,8 +21,8 @@ export function ConversationPanel({ events, loading }: ConversationPanelProps) {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-slate-900">
-        <Loader2 className="w-8 h-8 text-orix-accent animate-spin" />
+      <div className="h-full flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     )
   }
@@ -51,32 +51,36 @@ export function ConversationPanel({ events, loading }: ConversationPanelProps) {
   }
 
   return (
-    <div className="h-full flex flex-col bg-slate-900">
+    <Card className="h-full flex flex-col border-none rounded-none bg-background shadow-none">
       {/* Header */}
-      <div className="border-b border-slate-800 p-4 flex items-center justify-between">
+      <div className="border-b p-4 flex items-center justify-between bg-card">
         <div className="flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
-          <h2 className="text-lg font-semibold text-white">
-            💬 Live Conversation
-          </h2>
+          <div className={`w-2.5 h-2.5 rounded-full ${isCallActive ? 'bg-green-500 animate-pulse' : 'bg-muted-foreground'}`} />
+          <div className="flex items-center gap-2">
+            <MessageSquare className="w-4 h-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold text-foreground">
+              Live Transcript
+            </h2>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           {isCallActive && (
-            <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20">
-              Active
+            <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20">
+              Active Call
             </Badge>
           )}
-          <span className="text-sm font-mono text-slate-400">
+          <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded-md">
             {getDuration()}
           </span>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-background/50">
         {messages.length === 0 ? (
-          <div className="h-full flex items-center justify-center">
-            <p className="text-slate-500 text-sm">
+          <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50">
+            <MessageSquare className="w-12 h-12 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
               Waiting for conversation to start...
             </p>
           </div>
@@ -94,7 +98,7 @@ export function ConversationPanel({ events, loading }: ConversationPanelProps) {
           </>
         )}
       </div>
-    </div>
+    </Card>
   )
 }
 
@@ -110,37 +114,42 @@ function MessageBubble({
   const isUser = role === 'user'
 
   return (
-    <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-slide-up`}>
+    <div className={`flex gap-4 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-slide-up group`}>
       {/* Avatar */}
       <div className={`
-        w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
-        ${isUser ? 'bg-orix-accent/20' : 'bg-orix-purple/20'}
+        w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border
+        ${isUser 
+          ? 'bg-primary text-primary-foreground border-primary' 
+          : 'bg-background text-foreground border-border'
+        }
       `}>
         {isUser ? (
-          <User className="w-5 h-5 text-orix-accent" />
+          <User className="w-4 h-4" />
         ) : (
-          <Bot className="w-5 h-5 text-orix-purple" />
+          <Bot className="w-4 h-4" />
         )}
       </div>
 
       {/* Message */}
-      <div className={`flex-1 ${isUser ? 'text-right' : 'text-left'}`}>
-        <Card className={`
-          inline-block max-w-[80%] p-4
+      <div className={`flex flex-col max-w-[80%] space-y-1 ${isUser ? 'items-end' : 'items-start'}`}>
+        <div className="flex items-baseline gap-2">
+          <span className="text-xs font-medium text-muted-foreground">
+            {isUser ? 'Customer' : 'AI Agent'}
+          </span>
+          <span className="text-[10px] text-muted-foreground/50">
+            {new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
+        </div>
+        <div className={`
+          p-4 rounded-2xl text-sm leading-relaxed shadow-sm border
           ${isUser 
-            ? 'bg-orix-accent/10 border-orix-accent/20' 
-            : 'bg-slate-800 border-slate-700'
+            ? 'bg-primary text-primary-foreground border-primary rounded-tr-none' 
+            : 'bg-card text-card-foreground border-border rounded-tl-none'
           }
         `}>
-          <p className="text-sm text-slate-100 leading-relaxed">
-            {content}
-          </p>
-        </Card>
-        <p className="text-xs text-slate-500 mt-1 px-1">
-          {new Date(timestamp).toLocaleTimeString()}
-        </p>
+          {content}
+        </div>
       </div>
     </div>
   )
 }
-

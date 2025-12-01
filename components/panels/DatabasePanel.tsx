@@ -12,9 +12,9 @@ export const DatabasePanel = memo(function DatabasePanel({
   results?: Record<string, any>
 }) {
   return (
-    <Card className="bg-slate-800 border-slate-700 animate-slide-up">
-      <CardHeader>
-        <CardTitle className="text-sm flex items-center gap-2 text-slate-200">
+    <Card className="animate-slide-up shadow-sm">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium flex items-center gap-2">
           🔍 Database Query
         </CardTitle>
       </CardHeader>
@@ -22,13 +22,11 @@ export const DatabasePanel = memo(function DatabasePanel({
         {/* SQL Query */}
         {query && (
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Database className="w-4 h-4 text-blue-400" />
-              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">
-                SQL Query
-              </span>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground font-semibold uppercase tracking-wider">
+              <Database className="w-3 h-3" />
+              <span>SQL Query</span>
             </div>
-            <pre className="text-xs font-mono bg-slate-900 p-3 rounded-lg text-blue-300 overflow-x-auto border border-slate-700">
+            <pre className="text-xs font-mono bg-muted p-3 rounded-lg text-foreground overflow-x-auto border border-border">
               {query.sql}
             </pre>
           </div>
@@ -37,21 +35,19 @@ export const DatabasePanel = memo(function DatabasePanel({
         {/* Query Results */}
         {results && (
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-green-400" />
-              <span className="text-xs text-green-400 font-semibold">
-                Query executed successfully
-              </span>
+            <div className="flex items-center gap-2 text-xs text-green-600 font-semibold">
+              <Zap className="w-3 h-3" />
+              <span>Query executed successfully</span>
             </div>
             
-            <div className="bg-slate-900 p-3 rounded-lg border border-slate-700">
+            <div className="bg-muted/50 p-3 rounded-lg border border-border">
               <div className="space-y-2">
                 {Object.entries(results).map(([key, value]) => (
                   <div key={key} className="flex justify-between items-center text-sm">
-                    <span className="text-slate-400 capitalize">
-                      {key.replace('_', ' ')}:
+                    <span className="text-muted-foreground capitalize">
+                      {key.replace('_', ' ')}
                     </span>
-                    <span className="text-slate-100 font-semibold font-mono">
+                    <span className="font-mono font-medium text-foreground">
                       {String(value)}
                     </span>
                   </div>
@@ -64,4 +60,3 @@ export const DatabasePanel = memo(function DatabasePanel({
     </Card>
   )
 })
-

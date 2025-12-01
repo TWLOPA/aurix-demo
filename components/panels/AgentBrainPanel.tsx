@@ -7,11 +7,12 @@ import { DatabasePanel } from './DatabasePanel'
 import { ActionsPanel } from './ActionsPanel'
 import { Brain, Activity } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { Card } from '@/components/ui/card'
 
 // Dynamically import Orb to avoid SSR issues with Three.js/Canvas
 const Orb = dynamic(() => import('@/components/ui/orb').then(mod => mod.Orb), {
   ssr: false,
-  loading: () => <div className="w-full h-full bg-slate-900/50 rounded-full animate-pulse" />
+  loading: () => <div className="w-full h-full bg-primary/10 rounded-full animate-pulse" />
 })
 
 interface AgentBrainPanelProps {
@@ -54,11 +55,11 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
 
   const getStateColor = () => {
     switch (agentState) {
-      case 'idle': return 'text-slate-500'
-      case 'listening': return 'text-orix-accent animate-pulse'
+      case 'idle': return 'text-muted-foreground'
+      case 'listening': return 'text-primary animate-pulse'
       case 'thinking': return 'text-yellow-500 animate-pulse'
-      case 'talking': return 'text-orix-purple animate-pulse'
-      default: return 'text-slate-500'
+      case 'talking': return 'text-purple-500 animate-pulse'
+      default: return 'text-muted-foreground'
     }
   }
 
@@ -80,19 +81,19 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
   }
 
   return (
-    <div className="h-full flex flex-col bg-slate-900 overflow-y-auto">
+    <Card className="h-full flex flex-col border-none rounded-none bg-background shadow-none">
       {/* Header */}
-      <div className="border-b border-slate-800 p-4 sticky top-0 bg-slate-900 z-10">
+      <div className="border-b p-4 sticky top-0 bg-card z-10">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Brain className="w-6 h-6 text-orix-purple" />
-            <h2 className="text-lg font-semibold text-white">
+          <div className="flex items-center gap-2">
+            <Brain className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-semibold text-foreground">
               Agent Brain
             </h2>
           </div>
           <div className="flex items-center gap-2">
-            <Activity className={`w-4 h-4 ${getStateColor()}`} />
-            <span className={`text-sm font-medium ${getStateColor()}`}>
+            <Activity className={`w-3.5 h-3.5 ${getStateColor()}`} />
+            <span className={`text-xs font-medium ${getStateColor()}`}>
               {getStateText()}
             </span>
           </div>
@@ -100,17 +101,17 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
       </div>
 
       {/* Agent Orb Visualization */}
-      <div className="p-6 flex justify-center items-center min-h-[250px] bg-slate-950/50">
+      <div className="p-8 flex justify-center items-center min-h-[300px] bg-gradient-to-b from-background to-muted/30 border-b">
         <div className="w-64 h-64">
           <Orb 
             agentState={getOrbState()} 
-            colors={['#3b82f6', '#8b5cf6']} // Blue to Purple gradient
+            colors={['#3b82f6', '#8b5cf6']} // Blue to Purple gradient (keeping consistent with brand)
           />
         </div>
       </div>
 
       {/* Panels */}
-      <div className="flex-1 p-6 space-y-4">
+      <div className="flex-1 p-6 space-y-6 bg-muted/10">
         {/* Thinking Panel */}
         {thinkingEvent && (
           <ThinkingPanel data={thinkingEvent.event_data} />
@@ -131,13 +132,14 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
 
         {/* Empty state */}
         {!thinkingEvent && !queryEvent && !resultsEvent && actionEvents.length === 0 && (
-          <div className="h-64 flex items-center justify-center">
-            <p className="text-slate-500 text-sm">
+          <div className="h-64 flex flex-col items-center justify-center text-center space-y-3 opacity-50">
+            <Brain className="w-12 h-12 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
               Waiting for agent to process...
             </p>
           </div>
         )}
       </div>
-    </div>
+    </Card>
   )
 }
