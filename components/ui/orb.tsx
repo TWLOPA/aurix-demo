@@ -60,7 +60,7 @@ function OrbGeometry({
   }, [targetUniforms])
 
   useFrame((state) => {
-    if (!meshRef.current || !materialRef.current) return
+    if (!meshRef.current || !materialRef.current || !materialRef.current.uniforms) return
 
     const time = state.clock.getElapsedTime()
     materialRef.current.uniforms.uTime.value = time + seed
