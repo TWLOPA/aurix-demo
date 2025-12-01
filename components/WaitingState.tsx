@@ -50,15 +50,13 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-background p-8">
       <div className="text-center space-y-8 max-w-lg w-full">
-        {/* ElevenLabs Orb Hero Visual (Styled Container) */}
+        {/* Geomorph Orb Hero Visual (Floating) */}
         <div className="relative flex justify-center items-center h-64 w-full">
-          <div className="bg-muted relative h-64 w-64 rounded-full p-2 shadow-[inset_0_2px_8px_rgba(0,0,0,0.1)] dark:shadow-[inset_0_2px_8px_rgba(0,0,0,0.5)]">
-            <div className="bg-background h-full w-full overflow-hidden rounded-full shadow-[inset_0_0_12px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_0_12px_rgba(0,0,0,0.3)]">
-              <Orb 
-                agentState={loading ? "listening" : "thinking"} 
-                colors={['#3b82f6', '#8b5cf6']}
-              />
-            </div>
+          <div className="w-full h-full">
+            <Orb 
+              agentState={loading ? "listening" : "thinking"} 
+              colors={['#000000', '#000000']}
+            />
           </div>
         </div>
 
