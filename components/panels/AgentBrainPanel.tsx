@@ -6,13 +6,14 @@ import { ThinkingPanel } from './ThinkingPanel'
 import { DatabasePanel } from './DatabasePanel'
 import { ActionsPanel } from './ActionsPanel'
 import { Brain, Activity } from 'lucide-react'
+import { Orb } from '@/components/ui/orb'
 
 interface AgentBrainPanelProps {
   events: CallEvent[]
 }
 
 export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
-  const [agentState, setAgentState] = useState<'idle' | 'listening' | 'thinking' | 'talking'>('idle')
+  const [agentState, setAgentState] = useState<'idle' | 'listening' | 'thinking' | 'talking' | null>(null)
 
   // Update agent state based on latest events
   useEffect(() => {
@@ -33,6 +34,9 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
       case 'agent_spoke':
         setAgentState('talking')
         break
+      default:
+        // Don't reset state for other events to avoid flickering
+        break
     }
   }, [events])
 
@@ -48,6 +52,7 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
       case 'listening': return 'text-orix-accent animate-pulse'
       case 'thinking': return 'text-yellow-500 animate-pulse'
       case 'talking': return 'text-orix-purple animate-pulse'
+      default: return 'text-slate-500'
     }
   }
 
@@ -57,7 +62,15 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
       case 'listening': return 'Listening...'
       case 'thinking': return 'Processing...'
       case 'talking': return 'Responding...'
+      default: return 'Idle'
     }
+  }
+
+  // Helper for Orb state (maps our state to Orb's expected types)
+  // Orb expects: null | "thinking" | "listening" | "talking"
+  const getOrbState = () => {
+    if (agentState === 'idle') return null
+    return agentState
   }
 
   return (
@@ -81,8 +94,13 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
       </div>
 
       {/* Agent Orb Visualization */}
-      <div className="p-6 flex justify-center">
-        <AgentOrb state={agentState} />
+      <div className="p-6 flex justify-center items-center min-h-[250px] bg-slate-950/50">
+        <div className="w-64 h-64">
+          <Orb 
+            agentState={getOrbState()} 
+            colors={['#3b82f6', '#8b5cf6']} // Blue to Purple gradient
+          />
+        </div>
       </div>
 
       {/* Panels */}
@@ -117,37 +135,3 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
     </div>
   )
 }
-
-// Simple Agent Orb (can be replaced with @11labs/react component later)
-function AgentOrb({ state }: { state: string }) {
-  const getOrbStyles = () => {
-    switch (state) {
-      case 'idle':
-        return 'bg-slate-700 shadow-slate-500/20'
-      case 'listening':
-        return 'bg-orix-accent shadow-orix-accent/50 animate-pulse'
-      case 'thinking':
-        return 'bg-yellow-500 shadow-yellow-500/50 animate-pulse-slow'
-      case 'talking':
-        return 'bg-orix-purple shadow-orix-purple/50 animate-pulse'
-      default:
-        return 'bg-slate-700'
-    }
-  }
-
-  return (
-    <div className="relative">
-      <div className={`w-32 h-32 rounded-full ${getOrbStyles()} shadow-2xl transition-all duration-300`}>
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent" />
-      </div>
-      {/* Rings */}
-      {state !== 'idle' && (
-        <>
-          <div className={`absolute inset-0 rounded-full border-2 ${getOrbStyles()} opacity-30 animate-ping`} style={{ animationDuration: '2s' }} />
-          <div className={`absolute inset-0 rounded-full border ${getOrbStyles()} opacity-20 animate-ping`} style={{ animationDuration: '3s', animationDelay: '0.5s' }} />
-        </>
-      )}
-    </div>
-  )
-}
-
