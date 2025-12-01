@@ -1,12 +1,18 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import type { CallEvent } from '@/types'
 import { ThinkingPanel } from './ThinkingPanel'
 import { DatabasePanel } from './DatabasePanel'
 import { ActionsPanel } from './ActionsPanel'
 import { Brain, Activity } from 'lucide-react'
-import { Orb } from '@/components/ui/orb'
+import { useEffect, useState } from 'react'
+
+// Dynamically import Orb to avoid SSR issues with Three.js/Canvas
+const Orb = dynamic(() => import('@/components/ui/orb').then(mod => mod.Orb), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-slate-900/50 rounded-full animate-pulse" />
+})
 
 interface AgentBrainPanelProps {
   events: CallEvent[]
