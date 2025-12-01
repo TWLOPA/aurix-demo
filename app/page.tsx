@@ -6,7 +6,7 @@ import { ConversationPanel } from '@/components/panels/ConversationPanel'
 import { AgentBrainPanel } from '@/components/panels/AgentBrainPanel'
 import { MobileTabs } from '@/components/MobileTabs'
 import { useCallEvents } from '@/hooks/useCallEvents'
-import { ExternalLink, Mic } from 'lucide-react'
+import { ExternalLink, Mic, LayoutDashboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
@@ -26,53 +26,50 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background text-foreground">
-      {/* Header */}
-      <header className="border-b p-4 flex items-center justify-between bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground">
-            <Mic className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">
-              AURIX
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              Voice AI Customer Success Platform
-            </p>
-          </div>
+    <div className="h-screen flex flex-col bg-background text-foreground font-sans">
+      {/* Header - ElevenLabs Style */}
+      <header className="border-b border-neutral-200 bg-background px-6 py-4 flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
+            <Mic className="w-5 h-5" />
+            AURIX
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Real-time Voice AI Customer Success Agent
+          </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {callActive && (
             <>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm font-medium text-neutral-600 bg-neutral-100 px-3 py-1 rounded-full">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span>Call Active</span>
+                Live Call
               </div>
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={handleReset}
               >
-                End Call
+                End Session
               </Button>
             </>
           )}
           <Button
             variant="outline"
             size="sm"
+            className="gap-2"
             asChild
           >
             <Link href="/crm" target="_blank">
-              View CRM
-              <ExternalLink className="w-4 h-4 ml-2" />
+              <LayoutDashboard className="w-4 h-4" />
+              CRM View
             </Link>
           </Button>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden flex-col lg:flex-row">
+      <div className="flex-1 flex overflow-hidden flex-col lg:flex-row bg-neutral-50/50">
         {!callActive ? (
           <WaitingState onCallStart={handleCallStart} />
         ) : (
@@ -83,29 +80,17 @@ export default function Home() {
             </div>
             
             {/* Desktop: Split Panels */}
-            <div className="hidden lg:flex lg:flex-1 h-full">
-              <div className="w-1/2 border-r h-full">
+            <div className="hidden lg:flex lg:flex-1 h-full gap-px">
+              <div className="w-1/2 border-r border-neutral-200 bg-background h-full">
                 <ConversationPanel events={events} loading={loading} />
               </div>
-              <div className="w-1/2 h-full">
+              <div className="w-1/2 bg-background h-full">
                 <AgentBrainPanel events={events} />
               </div>
             </div>
           </>
         )}
       </div>
-
-      {/* Footer */}
-      <footer className="border-t p-3 bg-muted/30 text-muted-foreground">
-        <div className="flex items-center justify-between text-xs">
-          <div>
-            Powered by ElevenLabs, Anthropic Claude & Supabase
-          </div>
-          <div>
-            Built by Tom | Demo for FDE-S Role
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

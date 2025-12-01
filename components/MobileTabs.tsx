@@ -41,3 +41,4 @@ export function MobileTabs({ events }: { events: CallEvent[] }) {
   )
 }
 
+

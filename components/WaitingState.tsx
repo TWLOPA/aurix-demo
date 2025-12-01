@@ -10,8 +10,8 @@ import { Card } from '@/components/ui/card'
 const Orb = dynamic(() => import('@/components/ui/orb').then(mod => mod.Orb), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-primary/10 rounded-full">
-      <div className="w-32 h-32 bg-primary/20 rounded-full animate-pulse" />
+    <div className="w-full h-full flex items-center justify-center rounded-full">
+      <div className="w-32 h-32 bg-muted rounded-full animate-pulse" />
     </div>
   )
 })
@@ -60,68 +60,60 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
           </div>
         </div>
 
-        {/* Title */}
-        <div className="space-y-3">
-          <h1 className="text-5xl font-bold tracking-tight text-foreground">
+        {/* Title & Subtitle */}
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
             AURIX
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Voice AI Customer Success Agent
           </p>
         </div>
 
-        {/* Description */}
-        <div className="space-y-2">
-          <p className="text-foreground/80">
-            Experience real-time AI-powered customer support
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Watch the agent think, query, and respond in real-time
-          </p>
-        </div>
-
-        {/* CTA Button */}
-        <div className="pt-4">
+        {/* Primary CTA */}
+        <div className="pt-4 flex justify-center">
           <Button
             onClick={handleSimulateCall}
             disabled={loading}
-            size="lg"
-            className="w-full sm:w-auto px-8 py-6 text-lg font-semibold rounded-xl shadow-lg transition-all duration-200 hover:scale-105"
+            size="default"
+            className="gap-2"
           >
             {loading ? (
               <>
-                <Loader2 className="w-6 h-6 mr-3 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 Connecting...
               </>
             ) : (
               <>
-                <Phone className="w-6 h-6 mr-3" />
+                <Phone className="w-4 h-4" />
                 Start Demo Call
               </>
             )}
           </Button>
         </div>
 
-        {/* Demo Instructions */}
-        <div className="pt-8 space-y-3">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
-            Demo Scenario
-          </p>
-          <Card className="bg-muted/50 border-border p-4 text-left space-y-2">
-            <div className="text-sm flex justify-between">
-              <span className="text-muted-foreground font-medium">Customer</span>
-              <span className="text-foreground">Tom</span>
+        {/* Demo Context - Minimal Card */}
+        <Card className="p-6 text-left space-y-4 border-neutral-200 shadow-none">
+          <div className="space-y-1">
+            <h3 className="text-sm font-medium text-foreground">Demo Scenario</h3>
+            <p className="text-xs text-muted-foreground">Mock customer data for this interaction.</p>
+          </div>
+          
+          <div className="grid gap-3 text-sm">
+            <div className="flex justify-between py-2 border-b border-neutral-100">
+              <span className="text-muted-foreground">Customer</span>
+              <span className="font-medium text-foreground">Tom</span>
             </div>
-            <div className="text-sm flex justify-between">
-              <span className="text-muted-foreground font-medium">Order</span>
-              <span className="text-foreground">#417</span>
+            <div className="flex justify-between py-2 border-b border-neutral-100">
+              <span className="text-muted-foreground">Order</span>
+              <span className="font-medium text-foreground">#417</span>
             </div>
-            <div className="text-sm flex justify-between">
-              <span className="text-muted-foreground font-medium">Issue</span>
-              <span className="text-foreground">Delivery delay inquiry</span>
+            <div className="flex justify-between py-2">
+              <span className="text-muted-foreground">Issue</span>
+              <span className="font-medium text-foreground">Delivery delay</span>
             </div>
-          </Card>
-        </div>
+          </div>
+        </Card>
       </div>
     </div>
   )
