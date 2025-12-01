@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Phone, Loader2 } from 'lucide-react'
+import { Play, Loader2, Terminal } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { Card } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 // Dynamically import Orb to avoid SSR issues with Three.js/Canvas
 const Orb = dynamic(() => import('@/components/ui/orb').then(mod => mod.Orb), {
@@ -63,10 +63,10 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
         {/* Title & Subtitle */}
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            AURIX
+            Agent Simulation
           </h1>
-          <p className="text-base text-muted-foreground">
-            Voice AI Customer Success Agent
+          <p className="text-sm text-muted-foreground">
+            Ready to initialize conversation with agent <span className="font-mono text-xs bg-muted px-1 py-0.5 rounded">support-v1</span>.
           </p>
         </div>
 
@@ -76,43 +76,44 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
             onClick={handleSimulateCall}
             disabled={loading}
             size="default"
-            className="gap-2"
+            className="gap-2 min-w-[160px]"
           >
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Connecting...
+                Initializing...
               </>
             ) : (
               <>
-                <Phone className="w-4 h-4" />
-                Start Demo Call
+                <Play className="w-4 h-4" />
+                Start Simulation
               </>
             )}
           </Button>
         </div>
 
-        {/* Demo Context - Minimal Card */}
-        <Card className="p-6 text-left space-y-4 border-neutral-200 shadow-none">
-          <div className="space-y-1">
-            <h3 className="text-sm font-medium text-foreground">Demo Scenario</h3>
-            <p className="text-xs text-muted-foreground">Mock customer data for this interaction.</p>
-          </div>
-          
-          <div className="grid gap-3 text-sm">
+        {/* Demo Context - Technical Card */}
+        <Card className="text-left border-neutral-200 shadow-sm">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Session Context</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-2 text-sm">
             <div className="flex justify-between py-2 border-b border-neutral-100">
-              <span className="text-muted-foreground">Customer</span>
-              <span className="font-medium text-foreground">Tom</span>
+              <span className="text-muted-foreground">Customer ID</span>
+              <span className="font-mono text-xs text-foreground">cust_8921 (Tom)</span>
             </div>
             <div className="flex justify-between py-2 border-b border-neutral-100">
-              <span className="text-muted-foreground">Order</span>
-              <span className="font-medium text-foreground">#417</span>
+              <span className="text-muted-foreground">Reference Order</span>
+              <span className="font-mono text-xs text-foreground">ord_417</span>
             </div>
             <div className="flex justify-between py-2">
-              <span className="text-muted-foreground">Issue</span>
-              <span className="font-medium text-foreground">Delivery delay</span>
+              <span className="text-muted-foreground">Intent Scope</span>
+              <span className="font-medium text-foreground">Delivery Inquiry</span>
             </div>
-          </div>
+          </CardContent>
         </Card>
       </div>
     </div>

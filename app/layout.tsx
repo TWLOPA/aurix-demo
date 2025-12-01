@@ -1,22 +1,15 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { SidebarLayout } from "@/components/SidebarLayout";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+// Use Inter as per ElevenLabs design tokens
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AURIX - Voice AI Customer Success",
-  description: "Real-time Voice AI Customer Success Agent",
+  title: "AURIX - Agent Simulation",
+  description: "Real-time Voice AI Agent Execution Environment",
 };
 
 export default function RootLayout({
@@ -26,11 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${inter.className} antialiased`}>
         <ErrorBoundary>
-          {children}
+          <SidebarLayout>
+            {children}
+          </SidebarLayout>
         </ErrorBoundary>
       </body>
     </html>

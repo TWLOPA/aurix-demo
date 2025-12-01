@@ -2,12 +2,11 @@
 
 import dynamic from 'next/dynamic'
 import type { CallEvent } from '@/types'
-import { ThinkingPanel } from './ThinkingPanel'
-import { DatabasePanel } from './DatabasePanel'
-import { ActionsPanel } from './ActionsPanel'
-import { Brain, Activity } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { Card } from '@/components/ui/card'
+import { Brain, Activity, Database, MessageSquare, Zap, Terminal, ArrowRight, Clock } from 'lucide-react'
+import { useEffect, useState, useRef } from 'react'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
 // Dynamically import Orb to avoid SSR issues with Three.js/Canvas
 const Orb = dynamic(() => import('@/components/ui/orb').then(mod => mod.Orb), {
@@ -21,6 +20,7 @@ interface AgentBrainPanelProps {
 
 export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
   const [agentState, setAgentState] = useState<'idle' | 'listening' | 'thinking' | 'talking' | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   // Update agent state based on latest events
   useEffect(() => {
@@ -42,104 +42,180 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
         setAgentState('talking')
         break
       default:
-        // Don't reset state for other events to avoid flickering
         break
     }
   }, [events])
 
-  // Get latest event of each type
-  const thinkingEvent = [...events].reverse().find(e => e.event_type === 'agent_thinking')
-  const queryEvent = [...events].reverse().find(e => e.event_type === 'querying')
-  const resultsEvent = [...events].reverse().find(e => e.event_type === 'results')
-  const actionEvents = events.filter(e => e.event_type === 'action')
-
-  const getStateColor = () => {
-    switch (agentState) {
-      case 'idle': return 'text-muted-foreground'
-      case 'listening': return 'text-primary animate-pulse'
-      case 'thinking': return 'text-yellow-500 animate-pulse'
-      case 'talking': return 'text-purple-500 animate-pulse'
-      default: return 'text-muted-foreground'
+  // Auto-scroll log
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }
+  }, [events])
 
-  const getStateText = () => {
-    switch (agentState) {
-      case 'idle': return 'Idle'
-      case 'listening': return 'Listening...'
-      case 'thinking': return 'Processing...'
-      case 'talking': return 'Responding...'
-      default: return 'Idle'
-    }
-  }
-
-  // Helper for Orb state (maps our state to Orb's expected types)
-  // Orb expects: null | "thinking" | "listening" | "talking"
+  // Helper for Orb state
   const getOrbState = () => {
     if (agentState === 'idle') return null
     return agentState
   }
 
   return (
-    <Card className="h-full flex flex-col border-none rounded-none bg-background shadow-none">
-      {/* Header */}
-      <div className="border-b p-4 sticky top-0 bg-card z-10">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Brain className="w-4 h-4 text-primary" />
-            <h2 className="text-sm font-semibold text-foreground">
-              Agent Brain
+    <div className="h-full flex flex-col bg-background">
+      {/* Agent Header & Orb - Fixed Top */}
+      <div className="border-b border-neutral-200 bg-background p-6 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16">
+            <Orb 
+              agentState={getOrbState()} 
+              colors={['#3b82f6', '#8b5cf6']}
+            />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight flex items-center gap-2">
+              Agent Runtime
+              <Badge variant="outline" className="font-mono text-xs font-normal text-muted-foreground">
+                v1.0.2
+              </Badge>
             </h2>
-          </div>
-          <div className="flex items-center gap-2">
-            <Activity className={`w-3.5 h-3.5 ${getStateColor()}`} />
-            <span className={`text-xs font-medium ${getStateColor()}`}>
-              {getStateText()}
-            </span>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className={cn(
+                "w-2 h-2 rounded-full",
+                agentState === 'thinking' ? "bg-yellow-500 animate-pulse" :
+                agentState === 'talking' ? "bg-purple-500 animate-pulse" :
+                agentState === 'listening' ? "bg-blue-500 animate-pulse" :
+                "bg-neutral-300"
+              )} />
+              <span className="capitalize">{agentState || 'Idle'}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Agent Orb Visualization */}
-      <div className="p-8 flex justify-center items-center min-h-[300px] bg-gradient-to-b from-background to-muted/30 border-b">
-        <div className="w-64 h-64">
-          <Orb 
-            agentState={getOrbState()} 
-            colors={['#3b82f6', '#8b5cf6']} // Blue to Purple gradient (keeping consistent with brand)
-          />
+      {/* Execution Log - Scrollable Area */}
+      <div className="flex-1 overflow-hidden flex flex-col">
+        <div className="px-6 py-3 bg-neutral-50/50 border-b border-neutral-200 flex items-center justify-between">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+            <Terminal className="w-3 h-3" />
+            Execution Trace
+          </h3>
+          <span className="text-xs font-mono text-muted-foreground">
+            {events.length} events
+          </span>
+        </div>
+
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-0">
+          <div className="divide-y divide-neutral-100">
+            {events.length === 0 ? (
+              <div className="p-8 text-center text-sm text-muted-foreground">
+                Waiting for session initialization...
+              </div>
+            ) : (
+              events.map((event) => (
+                <LogEntry key={event.id} event={event} />
+              ))
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Panels */}
-      <div className="flex-1 p-6 space-y-6 bg-muted/10">
-        {/* Thinking Panel */}
-        {thinkingEvent && (
-          <ThinkingPanel data={thinkingEvent.event_data} />
-        )}
-
-        {/* Database Panel */}
-        {(queryEvent || resultsEvent) && (
-          <DatabasePanel
-            query={queryEvent?.event_data}
-            results={resultsEvent?.event_data}
-          />
-        )}
-
-        {/* Actions Panel */}
-        {actionEvents.length > 0 && (
-          <ActionsPanel actions={actionEvents.map(e => e.event_data)} />
-        )}
-
-        {/* Empty state */}
-        {!thinkingEvent && !queryEvent && !resultsEvent && actionEvents.length === 0 && (
-          <div className="h-64 flex flex-col items-center justify-center text-center space-y-3 opacity-50">
-            <Brain className="w-12 h-12 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">
-              Waiting for agent to process...
-            </p>
-          </div>
-        )}
-      </div>
-    </Card>
+    </div>
   )
+}
+
+function LogEntry({ event }: { event: CallEvent }) {
+  const timestamp = new Date(event.created_at).toLocaleTimeString([], { 
+    hour12: false, 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit',
+    fractionalSecondDigits: 3 
+  })
+
+  switch (event.event_type) {
+    case 'agent_thinking':
+      return (
+        <div className="group flex gap-4 p-4 hover:bg-neutral-50 transition-colors">
+          <div className="w-24 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+            {timestamp}
+          </div>
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-center gap-2">
+              <Brain className="w-4 h-4 text-yellow-500" />
+              <span className="text-sm font-medium text-foreground">Intent Classification</span>
+            </div>
+            <Card className="bg-neutral-50 border-neutral-200 shadow-none">
+              <CardContent className="p-3 font-mono text-xs space-y-1">
+                {Object.entries(event.event_data).map(([k, v]) => (
+                  <div key={k} className="flex gap-2">
+                    <span className="text-muted-foreground">{k}:</span>
+                    <span className="text-foreground font-semibold">
+                      {typeof v === 'string' ? v.replace('_', ' ') : String(v)}
+                    </span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )
+
+    case 'querying':
+      return (
+        <div className="group flex gap-4 p-4 hover:bg-neutral-50 transition-colors">
+          <div className="w-24 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+            {timestamp}
+          </div>
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-blue-500" />
+              <span className="text-sm font-medium text-foreground">SQL Execution</span>
+            </div>
+            <div className="font-mono text-xs bg-neutral-900 text-neutral-50 p-3 rounded-md overflow-x-auto">
+              {event.event_data.sql}
+            </div>
+          </div>
+        </div>
+      )
+
+    case 'results':
+      return (
+        <div className="group flex gap-4 p-4 hover:bg-neutral-50 transition-colors">
+          <div className="w-24 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+            {timestamp}
+          </div>
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-center gap-2">
+              <ArrowRight className="w-4 h-4 text-green-500" />
+              <span className="text-sm font-medium text-foreground">Query Result</span>
+            </div>
+            <div className="font-mono text-xs text-muted-foreground">
+              {JSON.stringify(event.event_data, null, 2)}
+            </div>
+          </div>
+        </div>
+      )
+
+    case 'action':
+      return (
+        <div className="group flex gap-4 p-4 bg-blue-50/30 hover:bg-blue-50/50 transition-colors border-l-2 border-blue-500">
+          <div className="w-24 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+            {timestamp}
+          </div>
+          <div className="flex-1 min-w-0 space-y-1">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium text-foreground">Tool Execution</span>
+            </div>
+            <p className="text-sm text-foreground">{event.event_data.description}</p>
+            {event.event_data.message && (
+              <p className="text-xs font-mono text-muted-foreground mt-1">
+                Payload: &quot;{event.event_data.message}&quot;
+              </p>
+            )}
+          </div>
+        </div>
+      )
+
+    default:
+      return null
+  }
 }
