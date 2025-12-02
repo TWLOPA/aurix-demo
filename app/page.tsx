@@ -8,7 +8,7 @@ import { MobileTabs } from '@/components/MobileTabs'
 import { useCallEvents } from '@/hooks/useCallEvents'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
-import { useConversation } from '@11labs/react'
+import { useConversation } from '@elevenlabs/react'
 import { insertCallEvent } from '@/lib/supabase/queries'
 
 export default function Home() {
