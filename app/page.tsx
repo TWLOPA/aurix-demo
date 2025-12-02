@@ -46,8 +46,12 @@ export default function Home() {
     try {
       // Request microphone permission explicitly first if needed, 
       // but startSession usually handles it.
+      const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID
+      if (!agentId) {
+        throw new Error('NEXT_PUBLIC_ELEVENLABS_AGENT_ID is not defined')
+      }
       await conversation.startSession({
-        agentId: process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID // Ensure this is in .env.local
+        agentId
       })
     } catch (error) {
       console.error('Failed to start conversation:', error)
