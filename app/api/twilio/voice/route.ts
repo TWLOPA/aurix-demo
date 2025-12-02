@@ -8,46 +8,33 @@ export async function POST(request: Request) {
 
     // Generate unique call ID
     const callSid = request.headers.get('X-Twilio-CallSid') || `CALL_${Date.now()}`
-    console.log(`[Twilio] Incoming call detected. CallSid: ${callSid}`)
+    console.log(`[Twilio] New Call Started: ${callSid}`)
 
-    // Get configuration
-    const agentId = process.env.ELEVENLABS_AGENT_ID
-    
-    if (!agentId) {
-      console.error('[Twilio] CRITICAL: Missing ELEVENLABS_AGENT_ID env var')
-      response.say('System configuration error.')
-      response.hangup()
-      return new NextResponse(response.toString(), { headers: { 'Content-Type': 'text/xml' }})
-    }
-
-    // Force Public URL for testing (Assuming Agent is Public)
-    // This eliminates potential issues with the Signed URL generation
-    const streamUrl = `wss://api.elevenlabs.io/v1/convai/conversation?agent_id=${agentId}`
-
-    console.log(`[Twilio] Connecting to Public Stream URL: ${streamUrl}`)
-
-    // Connect to ElevenLabs
-    const connect = response.connect()
-    const stream = connect.stream({
-      url: streamUrl
+    // Initial Greeting
+    // We use <Gather> to listen for user input immediately after the greeting
+    const gather = response.gather({
+      input: ['speech'], // Listen for speech
+      action: '/api/twilio/process', // Send results here
+      speechTimeout: 'auto', // Auto-detect silence
+      language: 'en-US',
     })
-    
-    // Pass parameters that might help
-    stream.parameter({ name: 'callSid', value: callSid })
 
-    const twimlString = response.toString()
-    console.log('[Twilio] Generated TwiML:', twimlString)
+    gather.say('Hello! This is ORIX. How can I help you today?')
 
-    return new NextResponse(twimlString, {
+    // If the user doesn't say anything, loop back
+    response.say('I didn\'t catch that. Could you repeat?')
+    response.redirect('/api/twilio/voice')
+
+    return new NextResponse(response.toString(), {
       headers: {
         'Content-Type': 'text/xml',
       },
     })
   } catch (error) {
-    console.error('[Twilio] Unhandled error in webhook:', error)
+    console.error('[Twilio] Error:', error)
     const VoiceResponse = twilio.twiml.VoiceResponse
     const response = new VoiceResponse()
-    response.say('Sorry, an internal error occurred.')
+    response.say('System error. Goodbye.')
     response.hangup()
     return new NextResponse(response.toString(), { headers: { 'Content-Type': 'text/xml' }})
   }
