@@ -26,23 +26,14 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
   const handleSimulateCall = async () => {
     setLoading(true)
     
-    // Generate unique call SID
+    // Generate unique call SID for local state
     const callSid = `CALL_${Date.now()}`
     
     try {
-      // Start simulation via API
-      const response = await fetch('/api/simulate-call', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ callSid })
-      })
-
-      if (response.ok) {
-        onCallStart(callSid)
-      }
+      // Directly trigger the parent handler to start the ElevenLabs session
+      onCallStart(callSid)
     } catch (error) {
       console.error('Failed to start simulation:', error)
-    } finally {
       setLoading(false)
     }
   }
