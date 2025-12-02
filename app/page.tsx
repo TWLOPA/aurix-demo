@@ -19,45 +19,52 @@ export default function Home() {
   // Initialize ElevenLabs Conversation Hook
   const conversation = useConversation({
     onConnect: () => {
-      console.log('Connected to ElevenLabs')
+      console.log('[ElevenLabs] ✅ Connected to ElevenLabs WebRTC')
       setCallActive(true)
     },
     onDisconnect: () => {
-      console.log('Disconnected from ElevenLabs')
+      console.log('[ElevenLabs] ❌ Disconnected from ElevenLabs')
       setCallActive(false)
       setCallSid(null)
     },
     onMessage: async (message: { message: string, source: string }) => {
-        console.log('Received message:', message)
+        console.log('[ElevenLabs] 💬 Received message:', JSON.stringify(message))
         if (callSid) {
+            console.log('[ElevenLabs] Inserting event to Supabase for callSid:', callSid)
             await insertCallEvent({
                 call_sid: callSid,
                 event_type: message.source === 'user' ? 'user_spoke' : 'agent_spoke',
                 event_data: { text: message.message }
             })
+        } else {
+            console.warn('[ElevenLabs] ⚠️ No callSid set, cannot insert event')
         }
     },
     onError: (error: string) => {
-      console.error('ElevenLabs Error:', error)
+      console.error('[ElevenLabs] 🔴 Error:', error)
     }
   })
 
   const handleCallStart = useCallback(async (sid: string) => {
+    console.log('[Page] handleCallStart called with sid:', sid)
     setCallSid(sid)
     try {
       // Request microphone permission explicitly first if needed, 
       // but startSession usually handles it.
       const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID
+      console.log('[Page] Agent ID from env:', agentId)
       if (!agentId) {
         throw new Error('NEXT_PUBLIC_ELEVENLABS_AGENT_ID is not defined')
       }
+      console.log('[Page] Calling conversation.startSession...')
       await conversation.startSession({
         agentId,
         // @ts-ignore
         connectionType: 'webrtc',
       })
+      console.log('[Page] ✅ startSession completed successfully')
     } catch (error) {
-      console.error('Failed to start conversation:', error)
+      console.error('[Page] 🔴 Failed to start conversation:', error)
     }
   }, [conversation])
 

@@ -24,16 +24,20 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
   const [loading, setLoading] = useState(false)
 
   const handleSimulateCall = async () => {
+    console.log('[WaitingState] Start Simulation button clicked')
     setLoading(true)
     
     // Generate unique call SID for local state
     const callSid = `CALL_${Date.now()}`
+    console.log('[WaitingState] Generated callSid:', callSid)
     
     try {
       // Directly trigger the parent handler to start the ElevenLabs session
+      console.log('[WaitingState] Calling onCallStart...')
       onCallStart(callSid)
+      console.log('[WaitingState] onCallStart completed')
     } catch (error) {
-      console.error('Failed to start simulation:', error)
+      console.error('[WaitingState] Failed to start simulation:', error)
       setLoading(false)
     }
   }
@@ -41,8 +45,15 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-background p-8">
       <div className="text-center space-y-8 max-w-lg w-full">
-        {/* Orb removed for stability on landing page */}
-        <div className="h-12" />
+        {/* Geomorph Orb Hero Visual (Floating) */}
+        <div className="relative flex justify-center items-center h-64 w-full">
+          <div className="w-full h-full">
+            <Orb 
+              agentState={loading ? "listening" : "thinking"} 
+              colors={['#000000', '#000000']}
+            />
+          </div>
+        </div>
 
         {/* Title & Subtitle */}
         <div className="space-y-2">
