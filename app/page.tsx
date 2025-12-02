@@ -21,6 +21,14 @@ export default function Home() {
   const conversation = useConversation({
     onConnect: () => {
       console.log('[ElevenLabs] ✅ Connected to ElevenLabs WebRTC')
+      console.log('[ElevenLabs] 🔊 Setting volume to maximum...')
+      // Ensure audio is at full volume
+      try {
+        conversation.setVolume({ volume: 1.0 })
+        console.log('[ElevenLabs] 🔊 Volume set to 1.0')
+      } catch (e) {
+        console.warn('[ElevenLabs] Could not set volume:', e)
+      }
       setCallActive(true)
     },
     onDisconnect: () => {
