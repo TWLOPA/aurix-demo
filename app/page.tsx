@@ -36,7 +36,7 @@ export default function Home() {
             })
         }
     },
-    onError: (error: Error) => {
+    onError: (error: string) => {
       console.error('ElevenLabs Error:', error)
     }
   })
