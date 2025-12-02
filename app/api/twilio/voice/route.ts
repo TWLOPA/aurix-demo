@@ -12,51 +12,19 @@ export async function POST(request: Request) {
 
     // Get configuration
     const agentId = process.env.ELEVENLABS_AGENT_ID
-    const apiKey = process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY
     
-    console.log(`[Twilio] Config check - AgentID: ${agentId ? 'Present' : 'Missing'}, APIKey: ${apiKey ? 'Present' : 'Missing'}`)
-
     if (!agentId) {
       console.error('[Twilio] CRITICAL: Missing ELEVENLABS_AGENT_ID env var')
-      response.say('System configuration error. Missing Agent ID.')
+      response.say('System configuration error.')
       response.hangup()
       return new NextResponse(response.toString(), { headers: { 'Content-Type': 'text/xml' }})
     }
 
-    // Construct initial WebSocket URL (Public)
-    let streamUrl = `wss://api.elevenlabs.io/v1/convai/conversation?agent_id=${agentId}`
+    // Force Public URL for testing (Assuming Agent is Public)
+    // This eliminates potential issues with the Signed URL generation
+    const streamUrl = `wss://api.elevenlabs.io/v1/convai/conversation?agent_id=${agentId}`
 
-    // Attempt to get signed URL if API key is present
-    if (apiKey) {
-      console.log('[Twilio] Attempting to generate Signed URL...')
-      try {
-        const signedUrlRes = await fetch(`https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${agentId}`, {
-          method: 'GET',
-          headers: {
-            'xi-api-key': apiKey
-          }
-        })
-
-        if (signedUrlRes.ok) {
-          const data = await signedUrlRes.json()
-          if (data.signed_url) {
-            streamUrl = data.signed_url
-            console.log('[Twilio] Successfully generated Signed URL.')
-          } else {
-            console.warn('[Twilio] Response ok but no signed_url field:', data)
-          }
-        } else {
-           const errorText = await signedUrlRes.text()
-           console.warn(`[Twilio] Failed to get signed URL. Status: ${signedUrlRes.status}. Response: ${errorText}`)
-        }
-      } catch (e) {
-        console.warn('[Twilio] Exception fetching signed URL:', e)
-      }
-    } else {
-      console.log('[Twilio] No API Key found, using Public URL.')
-    }
-
-    console.log(`[Twilio] Final Stream URL: ${streamUrl}`)
+    console.log(`[Twilio] Connecting to Public Stream URL: ${streamUrl}`)
 
     // Connect to ElevenLabs
     const connect = response.connect()
@@ -64,7 +32,7 @@ export async function POST(request: Request) {
       url: streamUrl
     })
     
-    // Optional: Pass parameters for debugging on ElevenLabs side if supported
+    // Pass parameters that might help
     stream.parameter({ name: 'callSid', value: callSid })
 
     const twimlString = response.toString()
