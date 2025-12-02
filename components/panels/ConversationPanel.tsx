@@ -4,14 +4,16 @@ import { useEffect, useRef } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { CallEvent } from '@/types'
-import { User, Bot, Loader2, MessageSquare } from 'lucide-react'
+import { User, Bot, Loader2, MessageSquare, Mic } from 'lucide-react'
 
 interface ConversationPanelProps {
   events: CallEvent[]
   loading?: boolean
+  agentSpeaking?: boolean
+  userSpeaking?: boolean
 }
 
-export function ConversationPanel({ events, loading }: ConversationPanelProps) {
+export function ConversationPanel({ events, loading, agentSpeaking, userSpeaking }: ConversationPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Auto-scroll to bottom
@@ -94,6 +96,15 @@ export function ConversationPanel({ events, loading }: ConversationPanelProps) {
                 timestamp={event.created_at}
               />
             ))}
+            
+            {/* Live speaking indicators */}
+            {agentSpeaking && (
+              <SpeakingIndicator role="assistant" />
+            )}
+            {!agentSpeaking && messages.length > 0 && (
+              <ListeningIndicator />
+            )}
+            
             <div ref={messagesEndRef} />
           </>
         )}
@@ -148,6 +159,100 @@ function MessageBubble({
           }
         `}>
           {content}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SpeakingIndicator({ role }: { role: 'user' | 'assistant' }) {
+  const isUser = role === 'user'
+
+  return (
+    <div className={`flex gap-4 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-fade-in`}>
+      {/* Avatar with pulse animation */}
+      <div className={`
+        w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border relative
+        ${isUser 
+          ? 'bg-primary text-primary-foreground border-primary' 
+          : 'bg-background text-foreground border-border'
+        }
+      `}>
+        {/* Pulse ring */}
+        <div className={`absolute inset-0 rounded-full animate-ping opacity-30 ${isUser ? 'bg-primary' : 'bg-foreground'}`} />
+        {isUser ? (
+          <Mic className="w-4 h-4 relative z-10" />
+        ) : (
+          <Bot className="w-4 h-4 relative z-10" />
+        )}
+      </div>
+
+      {/* Speaking indicator bubble */}
+      <div className={`flex flex-col max-w-[80%] space-y-1 ${isUser ? 'items-end' : 'items-start'}`}>
+        <div className="flex items-baseline gap-2">
+          <span className="text-xs font-medium text-muted-foreground">
+            {isUser ? 'Customer' : 'AI Agent'}
+          </span>
+          <span className="text-[10px] text-green-500 font-medium flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            {isUser ? 'Speaking...' : 'Responding...'}
+          </span>
+        </div>
+        <div className={`
+          px-4 py-3 rounded-2xl text-sm shadow-sm border
+          ${isUser 
+            ? 'bg-primary/80 text-primary-foreground border-primary rounded-tr-none' 
+            : 'bg-card text-card-foreground border-border rounded-tl-none'
+          }
+        `}>
+          {/* Animated typing dots */}
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-current opacity-60 animate-bounce" style={{ animationDelay: '0ms' }} />
+            <span className="w-2 h-2 rounded-full bg-current opacity-60 animate-bounce" style={{ animationDelay: '150ms' }} />
+            <span className="w-2 h-2 rounded-full bg-current opacity-60 animate-bounce" style={{ animationDelay: '300ms' }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ListeningIndicator() {
+  return (
+    <div className="flex gap-4 flex-row-reverse animate-fade-in">
+      {/* User avatar with subtle pulse */}
+      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border bg-primary/10 text-primary border-primary/20 relative">
+        {/* Subtle pulse ring */}
+        <div className="absolute inset-0 rounded-full animate-pulse opacity-50 bg-primary/20" />
+        <Mic className="w-4 h-4 relative z-10" />
+      </div>
+
+      {/* Listening indicator */}
+      <div className="flex flex-col max-w-[80%] space-y-1 items-end">
+        <div className="flex items-baseline gap-2">
+          <span className="text-xs font-medium text-muted-foreground">
+            Your turn
+          </span>
+          <span className="text-[10px] text-blue-500 font-medium flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            Listening...
+          </span>
+        </div>
+        <div className="px-4 py-3 rounded-2xl rounded-tr-none text-sm shadow-sm border bg-primary/5 text-muted-foreground border-primary/20">
+          {/* Audio waveform visualization */}
+          <div className="flex items-center gap-0.5 h-4">
+            {[...Array(7)].map((_, i) => (
+              <div
+                key={i}
+                className="w-1 bg-primary/40 rounded-full animate-pulse"
+                style={{
+                  height: `${Math.random() * 12 + 4}px`,
+                  animationDelay: `${i * 100}ms`,
+                  animationDuration: '0.8s'
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
