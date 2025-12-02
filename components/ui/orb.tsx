@@ -44,16 +44,15 @@ function GeomorphScene({
   
   // Create geometry and cache original positions
   const { geometry, originalPositions } = useMemo(() => {
-    // Increased detail to 10 for "Ex Machina" dense mesh look
-    // This creates a very tight, high-fidelity wireframe grid
-    const geo = new THREE.IcosahedronGeometry(1, 10)
+    // Reduced detail to 4 to prevent WebGL Context Lost (Crash)
+    const geo = new THREE.IcosahedronGeometry(1, 4)
     const pos = geo.attributes.position.array.slice()
     return { geometry: geo, originalPositions: pos }
   }, [])
 
   // Particle system
   const { particleGeometry, particleVelocities, particleOriginalDistances } = useMemo(() => {
-    const count = 800 // Increased particle count for density
+    const count = 150 // Reduced particle count for performance
     const geo = new THREE.BufferGeometry()
     const positions = new Float32Array(count * 3)
     const velocities = []

@@ -28,6 +28,7 @@ export default function Home() {
       setCallSid(null)
     },
     onMessage: async (message: { message: string, source: string }) => {
+        console.log('Received message:', message)
         if (callSid) {
             await insertCallEvent({
                 call_sid: callSid,
