@@ -23,7 +23,8 @@ export function Orb({
         camera={{ position: [0, 0, 5], fov: 60 }}
         gl={{
           alpha: true,
-          antialias: true,
+          antialias: false, // Disable for performance
+          powerPreference: 'low-power', // Prevent GPU overload
         }}
       >
         <GeomorphScene colors={colors} agentState={agentState} />
@@ -44,15 +45,15 @@ function GeomorphScene({
   
   // Create geometry and cache original positions
   const { geometry, originalPositions } = useMemo(() => {
-    // Reduced detail to 4 to prevent WebGL Context Lost (Crash)
-    const geo = new THREE.IcosahedronGeometry(1, 4)
+    // Very low detail (2) to prevent WebGL Context Lost
+    const geo = new THREE.IcosahedronGeometry(1, 2)
     const pos = geo.attributes.position.array.slice()
     return { geometry: geo, originalPositions: pos }
   }, [])
 
   // Particle system
   const { particleGeometry, particleVelocities, particleOriginalDistances } = useMemo(() => {
-    const count = 150 // Reduced particle count for performance
+    const count = 50 // Minimal particle count for performance
     const geo = new THREE.BufferGeometry()
     const positions = new Float32Array(count * 3)
     const velocities = []

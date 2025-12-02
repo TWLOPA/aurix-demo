@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { WaitingState } from '@/components/WaitingState'
 import { ConversationPanel } from '@/components/panels/ConversationPanel'
 import { AgentBrainPanel } from '@/components/panels/AgentBrainPanel'
@@ -14,6 +14,7 @@ import { insertCallEvent } from '@/lib/supabase/queries'
 export default function Home() {
   const [callActive, setCallActive] = useState(false)
   const [callSid, setCallSid] = useState<string | null>(null)
+  const callSidRef = useRef<string | null>(null) // Ref to avoid closure issues
   const { events, loading } = useCallEvents(callSid)
 
   // Initialize ElevenLabs Conversation Hook
@@ -26,13 +27,15 @@ export default function Home() {
       console.log('[ElevenLabs] ❌ Disconnected from ElevenLabs')
       setCallActive(false)
       setCallSid(null)
+      callSidRef.current = null
     },
     onMessage: async (message: { message: string, source: string }) => {
         console.log('[ElevenLabs] 💬 Received message:', JSON.stringify(message))
-        if (callSid) {
-            console.log('[ElevenLabs] Inserting event to Supabase for callSid:', callSid)
+        const currentCallSid = callSidRef.current // Use ref instead of state
+        if (currentCallSid) {
+            console.log('[ElevenLabs] Inserting event to Supabase for callSid:', currentCallSid)
             await insertCallEvent({
-                call_sid: callSid,
+                call_sid: currentCallSid,
                 event_type: message.source === 'user' ? 'user_spoke' : 'agent_spoke',
                 event_data: { text: message.message }
             })
@@ -48,6 +51,7 @@ export default function Home() {
   const handleCallStart = useCallback(async (sid: string) => {
     console.log('[Page] handleCallStart called with sid:', sid)
     setCallSid(sid)
+    callSidRef.current = sid // Set ref immediately
     try {
       // Request microphone permission explicitly first if needed, 
       // but startSession usually handles it.
@@ -72,6 +76,7 @@ export default function Home() {
     await conversation.endSession()
     setCallActive(false)
     setCallSid(null)
+    callSidRef.current = null
   }
 
   return (
