@@ -163,8 +163,9 @@ function GeomorphScene({
     // Animate Particles
     if (particlesRef.current) {
       const pPositions = particleGeometry.attributes.position.array as Float32Array
+      const particleCount = particleVelocities.length
       
-      for (let i = 0; i < 800; i++) {
+      for (let i = 0; i < particleCount; i++) {
         const i3 = i * 3
         let x = pPositions[i3]
         let y = pPositions[i3 + 1]

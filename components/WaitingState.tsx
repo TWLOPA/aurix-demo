@@ -41,15 +41,8 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-background p-8">
       <div className="text-center space-y-8 max-w-lg w-full">
-        {/* Geomorph Orb Hero Visual (Floating) */}
-        <div className="relative flex justify-center items-center h-64 w-full">
-          <div className="w-full h-full">
-            <Orb 
-              agentState={loading ? "listening" : "thinking"} 
-              colors={['#000000', '#000000']}
-            />
-          </div>
-        </div>
+        {/* Orb removed for stability on landing page */}
+        <div className="h-12" />
 
         {/* Title & Subtitle */}
         <div className="space-y-2">
