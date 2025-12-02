@@ -14,7 +14,6 @@ import { insertCallEvent } from '@/lib/supabase/queries'
 export default function Home() {
   const [callActive, setCallActive] = useState(false)
   const [callSid, setCallSid] = useState<string | null>(null)
-  const [userSpeaking, setUserSpeaking] = useState(false)
   const callSidRef = useRef<string | null>(null) // Ref to avoid closure issues
   const { events, loading } = useCallEvents(callSid)
 
@@ -36,15 +35,10 @@ export default function Home() {
       console.log('[ElevenLabs] ❌ Disconnected from ElevenLabs')
       setCallActive(false)
       setCallSid(null)
-      setUserSpeaking(false)
       callSidRef.current = null
     },
     onMessage: async (message: { message: string, source: string }) => {
         console.log('[ElevenLabs] 💬 Received message:', JSON.stringify(message))
-        // When user message is finalized, they've stopped speaking
-        if (message.source === 'user') {
-          setUserSpeaking(false)
-        }
         const currentCallSid = callSidRef.current // Use ref instead of state
         if (currentCallSid) {
             console.log('[ElevenLabs] Inserting event to Supabase for callSid:', currentCallSid)
@@ -56,15 +50,6 @@ export default function Home() {
         } else {
             console.warn('[ElevenLabs] ⚠️ No callSid set, cannot insert event')
         }
-    },
-    onModeChange: (mode: { mode: 'speaking' | 'listening' }) => {
-      console.log('[ElevenLabs] 🎤 Mode changed:', mode.mode)
-      // When mode is 'listening', the agent is waiting for user input (user might be speaking)
-      // When mode is 'speaking', the agent is talking
-      if (mode.mode === 'listening') {
-        // Agent is listening, user might start speaking
-        // We'll show "listening" indicator, and when audio is detected, show "speaking"
-      }
     },
     onError: (error: string) => {
       console.error('[ElevenLabs] 🔴 Error:', error)
@@ -136,7 +121,6 @@ export default function Home() {
               <MobileTabs 
                 events={events} 
                 agentSpeaking={conversation.isSpeaking}
-                userSpeaking={userSpeaking}
               />
             </div>
             
@@ -147,7 +131,6 @@ export default function Home() {
                   events={events} 
                   loading={loading} 
                   agentSpeaking={conversation.isSpeaking}
-                  userSpeaking={userSpeaking}
                 />
               </div>
               <div className="w-1/2 bg-background h-full">

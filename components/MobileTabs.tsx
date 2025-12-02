@@ -9,10 +9,9 @@ import type { CallEvent } from '@/types'
 interface MobileTabsProps {
   events: CallEvent[]
   agentSpeaking?: boolean
-  userSpeaking?: boolean
 }
 
-export function MobileTabs({ events, agentSpeaking, userSpeaking }: MobileTabsProps) {
+export function MobileTabs({ events, agentSpeaking }: MobileTabsProps) {
   const [activeTab, setActiveTab] = useState<'conversation' | 'brain'>('conversation')
 
   return (
@@ -41,7 +40,6 @@ export function MobileTabs({ events, agentSpeaking, userSpeaking }: MobileTabsPr
           <ConversationPanel 
             events={events} 
             agentSpeaking={agentSpeaking}
-            userSpeaking={userSpeaking}
           />
         ) : (
           <AgentBrainPanel events={events} />

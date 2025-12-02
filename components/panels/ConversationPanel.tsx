@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { CallEvent } from '@/types'
@@ -10,10 +10,36 @@ interface ConversationPanelProps {
   events: CallEvent[]
   loading?: boolean
   agentSpeaking?: boolean
-  userSpeaking?: boolean
 }
 
-export function ConversationPanel({ events, loading, agentSpeaking, userSpeaking }: ConversationPanelProps) {
+export function ConversationPanel({ events, loading, agentSpeaking }: ConversationPanelProps) {
+  const [showListening, setShowListening] = useState(false)
+  const lastMessageCountRef = useRef(0)
+
+  // Show "Listening..." with a delay after agent stops speaking
+  // Hide it immediately when a new message arrives
+  useEffect(() => {
+    const messageCount = events.filter(
+      e => e.event_type === 'user_spoke' || e.event_type === 'agent_spoke'
+    ).length
+
+    // If a new message arrived, hide the listening indicator immediately
+    if (messageCount > lastMessageCountRef.current) {
+      setShowListening(false)
+      lastMessageCountRef.current = messageCount
+    }
+
+    // If agent just stopped speaking, show listening after a delay
+    if (!agentSpeaking && messageCount > 0) {
+      const timer = setTimeout(() => {
+        setShowListening(true)
+      }, 1500) // 1.5 second delay before showing "Listening..."
+      
+      return () => clearTimeout(timer)
+    } else if (agentSpeaking) {
+      setShowListening(false)
+    }
+  }, [agentSpeaking, events])
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // Auto-scroll to bottom
@@ -97,11 +123,8 @@ export function ConversationPanel({ events, loading, agentSpeaking, userSpeaking
               />
             ))}
             
-            {/* Live speaking indicators */}
-            {agentSpeaking && (
-              <SpeakingIndicator role="assistant" />
-            )}
-            {!agentSpeaking && messages.length > 0 && (
+            {/* Live listening indicator - shows after agent finishes speaking */}
+            {showListening && !agentSpeaking && (
               <ListeningIndicator />
             )}
             
@@ -159,58 +182,6 @@ function MessageBubble({
           }
         `}>
           {content}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function SpeakingIndicator({ role }: { role: 'user' | 'assistant' }) {
-  const isUser = role === 'user'
-
-  return (
-    <div className={`flex gap-4 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-fade-in`}>
-      {/* Avatar with pulse animation */}
-      <div className={`
-        w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border relative
-        ${isUser 
-          ? 'bg-primary text-primary-foreground border-primary' 
-          : 'bg-background text-foreground border-border'
-        }
-      `}>
-        {/* Pulse ring */}
-        <div className={`absolute inset-0 rounded-full animate-ping opacity-30 ${isUser ? 'bg-primary' : 'bg-foreground'}`} />
-        {isUser ? (
-          <Mic className="w-4 h-4 relative z-10" />
-        ) : (
-          <Bot className="w-4 h-4 relative z-10" />
-        )}
-      </div>
-
-      {/* Speaking indicator bubble */}
-      <div className={`flex flex-col max-w-[80%] space-y-1 ${isUser ? 'items-end' : 'items-start'}`}>
-        <div className="flex items-baseline gap-2">
-          <span className="text-xs font-medium text-muted-foreground">
-            {isUser ? 'Customer' : 'AI Agent'}
-          </span>
-          <span className="text-[10px] text-green-500 font-medium flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            {isUser ? 'Speaking...' : 'Responding...'}
-          </span>
-        </div>
-        <div className={`
-          px-4 py-3 rounded-2xl text-sm shadow-sm border
-          ${isUser 
-            ? 'bg-primary/80 text-primary-foreground border-primary rounded-tr-none' 
-            : 'bg-card text-card-foreground border-border rounded-tl-none'
-          }
-        `}>
-          {/* Animated typing dots */}
-          <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-current opacity-60 animate-bounce" style={{ animationDelay: '0ms' }} />
-            <span className="w-2 h-2 rounded-full bg-current opacity-60 animate-bounce" style={{ animationDelay: '150ms' }} />
-            <span className="w-2 h-2 rounded-full bg-current opacity-60 animate-bounce" style={{ animationDelay: '300ms' }} />
-          </div>
         </div>
       </div>
     </div>
