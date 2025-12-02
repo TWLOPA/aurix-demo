@@ -51,7 +51,9 @@ export default function Home() {
         throw new Error('NEXT_PUBLIC_ELEVENLABS_AGENT_ID is not defined')
       }
       await conversation.startSession({
-        agentId
+        agentId,
+        // @ts-ignore
+        connectionType: 'webrtc',
       })
     } catch (error) {
       console.error('Failed to start conversation:', error)
