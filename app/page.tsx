@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { WaitingState } from '@/components/WaitingState'
 import { ConversationPanel } from '@/components/panels/ConversationPanel'
 import { AgentBrainPanel } from '@/components/panels/AgentBrainPanel'
@@ -8,18 +8,54 @@ import { MobileTabs } from '@/components/MobileTabs'
 import { useCallEvents } from '@/hooks/useCallEvents'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
+import { useConversation } from '@11labs/react'
+import { insertCallEvent } from '@/lib/supabase/queries'
 
 export default function Home() {
   const [callActive, setCallActive] = useState(false)
   const [callSid, setCallSid] = useState<string | null>(null)
   const { events, loading } = useCallEvents(callSid)
 
-  const handleCallStart = (sid: string) => {
-    setCallActive(true)
-    setCallSid(sid)
-  }
+  // Initialize ElevenLabs Conversation Hook
+  const conversation = useConversation({
+    onConnect: () => {
+      console.log('Connected to ElevenLabs')
+      setCallActive(true)
+    },
+    onDisconnect: () => {
+      console.log('Disconnected from ElevenLabs')
+      setCallActive(false)
+      setCallSid(null)
+    },
+    onMessage: async (message: { message: string, source: string }) => {
+        if (callSid) {
+            await insertCallEvent({
+                call_sid: callSid,
+                event_type: message.source === 'user' ? 'user_spoke' : 'agent_spoke',
+                event_data: { text: message.message }
+            })
+        }
+    },
+    onError: (error: Error) => {
+      console.error('ElevenLabs Error:', error)
+    }
+  })
 
-  const handleReset = () => {
+  const handleCallStart = useCallback(async (sid: string) => {
+    setCallSid(sid)
+    try {
+      // Request microphone permission explicitly first if needed, 
+      // but startSession usually handles it.
+      await conversation.startSession({
+        agentId: process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID // Ensure this is in .env.local
+      })
+    } catch (error) {
+      console.error('Failed to start conversation:', error)
+    }
+  }, [conversation])
+
+  const handleReset = async () => {
+    await conversation.endSession()
     setCallActive(false)
     setCallSid(null)
   }
