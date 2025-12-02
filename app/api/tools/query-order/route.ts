@@ -4,7 +4,8 @@ import { insertCallEvent, queryOrder } from '@/lib/supabase/queries'
 export async function POST(request: Request) {
   try {
     const { order_number, customer_name, call_sid } = await request.json()
-    const callSid = call_sid || `BROWSER_${Date.now()}`
+    // Use a fixed Demo ID if no specific call_sid is provided (common in Webhook calls)
+    const callSid = call_sid || 'DEMO_SESSION_ID'
 
     // 1. Log Agent Thinking (UI Update)
     await insertCallEvent({

@@ -33,17 +33,19 @@ export function useCallEvents(callSid: string | null) {
 
     // Subscribe to new events
     const channel = supabase
-      .channel(`call_events:${callSid}`)
+      .channel(`call_events_subscription`)
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
           table: 'call_events',
-          filter: `call_sid=eq.${callSid}`
         },
         (payload) => {
-          setEvents(prev => [...prev, payload.new as CallEvent])
+            // Filter locally for either our specific SID or the global DEMO ID
+            if (payload.new.call_sid === callSid || payload.new.call_sid === 'DEMO_SESSION_ID') {
+                setEvents(prev => [...prev, payload.new as CallEvent])
+            }
         }
       )
       .subscribe()
