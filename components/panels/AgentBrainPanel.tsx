@@ -89,7 +89,7 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
             <div>
               <p className="text-sm font-medium text-foreground">Waiting for conversation...</p>
               <p className="text-xs text-muted-foreground mt-1">
-                The agent's decision-making process will appear here in real-time
+                The agent&apos;s decision-making process will appear here in real-time
               </p>
             </div>
           </div>
@@ -272,7 +272,7 @@ function TimelineEntry({ event, isLast }: { event: CallEvent; isLast: boolean })
             </div>
             {event.event_data.message && (
               <p className="text-xs text-muted-foreground mt-2 font-mono">
-                "{event.event_data.message}"
+                &quot;{event.event_data.message}&quot;
               </p>
             )}
           </div>

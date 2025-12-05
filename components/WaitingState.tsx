@@ -101,7 +101,7 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
                 <Clock className="w-5 h-5 text-orange-500" />
                 <div>
                   <span className="text-xs text-muted-foreground">Issue</span>
-                  <p className="font-semibold text-foreground">Package hasn't arrived (was due Tuesday)</p>
+                  <p className="font-semibold text-foreground">Package hasn&apos;t arrived (was due Tuesday)</p>
                 </div>
               </div>
             </div>
@@ -133,7 +133,7 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
         {/* Hint */}
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-full px-4 py-2 mx-auto w-fit">
           <Eye className="w-4 h-4" />
-          <span>Watch the <strong>right panel</strong> to see the agent's reasoning in real-time</span>
+          <span>Watch the <strong>right panel</strong> to see the agent&apos;s reasoning in real-time</span>
         </div>
 
         {/* Footer */}
