@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Play, Loader2, Terminal } from 'lucide-react'
+import { Mic, Loader2, Package, User, Clock, Eye } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 // Dynamically import Orb to avoid SSR issues with Three.js/Canvas
 const Orb = dynamic(() => import('@/components/ui/orb').then(mod => mod.Orb), {
@@ -24,7 +25,7 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
   const [loading, setLoading] = useState(false)
 
   const handleSimulateCall = async () => {
-    console.log('[WaitingState] Start Simulation button clicked')
+    console.log('[WaitingState] Start Call button clicked')
     setLoading(true)
     
     // Generate unique call SID for local state
@@ -43,11 +44,12 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-background p-8">
-      <div className="text-center space-y-8 max-w-lg w-full">
-        {/* Geomorph Orb Hero Visual (Floating) */}
-        <div className="relative flex justify-center items-center h-64 w-full">
-          <div className="w-full h-full">
+    <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-b from-background to-muted/20 p-8">
+      <div className="text-center space-y-8 max-w-xl w-full">
+        
+        {/* Hero Orb */}
+        <div className="relative flex justify-center items-center h-48 w-full">
+          <div className="w-48 h-48">
             <Orb 
               agentState={loading ? "listening" : "thinking"} 
               colors={['#000000', '#000000']}
@@ -55,61 +57,89 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
           </div>
         </div>
 
-        {/* Title & Subtitle */}
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Agent Simulation
+        {/* Branding */}
+        <div className="space-y-3">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">
+            AURIX
           </h1>
-          <p className="text-sm text-muted-foreground">
-            Ready to initialize conversation with agent <span className="font-mono text-xs bg-muted px-1 py-0.5 rounded">support-v1</span>.
+          <p className="text-lg text-muted-foreground">
+            AI Customer Success Agent with <span className="text-foreground font-medium">Transparent Reasoning</span>
           </p>
         </div>
 
-        {/* Primary CTA */}
-        <div className="pt-4 flex justify-center">
+        {/* Demo Scenario Card */}
+        <Card className="text-left border-2 border-primary/20 bg-primary/5 shadow-lg">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-primary/10 text-primary font-semibold">
+                🎭 Demo Scenario
+              </Badge>
+            </div>
+            
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              You are calling customer service to check on your order. Play the role below:
+            </p>
+
+            <div className="grid gap-3 pt-2">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-background border border-border">
+                <User className="w-5 h-5 text-primary" />
+                <div>
+                  <span className="text-xs text-muted-foreground">Your Name</span>
+                  <p className="font-semibold text-foreground">Tom Wilson</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-background border border-border">
+                <Package className="w-5 h-5 text-primary" />
+                <div>
+                  <span className="text-xs text-muted-foreground">Order Number</span>
+                  <p className="font-semibold text-foreground font-mono">#423</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-background border border-border">
+                <Clock className="w-5 h-5 text-orange-500" />
+                <div>
+                  <span className="text-xs text-muted-foreground">Issue</span>
+                  <p className="font-semibold text-foreground">Package hasn't arrived (was due Tuesday)</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* CTA Button */}
+        <div className="pt-2">
           <Button
             onClick={handleSimulateCall}
             disabled={loading}
-            size="default"
-            className="gap-2 min-w-[160px]"
+            size="lg"
+            className="gap-3 min-w-[200px] h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
           >
             {loading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Initializing...
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Connecting...
               </>
             ) : (
               <>
-                <Play className="w-4 h-4" />
-                Start Simulation
+                <Mic className="w-5 h-5" />
+                Start Call
               </>
             )}
           </Button>
         </div>
 
-        {/* Demo Context - Technical Card */}
-        <Card className="text-left border-neutral-200 shadow-sm">
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-muted-foreground" />
-              <CardTitle className="text-sm font-medium">Session Context</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="grid gap-2 text-sm">
-            <div className="flex justify-between py-2 border-b border-neutral-100">
-              <span className="text-muted-foreground">Customer ID</span>
-              <span className="font-mono text-xs text-foreground">cust_8921 (Tom)</span>
-            </div>
-            <div className="flex justify-between py-2 border-b border-neutral-100">
-              <span className="text-muted-foreground">Reference Order</span>
-              <span className="font-mono text-xs text-foreground">ord_417</span>
-            </div>
-            <div className="flex justify-between py-2">
-              <span className="text-muted-foreground">Intent Scope</span>
-              <span className="font-medium text-foreground">Delivery Inquiry</span>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Hint */}
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-full px-4 py-2 mx-auto w-fit">
+          <Eye className="w-4 h-4" />
+          <span>Watch the <strong>right panel</strong> to see the agent's reasoning in real-time</span>
+        </div>
+
+        {/* Footer */}
+        <p className="text-xs text-muted-foreground/60 pt-4">
+          Powered by ElevenLabs Conversational AI
+        </p>
       </div>
     </div>
   )
