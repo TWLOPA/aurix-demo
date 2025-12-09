@@ -2,8 +2,10 @@ export type EventType =
   | 'call_started'
   | 'user_spoke'
   | 'agent_thinking'
-  | 'understanding'      // New: Intent classification
-  | 'compliance_check'   // New: Compliance/verification checks
+  | 'understanding'           // Intent classification
+  | 'compliance_check'        // Agent scope/policy checks
+  | 'identity_check'          // Identity verification requested
+  | 'identity_verification'   // Identity verification result
   | 'querying'
   | 'results'
   | 'agent_spoke'
@@ -26,6 +28,7 @@ export interface Customer {
   email: string
   phone: string
   date_of_birth?: string
+  postcode?: string           // For identity verification (HIPAA/GDPR)
   customer_ltv: number
   order_count: number
   vip_tier: 'standard' | 'gold' | 'platinum'
