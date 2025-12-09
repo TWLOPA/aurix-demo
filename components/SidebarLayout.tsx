@@ -51,26 +51,19 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      {/* Left Sidebar with blue gradient */}
+      {/* Left Sidebar - White with subtle warmth */}
       <aside 
         className={cn(
-          "flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out relative",
+          "flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out relative border-r border-neutral-200/60",
           isCollapsed ? "w-16" : "w-56"
         )}
         style={{
-          background: 'linear-gradient(180deg, #E8F4FC 0%, #D4EAF7 50%, #C7E2F4 100%)'
+          background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%)'
         }}
       >
-        {/* Subtle radial glow */}
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at center top, rgba(125, 211, 252, 0.2) 0%, transparent 70%)'
-          }}
-        />
 
         {/* Content */}
-        <div className="relative flex flex-col h-full">
+        <div className="flex flex-col h-full">
           {/* Logo Area */}
           <div className="h-14 flex items-center justify-between px-4">
             {!isCollapsed ? (
@@ -99,9 +92,9 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
             {!isCollapsed && (
               <button
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="p-1.5 rounded-lg hover:bg-white/30 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-neutral-500" />
+                <ChevronLeft className="w-4 h-4 text-neutral-400" />
               </button>
             )}
           </div>
@@ -110,9 +103,9 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
           {isCollapsed && (
             <button
               onClick={() => setIsCollapsed(false)}
-              className="p-2 mx-auto mt-2 rounded-lg hover:bg-white/30 transition-colors"
+              className="p-2 mx-auto mt-2 rounded-lg hover:bg-neutral-100 transition-colors"
             >
-              <ChevronRight className="w-4 h-4 text-neutral-500" />
+              <ChevronRight className="w-4 h-4 text-neutral-400" />
             </button>
           )}
 
@@ -139,15 +132,11 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
                         href={item.href}
                         className={cn(
                           "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200",
+                          isActive 
+                            ? "bg-neutral-100/80 shadow-sm" 
+                            : "hover:bg-neutral-50",
                           isCollapsed && "justify-center px-2"
                         )}
-                        style={isActive ? {
-                          background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%)',
-                          backdropFilter: 'blur(12px)',
-                          WebkitBackdropFilter: 'blur(12px)',
-                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-                          border: '1px solid rgba(255, 255, 255, 0.6)'
-                        } : undefined}
                         title={isCollapsed ? item.title : undefined}
                       >
                         <item.icon className={cn(
@@ -183,12 +172,12 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
                   onClick={() => setShowGuide(true)}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm w-full transition-all duration-200",
-                    "text-neutral-600 hover:bg-white/30",
+                    "text-neutral-600 hover:bg-neutral-50",
                     isCollapsed && "justify-center px-2"
                   )}
                   title={isCollapsed ? "How to Use" : undefined}
                 >
-                  <HelpCircle className="w-[18px] h-[18px] text-neutral-500 shrink-0" />
+                  <HelpCircle className="w-[18px] h-[18px] text-neutral-400 shrink-0" />
                   {!isCollapsed && <span>How to Use</span>}
                 </button>
               </div>
@@ -196,22 +185,16 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
           </nav>
 
           {/* Footer - Powered by */}
-          <div className="p-3">
+          <div className="p-3 border-t border-neutral-100">
             {!isCollapsed ? (
-              <div 
-                className="px-3 py-2.5 rounded-xl"
-                style={{
-                  background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.25) 100%)',
-                  border: '1px solid rgba(255, 255, 255, 0.5)'
-                }}
-              >
+              <div className="px-2 py-1">
                 <p className="text-[10px] text-neutral-400 mb-1.5">Powered by</p>
                 <Image 
                   src="/assets/ElevenLabs_logo.png" 
                   alt="ElevenLabs" 
                   width={70} 
                   height={14}
-                  className="h-3.5 w-auto opacity-70"
+                  className="h-3.5 w-auto opacity-60"
                 />
               </div>
             ) : (
@@ -221,7 +204,7 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
                   alt="ElevenLabs" 
                   width={16} 
                   height={16}
-                  className="opacity-50"
+                  className="opacity-40"
                 />
               </div>
             )}
