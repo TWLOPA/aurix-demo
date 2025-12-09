@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { X } from 'lucide-react'
+import { ChevronDown, ChevronUp, DollarSign } from 'lucide-react'
 
 interface CostCalculatorProps {
   isActive?: boolean
@@ -11,7 +11,7 @@ interface CostCalculatorProps {
 
 export function CostCalculator({ isActive = false }: CostCalculatorProps) {
   const [seconds, setSeconds] = useState(0)
-  const [isVisible, setIsVisible] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(true)
 
   const AI_COST_PER_SECOND = 0.08 / 60
   const HUMAN_COST_PER_SECOND = 0.50 / 60
@@ -41,45 +41,53 @@ export function CostCalculator({ isActive = false }: CostCalculatorProps) {
     return `${mins}:${remainingSecs.toString().padStart(2, '0')}`
   }
 
-  if (!isVisible) return null
-
   return (
-    <div className="fixed bottom-6 left-6 z-50 w-[280px]">
-      <Card 
-        className="p-4 border-2 bg-[rgba(26,26,46,0.95)] backdrop-blur-xl border-[#2A2A3E] rounded-2xl"
-        style={{
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
-        }}
+    <Card 
+      className="rounded-2xl border-2 border-white/10 overflow-hidden transition-all duration-300 ease-in-out"
+      style={{
+        background: 'linear-gradient(135deg, #0A4D68 0%, #088395 100%)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+      }}
+    >
+      {/* Header - Always visible, clickable to toggle */}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between gap-3 p-4 hover:bg-white/5 transition-colors duration-200"
       >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h3 className="font-semibold flex items-center gap-2 text-sm text-white/95">
-              Cost Comparison
-              {isActive && (
-                <Badge 
-                  className="text-xs bg-[#05B2DC] text-white animate-pulse"
-                >
-                  Live
-                </Badge>
-              )}
-            </h3>
-            {isActive && (
-              <p className="mt-1 text-xs text-white/50">
-                Duration: {formatTime(seconds)}
-              </p>
-            )}
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg bg-white/10 flex items-center justify-center">
+            <DollarSign className="w-3.5 h-3.5 text-white/90" />
           </div>
-          <button
-            onClick={() => setIsVisible(false)}
-            className="text-white/50 hover:text-white/95 transition-colors duration-200 p-1"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <span className="font-semibold text-sm text-white/95">
+            Cost Comparison
+          </span>
+          {isActive && (
+            <Badge className="text-[10px] px-1.5 py-0.5 bg-[#05B2DC] text-white border-0 animate-pulse">
+              Live
+            </Badge>
+          )}
         </div>
+        <div className="flex items-center gap-2">
+          {isActive && (
+            <span className="text-xs font-mono text-white/70">
+              {formatTime(seconds)}
+            </span>
+          )}
+          {isExpanded ? (
+            <ChevronUp className="w-4 h-4 text-white/70" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-white/70" />
+          )}
+        </div>
+      </button>
 
-        {/* Cost Items */}
-        <div className="space-y-3">
+      {/* Expandable Content */}
+      <div 
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          isExpanded ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="px-4 pb-4 space-y-3">
           {/* AI Cost */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -103,7 +111,7 @@ export function CostCalculator({ isActive = false }: CostCalculatorProps) {
           </div>
 
           {/* Divider */}
-          <div className="h-px bg-[#2A2A3E] my-2" />
+          <div className="h-px bg-white/20" />
 
           {/* Savings */}
           <div className="flex items-center justify-between">
@@ -112,21 +120,20 @@ export function CostCalculator({ isActive = false }: CostCalculatorProps) {
               <div className="font-mono font-bold text-base text-[#7DD3FC]">
                 {formatCost(savings)}
               </div>
-              <div className="text-xs text-white/50">
+              <div className="text-[10px] text-white/50">
                 ({savingsPercent.toFixed(0)}% cheaper)
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="mt-4 pt-4 border-t border-[#2A2A3E]">
-          <p className="text-[11px] leading-relaxed text-white/50">
-            Based on ElevenLabs pricing: $0.08/min for AI vs $30/hr ($0.50/min) for human agents
-          </p>
+          {/* Footer note */}
+          <div className="pt-2 border-t border-white/10">
+            <p className="text-[10px] leading-relaxed text-white/50">
+              $0.08/min AI vs $0.50/min human
+            </p>
+          </div>
         </div>
-      </Card>
-    </div>
+      </div>
+    </Card>
   )
 }
-

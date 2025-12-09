@@ -194,17 +194,26 @@ export default function Home() {
               />
             </div>
             
-            {/* Desktop: Split Panels */}
-            <div className="hidden lg:flex lg:flex-1 h-full gap-px">
-              <div className="w-1/2 border-r border-neutral-200 bg-background h-full">
-                <ConversationPanel 
-                  events={events} 
-                  loading={loading} 
-                  agentSpeaking={conversation.isSpeaking}
-                />
+            {/* Desktop: Three-column layout with sidebar */}
+            <div className="hidden lg:flex lg:flex-1 h-full">
+              {/* Left Sidebar - Simulation Info */}
+              <div className="w-72 shrink-0 border-r border-neutral-200 bg-neutral-50/80 p-4 space-y-4 overflow-y-auto">
+                <PersonaToolbar mode="simulation" />
+                <CostCalculator isActive={callActive} />
               </div>
-              <div className="w-1/2 bg-background h-full">
-                <AgentBrainPanel events={events} />
+              
+              {/* Main Panels */}
+              <div className="flex-1 flex gap-px">
+                <div className="w-1/2 border-r border-neutral-200 bg-background h-full">
+                  <ConversationPanel 
+                    events={events} 
+                    loading={loading} 
+                    agentSpeaking={conversation.isSpeaking}
+                  />
+                </div>
+                <div className="w-1/2 bg-background h-full">
+                  <AgentBrainPanel events={events} />
+                </div>
               </div>
             </div>
 
@@ -216,9 +225,6 @@ export default function Home() {
           <WaitingState onCallStart={handleCallStart} />
         )}
       </div>
-
-      {/* Cost Calculator - Always visible */}
-      <CostCalculator isActive={callActive} />
 
       {/* Call Summary Modal */}
       <CallSummaryModal
