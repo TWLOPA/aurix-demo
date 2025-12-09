@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { CallEvent } from '@/types'
-import { User, Bot, Loader2, MessageSquare, Mic } from 'lucide-react'
+import { User, Loader2, MessageSquare, Mic } from 'lucide-react'
+import { AnimatedOrb } from '@/components/ui/animated-orb'
 
 interface ConversationPanelProps {
   events: CallEvent[]
@@ -151,19 +152,15 @@ function MessageBubble({
 
   return (
     <div className={`flex gap-4 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-slide-up group`}>
-      <div className={`
-        w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border
-        ${isUser 
-          ? 'bg-primary text-primary-foreground border-primary' 
-          : 'bg-background text-foreground border-border'
-        }
-      `}>
-        {isUser ? (
+      {isUser ? (
+        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border bg-primary text-primary-foreground border-primary">
           <User className="w-4 h-4" />
-        ) : (
-          <Bot className="w-4 h-4" />
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="flex-shrink-0">
+          <AnimatedOrb size={32} />
+        </div>
+      )}
 
       <div className={`flex flex-col max-w-[80%] space-y-1 ${isUser ? 'items-end' : 'items-start'}`}>
         <div className="flex items-baseline gap-2">
