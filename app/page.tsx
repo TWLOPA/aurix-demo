@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { WaitingState } from '@/components/WaitingState'
 import { ConversationPanel } from '@/components/panels/ConversationPanel'
 import { AgentBrainPanel } from '@/components/panels/AgentBrainPanel'
 import { MobileTabs } from '@/components/MobileTabs'
+import { CallSummaryModal } from '@/components/CallSummaryModal'
 import { useCallEvents } from '@/hooks/useCallEvents'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
@@ -14,8 +15,19 @@ import { insertCallEvent } from '@/lib/supabase/queries'
 export default function Home() {
   const [callActive, setCallActive] = useState(false)
   const [callSid, setCallSid] = useState<string | null>(null)
+  const [showSummary, setShowSummary] = useState(false)
+  const [callDuration, setCallDuration] = useState(0)
   const callSidRef = useRef<string | null>(null) // Ref to avoid closure issues
+  const callStartTimeRef = useRef<number | null>(null) // Track call start time
+  const eventsForSummaryRef = useRef<typeof events>([]) // Store events for summary
   const { events, loading } = useCallEvents(callSid)
+
+  // Update events ref whenever events change
+  useEffect(() => {
+    if (events.length > 0) {
+      eventsForSummaryRef.current = events
+    }
+  }, [events])
 
   // Initialize ElevenLabs Conversation Hook
   const conversation = useConversation({
@@ -30,12 +42,17 @@ export default function Home() {
         console.warn('[ElevenLabs] Could not set volume:', e)
       }
       setCallActive(true)
+      callStartTimeRef.current = Date.now()
     },
     onDisconnect: () => {
       console.log('[ElevenLabs] ❌ Disconnected from ElevenLabs')
+      // Calculate duration before showing summary
+      if (callStartTimeRef.current) {
+        const duration = Math.floor((Date.now() - callStartTimeRef.current) / 1000)
+        setCallDuration(duration)
+      }
       setCallActive(false)
-      setCallSid(null)
-      callSidRef.current = null
+      setShowSummary(true) // Show summary modal instead of resetting
     },
     onMessage: async (message: { message: string, source: string }) => {
         console.log('[ElevenLabs] 💬 Received message:', JSON.stringify(message))
@@ -76,6 +93,7 @@ export default function Home() {
     
     setCallSid(sid)
     callSidRef.current = sid // Set ref immediately
+    eventsForSummaryRef.current = [] // Clear events ref
     try {
       // Request microphone permission explicitly first if needed, 
       // but startSession usually handles it.
@@ -96,11 +114,25 @@ export default function Home() {
     }
   }, [conversation])
 
-  const handleReset = async () => {
+  const handleEndCall = async () => {
+    // Calculate duration
+    if (callStartTimeRef.current) {
+      const duration = Math.floor((Date.now() - callStartTimeRef.current) / 1000)
+      setCallDuration(duration)
+    }
+    
+    // End the ElevenLabs session
     await conversation.endSession()
     setCallActive(false)
+    setShowSummary(true) // Show summary modal
+  }
+
+  const handleCloseSummary = () => {
+    setShowSummary(false)
     setCallSid(null)
     callSidRef.current = null
+    callStartTimeRef.current = null
+    eventsForSummaryRef.current = []
   }
 
   return (
@@ -117,7 +149,7 @@ export default function Home() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleReset}
+            onClick={handleEndCall}
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -128,9 +160,9 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden flex-col lg:flex-row bg-neutral-50/50">
-        {!callActive ? (
+        {!callActive && !showSummary ? (
           <WaitingState onCallStart={handleCallStart} />
-        ) : (
+        ) : callActive ? (
           <>
              {/* Mobile: Tabs */}
             <div className="lg:hidden h-full">
@@ -154,8 +186,19 @@ export default function Home() {
               </div>
             </div>
           </>
+        ) : (
+          // Show waiting state in background when summary is displayed
+          <WaitingState onCallStart={handleCallStart} />
         )}
       </div>
+
+      {/* Call Summary Modal */}
+      <CallSummaryModal
+        isOpen={showSummary}
+        onClose={handleCloseSummary}
+        events={eventsForSummaryRef.current}
+        callDuration={callDuration}
+      />
     </div>
   )
 }

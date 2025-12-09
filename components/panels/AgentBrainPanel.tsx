@@ -23,7 +23,7 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
 
   // Filter to only reasoning events (not speech)
   const reasoningEvents = events.filter(e => 
-    ['understanding', 'agent_thinking', 'compliance_check', 'querying', 'results', 'action'].includes(e.event_type)
+    ['understanding', 'agent_thinking', 'compliance_check', 'identity_check', 'identity_verification', 'querying', 'results', 'action'].includes(e.event_type)
   )
 
   // Update agent state based on latest events
@@ -181,7 +181,7 @@ function LogEntry({ event }: { event: CallEvent }) {
         </div>
       )
 
-    // Compliance Check Phase
+    // Scope Check Phase (was compliance_check - clarified naming)
     case 'compliance_check':
       const isAllowed = data.allowed !== false && data.result !== 'FAILED'
       const isVIP = data.is_vip || data.check_type === 'vip_customer_detection'
@@ -197,7 +197,8 @@ function LogEntry({ event }: { event: CallEvent }) {
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
               <Shield className={cn("w-4 h-4", isAllowed ? "text-green-500" : "text-red-500")} />
-              <span className="text-sm font-medium text-foreground">Compliance Check</span>
+              <span className="text-sm font-medium text-foreground">Agent Scope Check</span>
+              <Badge variant="outline" className="text-xs font-normal">Policy</Badge>
             </div>
             <div className={cn(
               "border rounded-lg p-3 space-y-2 text-sm",
@@ -211,14 +212,14 @@ function LogEntry({ event }: { event: CallEvent }) {
               )}
               
               {data.inquiry_type && (
-                <div><span className="text-muted-foreground">Inquiry:</span> {data.inquiry_type.replace(/_/g, ' ')}</div>
+                <div><span className="text-muted-foreground">Inquiry Type:</span> {data.inquiry_type.replace(/_/g, ' ')}</div>
               )}
               
               {(data.allowed !== undefined || data.result) && (
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Status:</span>
+                  <span className="text-muted-foreground">Agent Permitted:</span>
                   <Badge className={isAllowed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
-                    {data.result || (data.allowed ? '✓ ALLOWED' : '✗ BLOCKED')}
+                    {data.result || (data.allowed ? '✓ YES' : '✗ ESCALATE')}
                   </Badge>
                 </div>
               )}
@@ -254,6 +255,90 @@ function LogEntry({ event }: { event: CallEvent }) {
                 <div className="text-xs text-blue-600 flex items-center gap-1 pt-1">
                   <Shield className="w-3 h-3" />
                   HIPAA verification required
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+
+    // Identity Check Phase (requesting verification)
+    case 'identity_check':
+      return (
+        <div className="group flex gap-4 p-4 bg-amber-50/30 hover:bg-amber-50/50 transition-colors border-l-2 border-amber-500">
+          <div className="w-20 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+            {timestamp}
+          </div>
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-amber-600" />
+              <span className="text-sm font-medium text-foreground">Identity Verification Required</span>
+              <Badge className="bg-amber-100 text-amber-700 text-xs">HIPAA/GDPR</Badge>
+            </div>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2 text-sm">
+              {data.order_id && (
+                <div><span className="text-muted-foreground">For Order:</span> <span className="font-mono font-semibold">#{data.order_id}</span></div>
+              )}
+              {data.verification_method && (
+                <div><span className="text-muted-foreground">Method:</span> {data.verification_method.replace(/_/g, ' ')}</div>
+              )}
+              {data.identity_provided === false && (
+                <div className="flex items-center gap-2 text-amber-700">
+                  <span>⏳</span>
+                  <span className="text-xs font-medium">Awaiting customer verification...</span>
+                </div>
+              )}
+              {data.compliance_regulation && (
+                <div className="text-xs text-muted-foreground">
+                  Regulation: {data.compliance_regulation}
+                </div>
+              )}
+              {data.reason && (
+                <div className="text-xs text-amber-600 italic">{data.reason}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )
+
+    // Identity Verification Result
+    case 'identity_verification':
+      const identityVerified = data.verified === true || data.compliance === 'PASSED'
+      return (
+        <div className={cn(
+          "group flex gap-4 p-4 transition-colors border-l-2",
+          identityVerified 
+            ? "bg-green-50/30 hover:bg-green-50/50 border-green-500" 
+            : "bg-red-50/30 hover:bg-red-50/50 border-red-500"
+        )}>
+          <div className="w-20 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+            {timestamp}
+          </div>
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex items-center gap-2">
+              <Shield className={cn("w-4 h-4", identityVerified ? "text-green-600" : "text-red-600")} />
+              <span className="text-sm font-medium text-foreground">Identity Verification</span>
+              <Badge className={identityVerified ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
+                {identityVerified ? '✓ VERIFIED' : '✗ FAILED'}
+              </Badge>
+            </div>
+            <div className={cn(
+              "border rounded-lg p-3 space-y-2 text-sm",
+              identityVerified ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
+            )}>
+              {data.method && (
+                <div><span className="text-muted-foreground">Method:</span> {data.method.replace(/_/g, ' ')}</div>
+              )}
+              {data.customer_id && (
+                <div><span className="text-muted-foreground">Customer ID:</span> <span className="font-mono">{data.customer_id}</span></div>
+              )}
+              {!identityVerified && data.security_action && (
+                <div className="text-xs text-red-600 font-medium">{data.security_action}</div>
+              )}
+              {identityVerified && (
+                <div className="text-xs text-green-600 flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3" />
+                  Customer identity confirmed - proceeding with request
                 </div>
               )}
             </div>
