@@ -244,15 +244,13 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
                 <MessageSquare className="w-4 h-4" />
                 Meeting Notes
               </h3>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <button 
                 onClick={handleCopyNotes}
-                className="gap-2 text-xs"
+                className="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-border bg-transparent text-foreground hover:bg-muted hover:border-muted-foreground/20 active:scale-[0.98] h-8 px-3 rounded gap-2 text-xs"
               >
                 {copied ? <CheckCheck className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                 {copied ? 'Copied!' : 'Copy Notes'}
-              </Button>
+              </button>
             </div>
 
             {/* Notes Content - 8px border radius, mono font */}
@@ -357,14 +355,14 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
           <Button 
             variant="outline" 
             onClick={onClose}
-            className="gap-2"
+            className="gap-2 border-border bg-transparent text-foreground hover:bg-muted hover:border-muted-foreground/20 active:scale-[0.98]"
           >
             <Home className="w-4 h-4" />
             Back to Home
           </Button>
           <Button 
             onClick={onNewCall}
-            className="gap-2"
+            className="gap-2 bg-azure text-white shadow-sm hover:bg-azure/90 hover:shadow-md active:scale-[0.98]"
           >
             <Phone className="w-4 h-4" />
             Start New Call
