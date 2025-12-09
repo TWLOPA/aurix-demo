@@ -59,13 +59,13 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
       >
         <div className="text-center space-y-6">
           {/* Logo */}
-          <div className="flex justify-center py-4">
+          <div className="flex justify-center py-6">
             <Image 
-              src="/assets/Aurix Logo.png" 
+              src="/assets/AL.png" 
               alt="Aurix" 
-              width={140} 
-              height={40}
-              className="h-9 w-auto"
+              width={280} 
+              height={80}
+              style={{ height: '72px', width: 'auto' }}
             />
           </div>
 
