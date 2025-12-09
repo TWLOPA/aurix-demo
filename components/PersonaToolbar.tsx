@@ -72,17 +72,23 @@ export function PersonaToolbar({ activeScenario = 1 }: PersonaToolbarProps) {
   
   const scenario = SCENARIOS.find(s => s.id === selectedScenario) || SCENARIOS[0]
 
+  const glassyCardStyle = {
+    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+    border: '1px solid rgba(255, 255, 255, 0.6)'
+  }
+
   return (
     <Card 
-      className="rounded-2xl border border-neutral-200/80 overflow-hidden transition-all duration-300 ease-in-out shadow-sm"
-      style={{
-        background: 'radial-gradient(ellipse at top, #ffffff 0%, #f8f9fa 100%)',
-      }}
+      className="rounded-2xl overflow-hidden transition-all duration-300 ease-in-out"
+      style={glassyCardStyle}
     >
       {/* Header - Always visible */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between gap-3 p-4 hover:bg-neutral-50/50 transition-colors duration-200"
+        className="w-full flex items-center justify-between gap-3 p-4 hover:bg-white/30 transition-colors duration-200"
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center">
@@ -112,7 +118,7 @@ export function PersonaToolbar({ activeScenario = 1 }: PersonaToolbarProps) {
       >
         <div className="px-4 pb-4 space-y-3">
           {/* Scenario Tabs */}
-          <div className="flex gap-1 p-1 bg-neutral-100 rounded-lg">
+          <div className="flex gap-1 p-1 bg-white/40 rounded-lg">
             {SCENARIOS.map(s => (
               <button
                 key={s.id}
@@ -158,7 +164,7 @@ export function PersonaToolbar({ activeScenario = 1 }: PersonaToolbarProps) {
 
 function InfoItem({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="bg-neutral-50 rounded-lg p-2">
+    <div className="bg-white/50 rounded-lg p-2">
       <div className="text-[10px] text-neutral-500 mb-0.5">{label}</div>
       <div className={`text-xs font-medium ${highlight ? 'font-mono text-azure' : 'text-neutral-900'}`}>
         {value}

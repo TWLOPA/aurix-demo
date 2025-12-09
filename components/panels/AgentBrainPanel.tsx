@@ -65,10 +65,26 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
     return agentState
   }
 
+  const glassyStyle = {
+    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+    border: '1px solid rgba(255, 255, 255, 0.6)'
+  }
+
   return (
-    <div className="h-full flex flex-col bg-background">
-      {/* Header with Large Centered Orb */}
-      <div className="border-b border-neutral-200 bg-gradient-to-b from-neutral-50 to-background shrink-0">
+    <div 
+      className="h-full flex flex-col"
+      style={{
+        background: 'linear-gradient(180deg, #E8F4FC 0%, #D4EAF7 50%, #C7E2F4 100%)',
+      }}
+    >
+      {/* Header with Large Centered Orb - Glassy */}
+      <div 
+        className="shrink-0 m-4 mb-0 rounded-2xl"
+        style={glassyStyle}
+      >
         {/* Orb Section */}
         <div className="flex flex-col items-center justify-center py-8">
           <div className="w-32 h-32 mb-4">
@@ -87,39 +103,42 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
               agentState === 'listening' && "bg-blue-500 animate-pulse",
               (!agentState || agentState === 'idle') && "bg-neutral-300"
             )} />
-            <span className="text-muted-foreground capitalize font-medium">
+            <span className="text-neutral-600 capitalize font-medium">
               {agentState || 'Idle'}
             </span>
           </div>
         </div>
 
         {/* Title Bar */}
-        <div className="px-6 py-3 border-t border-neutral-200 flex items-center justify-between">
-          <h2 className="text-sm font-semibold tracking-tight">
+        <div className="px-6 py-3 border-t border-white/40 flex items-center justify-between">
+          <h2 className="text-sm font-semibold tracking-tight text-neutral-800">
             Agent Reasoning
           </h2>
-          <Badge variant="outline" className="font-mono text-xs font-normal text-muted-foreground">
+          <Badge variant="outline" className="font-mono text-xs font-normal text-neutral-500 bg-white/50 border-white/60">
             Real-time
           </Badge>
         </div>
       </div>
 
-      {/* Execution Log - Scrollable Area */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="px-6 py-3 bg-neutral-50/50 border-b border-neutral-200 flex items-center justify-between">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+      {/* Execution Log - Scrollable Area - Glassy */}
+      <div 
+        className="flex-1 overflow-hidden flex flex-col m-4 rounded-2xl"
+        style={glassyStyle}
+      >
+        <div className="px-6 py-3 border-b border-white/40 flex items-center justify-between">
+          <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider flex items-center gap-2">
             <Terminal className="w-3 h-3" />
             Decision Audit Trail
           </h3>
-          <span className="text-xs font-mono text-muted-foreground">
+          <span className="text-xs font-mono text-neutral-500">
             {reasoningEvents.length} events
           </span>
         </div>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-0">
-          <div className="divide-y divide-neutral-100">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto">
+          <div className="divide-y divide-white/40">
             {reasoningEvents.length === 0 ? (
-              <div className="p-8 text-center text-sm text-muted-foreground">
+              <div className="p-8 text-center text-sm text-neutral-500">
                 <p>The agent&apos;s decision-making process will appear here in real-time...</p>
               </div>
             ) : (

@@ -41,17 +41,23 @@ export function CostCalculator({ isActive = false }: CostCalculatorProps) {
     return `${mins}:${remainingSecs.toString().padStart(2, '0')}`
   }
 
+  const glassyCardStyle = {
+    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+    border: '1px solid rgba(255, 255, 255, 0.6)'
+  }
+
   return (
     <Card 
-      className="rounded-2xl border border-neutral-200/80 overflow-hidden transition-all duration-300 ease-in-out shadow-sm"
-      style={{
-        background: 'radial-gradient(ellipse at top, #ffffff 0%, #f8f9fa 100%)',
-      }}
+      className="rounded-2xl overflow-hidden transition-all duration-300 ease-in-out"
+      style={glassyCardStyle}
     >
       {/* Header - removed dollar icon */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between gap-3 p-4 hover:bg-neutral-50/50 transition-colors duration-200"
+        className="w-full flex items-center justify-between gap-3 p-4 hover:bg-white/30 transition-colors duration-200"
       >
         <div className="text-left">
           <span className="font-semibold text-sm text-neutral-900 block">

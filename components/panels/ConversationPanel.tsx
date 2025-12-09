@@ -83,16 +83,9 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
   const isCallActive = events.length > 0
 
   return (
-    <Card className="h-full flex flex-col border-none rounded-none shadow-none overflow-hidden">
-      {/* Header - Glassy */}
-      <div 
-        className="border-b border-white/20 p-4 flex items-center justify-between"
-        style={{
-          background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-        }}
-      >
+    <Card className="h-full flex flex-col border-none rounded-none shadow-none overflow-hidden bg-white">
+      {/* Header */}
+      <div className="border-b border-neutral-200 p-4 flex items-center justify-between bg-neutral-50">
         <div className="flex items-center gap-3">
           <div className={`w-2.5 h-2.5 rounded-full ${isCallActive ? 'bg-green-500 animate-pulse' : 'bg-neutral-400'}`} />
           <div className="flex items-center gap-2">
@@ -108,38 +101,21 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
               Active Call
             </Badge>
           )}
-          <span className="text-xs font-mono text-neutral-500 bg-white/50 px-2 py-1 rounded-md">
+          <span className="text-xs font-mono text-neutral-500 bg-neutral-100 px-2 py-1 rounded-md">
             {callDuration}
           </span>
         </div>
       </div>
 
-      {/* Messages - Blue gradient background */}
+      {/* Messages - White background */}
       <div 
-        className="flex-1 overflow-y-auto p-6 space-y-4 relative"
-        style={{
-          background: 'linear-gradient(180deg, #E8F4FC 0%, #D4EAF7 30%, #C7E2F4 60%, #E0EEF8 100%)'
-        }}
+        className="flex-1 overflow-y-auto p-6 space-y-4 relative bg-white"
       >
-        {/* Subtle radial glow */}
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at center 30%, rgba(125, 211, 252, 0.15) 0%, transparent 60%)'
-          }}
-        />
         
-        <div className="relative z-10 space-y-4">
+        <div className="space-y-4">
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-20">
-              <div 
-                className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%)',
-                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.6)'
-                }}
-              >
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-neutral-50 border border-neutral-100">
                 <MessageSquare className="w-8 h-8 text-neutral-400" />
               </div>
               <p className="text-sm text-neutral-500">
@@ -181,14 +157,6 @@ function MessageBubble({
 }) {
   const isUser = role === 'user'
 
-  const glassyStyle = {
-    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%)',
-    backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-    border: '1px solid rgba(255, 255, 255, 0.6)'
-  }
-
   return (
     <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-slide-up`}>
       {/* Agent gets orb */}
@@ -200,10 +168,11 @@ function MessageBubble({
 
       <div className={`flex flex-col max-w-[75%] space-y-1 ${isUser ? 'items-end' : 'items-start'}`}>
         <div 
-          className={`px-4 py-3 text-sm leading-relaxed text-neutral-700 ${
-            isUser ? 'rounded-2xl rounded-tr-md' : 'rounded-2xl rounded-tl-md'
+          className={`px-4 py-3 text-sm leading-relaxed ${
+            isUser 
+              ? 'rounded-2xl rounded-tr-md bg-neutral-900 text-white' 
+              : 'rounded-2xl rounded-tl-md bg-neutral-100 text-neutral-700'
           }`}
-          style={glassyStyle}
         >
           {content}
         </div>
@@ -216,21 +185,10 @@ function MessageBubble({
 }
 
 function ListeningIndicator() {
-  const glassyStyle = {
-    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.5) 100%)',
-    backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
-    border: '1px solid rgba(255, 255, 255, 0.5)'
-  }
-
   return (
     <div className="flex gap-3 flex-row-reverse animate-fade-in">
       <div className="flex flex-col max-w-[75%] space-y-1 items-end">
-        <div 
-          className="flex items-center gap-2 px-4 py-3 rounded-2xl rounded-tr-md"
-          style={glassyStyle}
-        >
+        <div className="flex items-center gap-2 px-4 py-3 rounded-2xl rounded-tr-md bg-neutral-100">
           <span className="text-xs text-neutral-500">Listening</span>
           <div className="flex items-center gap-0.5">
             {[...Array(3)].map((_, i) => (
