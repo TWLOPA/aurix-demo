@@ -11,8 +11,6 @@ import { PersonaToolbar } from '@/components/PersonaToolbar'
 import { PlatformFeatures } from '@/components/PlatformFeatures'
 import { SMSPrompt } from '@/components/SMSPrompt'
 import { useCallEvents } from '@/hooks/useCallEvents'
-import { Button } from '@/components/ui/button'
-import { ArrowLeft } from 'lucide-react'
 import { useConversation } from '@elevenlabs/react'
 import { insertCallEvent } from '@/lib/supabase/queries'
 
@@ -176,26 +174,13 @@ export default function Home() {
             <div className="hidden lg:flex lg:flex-1 h-full">
               {/* Left Sidebar - Blue gradient with glassy cards */}
               <div 
-                className="w-72 shrink-0 p-4 space-y-4 overflow-y-auto flex flex-col"
+                className="w-72 shrink-0 p-4 space-y-4 overflow-y-auto"
                 style={{
                   background: 'linear-gradient(180deg, #E8F4FC 0%, #D4EAF7 50%, #C7E2F4 100%)',
                 }}
               >
                 <PersonaToolbar />
                 <CostCalculator isActive={callActive} />
-                
-                {/* End Session Button - at bottom of sidebar */}
-                <div className="mt-auto pt-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleEndCall}
-                    className="w-full text-red-600 hover:text-red-700 hover:bg-red-50/80 bg-white/60 backdrop-blur-sm border border-white/40"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    End Session
-                  </Button>
-                </div>
               </div>
               
               {/* Main Panels */}
@@ -205,6 +190,7 @@ export default function Home() {
                     events={events} 
                     loading={loading} 
                     agentSpeaking={conversation.isSpeaking}
+                    onEndCall={handleEndCall}
                   />
                 </div>
                 <div className="w-1/2 h-full">

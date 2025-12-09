@@ -1,62 +1,50 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-
 interface AnimatedOrbProps {
   size?: number
   className?: string
 }
 
 export function AnimatedOrb({ size = 32, className = '' }: AnimatedOrbProps) {
-  const gradientRef = useRef<HTMLDivElement>(null)
-  const angleRef = useRef(180)
-
-  useEffect(() => {
-    let animationId: number
-    const animate = () => {
-      angleRef.current = (angleRef.current + 0.5) % 360
-      if (gradientRef.current) {
-        gradientRef.current.style.background = `conic-gradient(
-          from ${angleRef.current}deg at 50% 50%,
-          #3D75D8 11.59deg,
-          #2A68D2 26.32deg,
-          #75BEE5 32.39deg,
-          #52D0E9 38.91deg,
-          #2159BA 75.35deg,
-          #3A74DA 85.04deg,
-          #6CD7EC 94.53deg,
-          #5AB9F1 122.11deg,
-          #33A1E5 129.97deg,
-          #1F5FCF 136.72deg,
-          #2C54CA 144.31deg,
-          #3A9ECF 175.98deg,
-          #3167C5 183.87deg,
-          #ADE8F3 201.63deg,
-          #D8F1F5 224.87deg,
-          #A5DBE6 239.73deg,
-          #2B9DD6 268.17deg,
-          #AEE0E9 286.21deg,
-          #20BAD0 329.65deg,
-          #1E53B0 343.55deg,
-          #2F40D2 359.26deg
-        )`
-      }
-      animationId = requestAnimationFrame(animate)
-    }
-    animate()
-    return () => cancelAnimationFrame(animationId)
-  }, [])
-
   const blobSize = size * 0.85
   const blobHeight = size * 0.76
+
+  // Static gradient - no rotation
+  const staticGradient = `conic-gradient(
+    from 180deg at 50% 50%,
+    #3D75D8 11.59deg,
+    #2A68D2 26.32deg,
+    #75BEE5 32.39deg,
+    #52D0E9 38.91deg,
+    #2159BA 75.35deg,
+    #3A74DA 85.04deg,
+    #6CD7EC 94.53deg,
+    #5AB9F1 122.11deg,
+    #33A1E5 129.97deg,
+    #1F5FCF 136.72deg,
+    #2C54CA 144.31deg,
+    #3A9ECF 175.98deg,
+    #3167C5 183.87deg,
+    #ADE8F3 201.63deg,
+    #D8F1F5 224.87deg,
+    #A5DBE6 239.73deg,
+    #2B9DD6 268.17deg,
+    #AEE0E9 286.21deg,
+    #20BAD0 329.65deg,
+    #1E53B0 343.55deg,
+    #2F40D2 359.26deg
+  )`
 
   return (
     <div 
       className={`relative flex items-center justify-center overflow-hidden rounded-full ${className}`}
       style={{ width: size, height: size }}
     >
-      {/* Animated conic gradient */}
-      <div ref={gradientRef} className="absolute inset-0 rounded-full" />
+      {/* Static conic gradient background */}
+      <div 
+        className="absolute inset-0 rounded-full" 
+        style={{ background: staticGradient }}
+      />
       
       {/* Single animated blob */}
       <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full">

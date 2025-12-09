@@ -4,16 +4,17 @@ import { useEffect, useRef, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { CallEvent } from '@/types'
-import { Loader2, MessageSquare } from 'lucide-react'
+import { Loader2, MessageSquare, PhoneOff } from 'lucide-react'
 import { AnimatedOrb } from '@/components/ui/animated-orb'
 
 interface ConversationPanelProps {
   events: CallEvent[]
   loading?: boolean
   agentSpeaking?: boolean
+  onEndCall?: () => void
 }
 
-export function ConversationPanel({ events, loading, agentSpeaking }: ConversationPanelProps) {
+export function ConversationPanel({ events, loading, agentSpeaking, onEndCall }: ConversationPanelProps) {
   const [showListening, setShowListening] = useState(false)
   const [callDuration, setCallDuration] = useState('0:00')
   const lastMessageCountRef = useRef(0)
@@ -130,8 +131,8 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 relative">
+          <div className="space-y-4 pb-20">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-20">
                 <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/50 border border-white/60">
@@ -161,6 +162,36 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
             )}
           </div>
         </div>
+
+        {/* Floating Action Bar */}
+        {isCallActive && onEndCall && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+            <div 
+              className="flex items-center gap-2 p-1.5 pr-2 rounded-full"
+              style={{
+                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.8)'
+              }}
+            >
+              {/* Orb */}
+              <div className="w-10 h-10 flex items-center justify-center">
+                <AnimatedOrb size={36} />
+              </div>
+              
+              {/* End Call Button */}
+              <button
+                onClick={onEndCall}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-neutral-900 text-white text-sm font-medium hover:bg-neutral-800 transition-all duration-200 active:scale-[0.98]"
+              >
+                <PhoneOff className="w-4 h-4" />
+                END CALL
+              </button>
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   )
