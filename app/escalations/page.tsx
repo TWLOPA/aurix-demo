@@ -1,12 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { supabase } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, Clock, CheckCircle, User, MessageSquare } from 'lucide-react'
 
-const supabase = createClient()
+// Using imported supabase client
 
 interface Escalation {
   id: number
