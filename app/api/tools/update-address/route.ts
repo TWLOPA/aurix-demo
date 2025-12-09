@@ -27,7 +27,8 @@ export async function POST(request: Request) {
       verification_code 
     } = await request.json()
     
-    const call_sid = `CALL_${Date.now()}`
+    // Use DEMO_SESSION_ID so the frontend can see the events
+    const call_sid = 'DEMO_SESSION_ID'
     
     console.log(`[Update Address] Changing delivery for order: ${order_id}`)
 

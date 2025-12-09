@@ -27,9 +27,9 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
     console.log('[WaitingState] Start Simulation button clicked')
     setLoading(true)
     
-    // Generate unique call SID for local state
-    const callSid = `CALL_${Date.now()}`
-    console.log('[WaitingState] Generated callSid:', callSid)
+    // Use fixed DEMO_SESSION_ID so frontend and API events are in sync
+    const callSid = 'DEMO_SESSION_ID'
+    console.log('[WaitingState] Using callSid:', callSid)
     
     try {
       // Directly trigger the parent handler to start the ElevenLabs session

@@ -92,8 +92,9 @@ export async function POST(request: Request) {
     console.log('  - order_id:', order_id)
     console.log('  - question_text:', question_text?.substring(0, 50))
     
-    const call_sid = `CALL_${Date.now()}`
-    console.log('[Handle Inquiry] 🆔 Generated call_sid:', call_sid)
+    // Use DEMO_SESSION_ID so the frontend can see the events
+    const call_sid = 'DEMO_SESSION_ID'
+    console.log('[Handle Inquiry] 🆔 Using call_sid:', call_sid)
 
     // Step 1: Log understanding
     console.log('[Handle Inquiry] Step 1: Inserting understanding event...')

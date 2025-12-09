@@ -22,7 +22,8 @@ export async function POST(request: Request) {
   try {
     const { customer_phone, prescription_id, verification_last4 } = await request.json()
     
-    const call_sid = `CALL_${Date.now()}`
+    // Use DEMO_SESSION_ID so the frontend can see the events
+    const call_sid = 'DEMO_SESSION_ID'
     
     console.log(`[Request Refill] Processing refill for prescription: ${prescription_id}`)
 
