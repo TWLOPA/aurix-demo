@@ -34,11 +34,11 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
   ]
 
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden">
-      {/* Left Sidebar */}
-      <aside className="w-64 flex-shrink-0 border-r border-neutral-200 bg-white flex flex-col">
-        {/* Hims Logo Area */}
-        <div className="h-16 flex items-center px-6 border-b border-neutral-100">
+    <div className="flex h-screen w-full bg-cloud overflow-hidden">
+      {/* Left Sidebar - 256px width */}
+      <aside className="w-64 flex-shrink-0 border-r border-border bg-white flex flex-col">
+        {/* Logo Area - 64px height */}
+        <div className="h-16 flex items-center px-6 border-b border-border/50">
           <Link href="/" className="flex items-center">
             <Image 
               src="/assets/hims-brand-logo.png" 
@@ -50,7 +50,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
           </Link>
         </div>
 
-        {/* Navigation */}
+        {/* Navigation - 24px padding, 4px gap */}
         <nav className="flex-1 px-3 py-6 space-y-1">
           {navItems.map((item) => {
             const isActive = item.matches.includes(pathname)
@@ -59,24 +59,25 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 key={item.title}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all group",
+                  "flex items-center gap-3 px-4 py-3 rounded-lg text-sm",
+                  "transition-all duration-200 ease-in-out group",
                   isActive 
-                    ? "bg-neutral-100 text-neutral-900 font-medium" 
-                    : "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50"
+                    ? "bg-mist text-shadow-blue font-medium" 
+                    : "text-muted-foreground hover:text-shadow-blue hover:bg-mist/50"
                 )}
               >
                 <item.icon className={cn(
-                  "w-5 h-5 transition-colors",
-                  isActive ? "text-neutral-900" : "text-neutral-400 group-hover:text-neutral-600"
+                  "w-5 h-5 transition-colors duration-200",
+                  isActive ? "text-azure" : "text-muted-foreground group-hover:text-azure"
                 )} />
                 <div className="flex-1">
                   <span className="block">{item.title}</span>
                   {isActive && (
-                    <span className="text-xs text-neutral-500 font-normal">{item.description}</span>
+                    <span className="text-xs text-muted-foreground font-normal">{item.description}</span>
                   )}
                 </div>
                 {isActive && (
-                  <ChevronRight className="w-4 h-4 text-neutral-400" />
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 )}
               </Link>
             )
@@ -85,30 +86,34 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
           {/* Guide Button */}
           <button
             onClick={() => setShowGuide(true)}
-            className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all group text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50 w-full"
+            className={cn(
+              "flex items-center gap-3 px-4 py-3 rounded-lg text-sm w-full",
+              "transition-all duration-200 ease-in-out group",
+              "text-muted-foreground hover:text-shadow-blue hover:bg-mist/50"
+            )}
           >
-            <HelpCircle className="w-5 h-5 text-neutral-400 group-hover:text-neutral-600" />
+            <HelpCircle className="w-5 h-5 text-muted-foreground group-hover:text-azure transition-colors duration-200" />
             <span>How to Use</span>
           </button>
         </nav>
 
         {/* Footer - Powered by */}
-        <div className="p-4 border-t border-neutral-100">
-          <div className="px-3 py-2">
-            <p className="text-xs text-neutral-400 mb-2">Powered by</p>
+        <div className="p-4 border-t border-border/50">
+          <div className="px-4 py-3">
+            <p className="text-xs text-muted-foreground mb-2">Powered by</p>
             <Image 
               src="/assets/ElevenLabs_logo.png" 
               alt="ElevenLabs" 
               width={120} 
               height={24}
-              className="h-6 w-auto"
+              className="h-6 w-auto opacity-80"
             />
           </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-neutral-50">
+      <main className="flex-1 flex flex-col min-w-0 bg-cloud">
         {children}
       </main>
 
@@ -116,25 +121,25 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
       {showGuide && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-shadow-blue/50 backdrop-blur-sm"
             onClick={() => setShowGuide(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-xl w-full mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="relative bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 overflow-hidden animate-scale-in">
             {/* Header */}
-            <div className="bg-gradient-to-r from-neutral-900 to-neutral-800 text-white px-6 py-5">
+            <div className="gradient-deep-dive text-white px-6 py-6">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                    <HelpCircle className="w-5 h-5" />
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center">
+                    <HelpCircle className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-semibold">Application Guide</h2>
-                    <p className="text-sm text-white/60">How to use the Health Support Agent</p>
+                    <h2 className="text-xl font-semibold">Application Guide</h2>
+                    <p className="text-sm text-white/70">How to use the Health Support Agent</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setShowGuide(false)}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors duration-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -145,8 +150,8 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
             <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
               {/* What is this */}
               <div>
-                <h3 className="font-semibold text-neutral-900 mb-2">What is this?</h3>
-                <p className="text-sm text-neutral-600">
+                <h3 className="font-semibold text-shadow-blue mb-2">What is this?</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   This is a demonstration of an AI-powered customer service agent for health e-commerce. 
                   It showcases transparent decision-making, compliance boundaries, and identity verification 
                   for sensitive health data (HIPAA/GDPR).
@@ -155,46 +160,46 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
               {/* Test Scenarios */}
               <div>
-                <h3 className="font-semibold text-neutral-900 mb-3">Test Scenarios</h3>
+                <h3 className="font-semibold text-shadow-blue mb-4">Test Scenarios</h3>
                 <div className="space-y-3">
-                  <div className="bg-neutral-50 rounded-lg p-4 border border-neutral-200">
+                  <div className="bg-mist rounded-lg p-4 border border-border">
                     <div className="flex items-center gap-2 mb-2">
-                      <Package className="w-4 h-4 text-blue-500" />
+                      <Package className="w-4 h-4 text-azure" />
                       <span className="font-medium text-sm">Order Inquiry</span>
                     </div>
-                    <p className="text-sm text-neutral-600 mb-2">Ask about an order status:</p>
-                    <code className="text-xs bg-neutral-100 px-2 py-1 rounded block">
+                    <p className="text-sm text-muted-foreground mb-2">Ask about an order status:</p>
+                    <code className="text-xs bg-white border border-border px-2 py-1 rounded block font-mono">
                       &quot;Can you check on order 7823 for me?&quot;
                     </code>
-                    <p className="text-xs text-neutral-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       Verify with DOB: <strong>15th March 1985</strong> or postcode: <strong>SW1A 1AA</strong>
                     </p>
                   </div>
 
-                  <div className="bg-neutral-50 rounded-lg p-4 border border-neutral-200">
+                  <div className="bg-mist rounded-lg p-4 border border-border">
                     <div className="flex items-center gap-2 mb-2">
-                      <Shield className="w-4 h-4 text-amber-500" />
+                      <Shield className="w-4 h-4 text-warning" />
                       <span className="font-medium text-sm">Compliance Test</span>
                     </div>
-                    <p className="text-sm text-neutral-600 mb-2">Ask a medical question:</p>
-                    <code className="text-xs bg-neutral-100 px-2 py-1 rounded block">
+                    <p className="text-sm text-muted-foreground mb-2">Ask a medical question:</p>
+                    <code className="text-xs bg-white border border-border px-2 py-1 rounded block font-mono">
                       &quot;What are the side effects of this medication?&quot;
                     </code>
-                    <p className="text-xs text-neutral-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       Watch the agent escalate to a clinician
                     </p>
                   </div>
 
-                  <div className="bg-neutral-50 rounded-lg p-4 border border-neutral-200">
+                  <div className="bg-mist rounded-lg p-4 border border-border">
                     <div className="flex items-center gap-2 mb-2">
-                      <Zap className="w-4 h-4 text-green-500" />
+                      <Zap className="w-4 h-4 text-success" />
                       <span className="font-medium text-sm">Refill Request</span>
                     </div>
-                    <p className="text-sm text-neutral-600 mb-2">Request a prescription refill:</p>
-                    <code className="text-xs bg-neutral-100 px-2 py-1 rounded block">
+                    <p className="text-sm text-muted-foreground mb-2">Request a prescription refill:</p>
+                    <code className="text-xs bg-white border border-border px-2 py-1 rounded block font-mono">
                       &quot;I need to refill my prescription&quot;
                     </code>
-                    <p className="text-xs text-neutral-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       Verify with last 4 card digits: <strong>4532</strong>
                     </p>
                   </div>
@@ -203,27 +208,27 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
               {/* Understanding the UI */}
               <div>
-                <h3 className="font-semibold text-neutral-900 mb-3">Understanding the UI</h3>
-                <div className="space-y-2 text-sm">
+                <h3 className="font-semibold text-shadow-blue mb-4">Understanding the UI</h3>
+                <div className="space-y-3 text-sm">
                   <div className="flex items-start gap-3">
-                    <MessageSquare className="w-4 h-4 text-neutral-400 mt-0.5" />
+                    <MessageSquare className="w-4 h-4 text-muted-foreground mt-0.5" />
                     <div>
-                      <span className="font-medium">Live Transcript</span>
-                      <p className="text-neutral-500">Shows the real-time conversation between you and the agent</p>
+                      <span className="font-medium text-shadow-blue">Live Transcript</span>
+                      <p className="text-muted-foreground">Shows the real-time conversation between you and the agent</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Brain className="w-4 h-4 text-neutral-400 mt-0.5" />
+                    <Brain className="w-4 h-4 text-muted-foreground mt-0.5" />
                     <div>
-                      <span className="font-medium">Agent Reasoning</span>
-                      <p className="text-neutral-500">Transparent view of the agent&apos;s decision-making process, database queries, and compliance checks</p>
+                      <span className="font-medium text-shadow-blue">Agent Reasoning</span>
+                      <p className="text-muted-foreground">Transparent view of the agent&apos;s decision-making process, database queries, and compliance checks</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <FileText className="w-4 h-4 text-neutral-400 mt-0.5" />
+                    <FileText className="w-4 h-4 text-muted-foreground mt-0.5" />
                     <div>
-                      <span className="font-medium">Call Logs</span>
-                      <p className="text-neutral-500">Review past sessions and their complete audit trails</p>
+                      <span className="font-medium text-shadow-blue">Call Logs</span>
+                      <p className="text-muted-foreground">Review past sessions and their complete audit trails</p>
                     </div>
                   </div>
                 </div>
@@ -231,7 +236,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-neutral-200 bg-neutral-50">
+            <div className="px-6 py-4 border-t border-border bg-mist">
               <Button onClick={() => setShowGuide(false)} className="w-full">
                 Got it, let&apos;s start
               </Button>
