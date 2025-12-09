@@ -85,13 +85,15 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
                 description: data.description
               })
             }
-            if (data.type === 'escalation') {
+            // Track clinician escalations
+            if (data.type === 'escalation' || data.type === 'clinician_escalation') {
               summaryData.escalationsScheduled++
+              summaryData.complianceBlocked = true // Medical escalation = compliance action
             }
             break
 
           case 'compliance_check':
-            if (data.allowed === false) {
+            if (data.allowed === false || data.result === 'BLOCKED') {
               summaryData.complianceBlocked = true
             }
             break
@@ -331,16 +333,18 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
                 </div>
               )}
 
-              {/* Compliance Note */}
+              {/* Compliance/Escalation Note - More Prominent */}
               {summary?.complianceBlocked && (
-                <div className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center shrink-0">
+                <div className="flex items-start gap-2.5 bg-red-50/50 -mx-3 px-3 py-2 rounded-lg border border-red-100">
+                  <div className="w-5 h-5 rounded-full bg-red-100 text-red-500 flex items-center justify-center shrink-0">
                     <AlertTriangle className="w-3 h-3" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-amber-600">Compliance Alert</p>
-                    <p className="text-[11px] text-neutral-500">
-                      Medical inquiry escalated to clinician
+                    <p className="text-xs font-medium text-red-600">Medical Inquiry Escalated</p>
+                    <p className="text-[11px] text-neutral-600">
+                      {summary.escalationsScheduled > 0 
+                        ? `${summary.escalationsScheduled} clinician callback${summary.escalationsScheduled > 1 ? 's' : ''} scheduled`
+                        : 'Medical advice boundary enforced - redirected to clinician'}
                     </p>
                   </div>
                 </div>

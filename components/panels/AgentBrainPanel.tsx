@@ -414,30 +414,67 @@ function LogEntry({ event }: { event: CallEvent }) {
         </div>
       )
 
-    // Action Phase
+    // Action Phase - with special styling for escalations
     case 'action':
+      const isEscalation = data.type === 'clinician_escalation' || data.type === 'escalation'
+      
       return (
-        <div className="group flex gap-3 p-4 hover:bg-white/30 transition-colors border-l-2 border-blue-500">
+        <div className={cn(
+          "group flex gap-3 p-4 transition-colors border-l-2",
+          isEscalation 
+            ? "bg-red-50/50 border-red-500" 
+            : "hover:bg-white/30 border-blue-500"
+        )}>
           <div className="w-16 font-mono text-[10px] text-neutral-400 shrink-0 text-right pt-1">
             {timestamp}
           </div>
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-md bg-blue-500/20 flex items-center justify-center">
-                <Zap className="w-3 h-3 text-blue-600" />
+              <div className={cn(
+                "w-5 h-5 rounded-md flex items-center justify-center",
+                isEscalation ? "bg-red-500/20" : "bg-blue-500/20"
+              )}>
+                {isEscalation ? (
+                  <Shield className="w-3 h-3 text-red-600" />
+                ) : (
+                  <Zap className="w-3 h-3 text-blue-600" />
+                )}
               </div>
-              <span className="text-xs font-medium text-neutral-700">Action</span>
+              <span className="text-xs font-medium text-neutral-700">
+                {isEscalation ? 'Clinician Escalation' : 'Action'}
+              </span>
               {data.type && (
-                <Badge className="bg-blue-100 text-blue-600 text-[10px]">
-                  {data.type.replace(/_/g, ' ')}
+                <Badge className={cn(
+                  "text-[10px]",
+                  isEscalation ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"
+                )}>
+                  {isEscalation ? 'ESCALATED' : data.type.replace(/_/g, ' ')}
                 </Badge>
               )}
             </div>
-            <div className={glassyInnerCard}>
+            <div className={cn(
+              glassyInnerCard,
+              isEscalation && "border-red-200 bg-red-50/50"
+            )}>
               {data.description && (
                 <div className="flex items-start gap-1.5 text-xs">
-                  <span className="text-blue-600">✓</span>
-                  <span className="text-neutral-700">{data.description}</span>
+                  <span className={isEscalation ? "text-red-600" : "text-blue-600"}>
+                    {isEscalation ? '⚠' : '✓'}
+                  </span>
+                  <span className={cn("text-neutral-700", isEscalation && "font-medium")}>
+                    {data.description}
+                  </span>
+                </div>
+              )}
+              {/* Escalation-specific fields */}
+              {isEscalation && data.scheduled_within && (
+                <div className="text-xs text-red-600 mt-1">
+                  Callback scheduled within: {data.scheduled_within}
+                </div>
+              )}
+              {isEscalation && data.reason && (
+                <div className="text-[11px] text-neutral-500 italic mt-1">
+                  Trigger: {data.reason}
                 </div>
               )}
               {data.message && (

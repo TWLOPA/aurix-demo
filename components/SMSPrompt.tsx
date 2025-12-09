@@ -20,8 +20,10 @@ export function SMSPrompt() {
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
-  const pendingPromptRef = useRef<SMSPromptData | null>(null) // Store pending prompt until agent mentions SMS
+  const pendingPromptRef = useRef<SMSPromptData | null>(null) // Store pending prompt until agent finishes speaking about SMS
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const speechPauseTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const agentMentionedSMSRef = useRef(false)
 
   useEffect(() => {
     const channel = supabase
@@ -36,13 +38,14 @@ export function SMSPrompt() {
           filter: 'event_type=eq.sms_prompt'
         },
         (payload) => {
-          console.log('[SMS Prompt] Received - waiting for agent to mention SMS in chat...')
+          console.log('[SMS Prompt] Received - waiting for agent to finish speaking about SMS...')
           const eventData = payload.new as { event_data: SMSPromptData }
           pendingPromptRef.current = eventData.event_data
+          agentMentionedSMSRef.current = false
           setSent(false)
           setError('')
           
-          // Fallback: if agent doesn't mention SMS within 10s, show anyway
+          // Fallback: if agent doesn't mention SMS within 15s, show anyway
           if (timeoutRef.current) clearTimeout(timeoutRef.current)
           timeoutRef.current = setTimeout(() => {
             if (pendingPromptRef.current && !isVisible) {
@@ -51,10 +54,10 @@ export function SMSPrompt() {
               setIsVisible(true)
               pendingPromptRef.current = null
             }
-          }, 10000)
+          }, 15000)
         }
       )
-      // Listen for agent speech - check if they mention SMS/text
+      // Listen for agent speech - detect when they mention SMS, then wait for speech to stop
       .on(
         'postgres_changes',
         {
@@ -71,17 +74,27 @@ export function SMSPrompt() {
           const smsKeywords = ['text', 'sms', 'message', 'send you', 'tracking link', 'phone']
           const mentionedSMS = smsKeywords.some(keyword => spokenText.includes(keyword))
           
-          if (mentionedSMS && pendingPromptRef.current && !isVisible) {
-            console.log('[SMS Prompt] Agent mentioned SMS - showing modal now')
-            // Small delay after agent speaks to let them finish
-            setTimeout(() => {
-              if (pendingPromptRef.current) {
+          if (mentionedSMS && pendingPromptRef.current) {
+            console.log('[SMS Prompt] Agent mentioned SMS - waiting for speech to finish...')
+            agentMentionedSMSRef.current = true
+          }
+          
+          // If agent has mentioned SMS, reset the "speech finished" timer on each new speech
+          // This way we wait for a pause in speech
+          if (agentMentionedSMSRef.current && pendingPromptRef.current && !isVisible) {
+            if (speechPauseTimerRef.current) clearTimeout(speechPauseTimerRef.current)
+            
+            // Wait 3 seconds after last speech to consider "finished speaking"
+            speechPauseTimerRef.current = setTimeout(() => {
+              if (pendingPromptRef.current && agentMentionedSMSRef.current) {
+                console.log('[SMS Prompt] Agent finished speaking about SMS - showing modal')
                 setPromptData(pendingPromptRef.current)
                 setIsVisible(true)
                 pendingPromptRef.current = null
+                agentMentionedSMSRef.current = false
                 if (timeoutRef.current) clearTimeout(timeoutRef.current)
               }
-            }, 1500)
+            }, 3000)
           }
         }
       )
@@ -90,6 +103,7 @@ export function SMSPrompt() {
     return () => {
       channel.unsubscribe()
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      if (speechPauseTimerRef.current) clearTimeout(speechPauseTimerRef.current)
     }
   }, [isVisible])
 

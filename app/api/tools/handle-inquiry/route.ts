@@ -144,16 +144,36 @@ export async function POST(request: Request) {
 
     // Step 3: If blocked, return early with escalation
     if (!compliance_result.allowed) {
-      console.log('[Handle Inquiry] 🚫 Request blocked by compliance')
+      console.log('[Handle Inquiry] 🚫 Request blocked by compliance - MEDICAL ESCALATION')
       
-      // Log action to call_events
+      // Log prominent MEDICAL ESCALATION event - this should be very visible in Agent Brain
+      await supabase.from('call_events').insert({
+        call_sid,
+        event_type: 'compliance_check',
+        event_data: {
+          check_type: 'medical_inquiry_detected',
+          inquiry_type: inquiry_type || 'medical_advice',
+          allowed: false,
+          result: 'BLOCKED',
+          reason: compliance_result.reason,
+          action: 'ESCALATE_TO_CLINICIAN',
+          severity: 'high',
+          compliance_boundary: 'Medical advice requires licensed clinician - agent cannot provide'
+        }
+      })
+
+      await sleep(500)
+
+      // Log the escalation action
       await supabase.from('call_events').insert({
         call_sid,
         event_type: 'action',
         event_data: {
-          type: 'escalation',
-          description: 'Clinician callback scheduled (medical advice boundary)',
-          scheduled_within: '2 hours'
+          type: 'clinician_escalation',
+          description: 'Medical inquiry detected - Clinician callback scheduled',
+          scheduled_within: '2 hours',
+          reason: `Customer asked: "${question_text || inquiry_type}"`,
+          status: 'SCHEDULED'
         }
       })
 
