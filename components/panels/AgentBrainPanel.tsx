@@ -98,8 +98,8 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
           <div className="flex items-center gap-2 text-sm">
             <div className={cn(
               "w-2 h-2 rounded-full transition-colors",
-              agentState === 'thinking' && "bg-yellow-500 animate-pulse",
-              agentState === 'talking' && "bg-purple-500 animate-pulse",
+              agentState === 'thinking' && "bg-blue-400 animate-pulse",
+              agentState === 'talking' && "bg-neutral-800 animate-pulse",
               agentState === 'listening' && "bg-blue-500 animate-pulse",
               (!agentState || agentState === 'idle') && "bg-neutral-300"
             )} />
@@ -163,117 +163,109 @@ function LogEntry({ event }: { event: CallEvent }) {
 
   const data = event.event_data
 
+  // Glassy inner card style - consistent across all events
+  const glassyInnerCard = "bg-white/60 border border-white/80 rounded-xl p-3 space-y-1.5 text-sm"
+
   switch (event.event_type) {
     // Understanding Phase
     case 'understanding':
     case 'agent_thinking':
       return (
-        <div className="group flex gap-4 p-4 hover:bg-neutral-50 transition-colors">
-          <div className="w-20 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+        <div className="group flex gap-3 p-4 hover:bg-white/30 transition-colors">
+          <div className="w-16 font-mono text-[10px] text-neutral-400 shrink-0 text-right pt-1">
             {timestamp}
           </div>
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-foreground">⚡ Understanding</span>
+              <div className="w-5 h-5 rounded-md bg-blue-500/20 flex items-center justify-center">
+                <Zap className="w-3 h-3 text-blue-600" />
+              </div>
+              <span className="text-xs font-medium text-neutral-700">Understanding Request</span>
             </div>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 space-y-1 text-sm">
+            <div className={glassyInnerCard}>
               {data.inquiry_type && (
-                <div><span className="text-muted-foreground">Type:</span> <Badge variant="outline">{data.inquiry_type.replace(/_/g, ' ')}</Badge></div>
+                <div className="flex items-center gap-2">
+                  <span className="text-neutral-500 text-xs">Type:</span>
+                  <Badge variant="outline" className="text-[10px] bg-white/50">{data.inquiry_type.replace(/_/g, ' ')}</Badge>
+                </div>
               )}
               {data.request_type && (
-                <div><span className="text-muted-foreground">Request:</span> <Badge variant="outline">{data.request_type.replace(/_/g, ' ')}</Badge></div>
+                <div className="flex items-center gap-2">
+                  <span className="text-neutral-500 text-xs">Request:</span>
+                  <Badge variant="outline" className="text-[10px] bg-white/50">{data.request_type.replace(/_/g, ' ')}</Badge>
+                </div>
               )}
               {data.order_id && (
-                <div><span className="text-muted-foreground">Order:</span> <span className="font-mono font-semibold">#{data.order_id}</span></div>
+                <div className="text-xs"><span className="text-neutral-500">Order:</span> <span className="font-mono font-medium text-neutral-800">#{data.order_id}</span></div>
               )}
               {data.prescription_id && (
-                <div><span className="text-muted-foreground">Prescription:</span> <span className="font-mono">{data.prescription_id}</span></div>
+                <div className="text-xs"><span className="text-neutral-500">Prescription:</span> <span className="font-mono text-neutral-800">{data.prescription_id}</span></div>
               )}
               {data.customer_name && (
-                <div><span className="text-muted-foreground">Customer:</span> {data.customer_name}</div>
+                <div className="text-xs"><span className="text-neutral-500">Customer:</span> <span className="text-neutral-800">{data.customer_name}</span></div>
               )}
               {data.order_number && (
-                <div><span className="text-muted-foreground">Order:</span> #{data.order_number}</div>
+                <div className="text-xs"><span className="text-neutral-500">Order:</span> <span className="text-neutral-800">#{data.order_number}</span></div>
               )}
             </div>
           </div>
         </div>
       )
 
-    // Scope Check Phase (was compliance_check - clarified naming)
+    // Scope Check Phase
     case 'compliance_check':
       const isAllowed = data.allowed !== false && data.result !== 'FAILED'
       const isVIP = data.is_vip || data.check_type === 'vip_customer_detection'
       
       return (
         <div className={cn(
-          "group flex gap-4 p-4 transition-colors",
-          isAllowed ? "hover:bg-green-50/50" : "hover:bg-red-50/50 bg-red-50/30"
+          "group flex gap-3 p-4 transition-colors",
+          !isAllowed && "bg-red-50/30"
         )}>
-          <div className="w-20 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+          <div className="w-16 font-mono text-[10px] text-neutral-400 shrink-0 text-right pt-1">
             {timestamp}
           </div>
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <Shield className={cn("w-4 h-4", isAllowed ? "text-green-500" : "text-red-500")} />
-              <span className="text-sm font-medium text-foreground">Agent Scope Check</span>
-              <Badge variant="outline" className="text-xs font-normal">Policy</Badge>
+              <div className={cn(
+                "w-5 h-5 rounded-md flex items-center justify-center",
+                isAllowed ? "bg-blue-500/20" : "bg-red-500/20"
+              )}>
+                <Shield className={cn("w-3 h-3", isAllowed ? "text-blue-600" : "text-red-500")} />
+              </div>
+              <span className="text-xs font-medium text-neutral-700">Scope Check</span>
+              {!isAllowed && <Badge className="bg-red-100 text-red-600 text-[10px]">Blocked</Badge>}
             </div>
-            <div className={cn(
-              "border rounded-lg p-3 space-y-2 text-sm",
-              isAllowed ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
-            )}>
+            <div className={glassyInnerCard}>
               {data.check_type && (
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Check:</span>
-                  <Badge variant="outline">{data.check_type.replace(/_/g, ' ')}</Badge>
+                  <span className="text-neutral-500 text-xs">Check:</span>
+                  <Badge variant="outline" className="text-[10px] bg-white/50">{data.check_type.replace(/_/g, ' ')}</Badge>
                 </div>
               )}
-              
               {data.inquiry_type && (
-                <div><span className="text-muted-foreground">Inquiry Type:</span> {data.inquiry_type.replace(/_/g, ' ')}</div>
+                <div className="text-xs"><span className="text-neutral-500">Inquiry:</span> <span className="text-neutral-700">{data.inquiry_type.replace(/_/g, ' ')}</span></div>
               )}
-              
               {(data.allowed !== undefined || data.result) && (
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Agent Permitted:</span>
-                  <Badge className={isAllowed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
-                    {data.result || (data.allowed ? '✓ YES' : '✗ ESCALATE')}
-                  </Badge>
+                  <span className="text-neutral-500 text-xs">Permitted:</span>
+                  <span className={cn("text-xs font-medium", isAllowed ? "text-blue-600" : "text-red-600")}>
+                    {isAllowed ? '✓ Yes' : '✗ Escalate'}
+                  </span>
                 </div>
               )}
-              
               {data.reason && (
-                <div className="text-muted-foreground text-xs italic">{data.reason}</div>
+                <div className="text-neutral-500 text-[11px] italic">{data.reason}</div>
               )}
-              
-              {data.action && (
-                <div className="flex items-center gap-2 pt-1">
-                  <Zap className="w-3 h-3 text-blue-500" />
-                  <span className="text-xs font-medium">{data.action}</span>
-                </div>
-              )}
-              
               {isVIP && data.customer_ltv && (
-                <div className="mt-2 pt-2 border-t border-green-200 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Crown className="w-4 h-4 text-amber-500" />
-                    <span className="font-semibold text-amber-700">⭐ VIP Customer Detected</span>
+                <div className="mt-2 pt-2 border-t border-white/60 space-y-1">
+                  <div className="flex items-center gap-1.5">
+                    <Crown className="w-3.5 h-3.5 text-neutral-600" />
+                    <span className="text-xs font-medium text-neutral-700">VIP Customer</span>
                   </div>
-                  <div className="text-xs space-y-1 pl-6">
-                    <div><span className="text-muted-foreground">LTV:</span> £{Number(data.customer_ltv).toLocaleString()}</div>
-                    <div><span className="text-muted-foreground">Tier:</span> <Badge className="bg-amber-100 text-amber-700">{data.vip_tier?.toUpperCase()}</Badge></div>
-                    {data.special_handling && (
-                      <div className="text-amber-600 font-medium">{data.special_handling}</div>
-                    )}
+                  <div className="text-[11px] text-neutral-500 pl-5">
+                    LTV: £{Number(data.customer_ltv).toLocaleString()} · {data.vip_tier?.toUpperCase()}
                   </div>
-                </div>
-              )}
-              
-              {data.hipaa_required && (
-                <div className="text-xs text-blue-600 flex items-center gap-1 pt-1">
-                  <Shield className="w-3 h-3" />
-                  HIPAA verification required
                 </div>
               )}
             </div>
@@ -281,39 +273,33 @@ function LogEntry({ event }: { event: CallEvent }) {
         </div>
       )
 
-    // Identity Check Phase (requesting verification)
+    // Identity Check Phase
     case 'identity_check':
       return (
-        <div className="group flex gap-4 p-4 bg-amber-50/30 hover:bg-amber-50/50 transition-colors border-l-2 border-amber-500">
-          <div className="w-20 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+        <div className="group flex gap-3 p-4 hover:bg-white/30 transition-colors border-l-2 border-blue-400">
+          <div className="w-16 font-mono text-[10px] text-neutral-400 shrink-0 text-right pt-1">
             {timestamp}
           </div>
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-amber-600" />
-              <span className="text-sm font-medium text-foreground">Identity Verification Required</span>
-              <Badge className="bg-amber-100 text-amber-700 text-xs">HIPAA/GDPR</Badge>
+              <div className="w-5 h-5 rounded-md bg-blue-500/20 flex items-center justify-center">
+                <Shield className="w-3 h-3 text-blue-600" />
+              </div>
+              <span className="text-xs font-medium text-neutral-700">Identity Required</span>
+              <Badge className="bg-blue-100 text-blue-600 text-[10px]">HIPAA</Badge>
             </div>
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2 text-sm">
+            <div className={glassyInnerCard}>
               {data.order_id && (
-                <div><span className="text-muted-foreground">For Order:</span> <span className="font-mono font-semibold">#{data.order_id}</span></div>
+                <div className="text-xs"><span className="text-neutral-500">For Order:</span> <span className="font-mono font-medium text-neutral-800">#{data.order_id}</span></div>
               )}
               {data.verification_method && (
-                <div><span className="text-muted-foreground">Method:</span> {data.verification_method.replace(/_/g, ' ')}</div>
+                <div className="text-xs"><span className="text-neutral-500">Method:</span> <span className="text-neutral-700">{data.verification_method.replace(/_/g, ' ')}</span></div>
               )}
               {data.identity_provided === false && (
-                <div className="flex items-center gap-2 text-amber-700">
-                  <span>⏳</span>
-                  <span className="text-xs font-medium">Awaiting customer verification...</span>
+                <div className="flex items-center gap-1.5 text-blue-600 text-xs">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                  Awaiting verification...
                 </div>
-              )}
-              {data.compliance_regulation && (
-                <div className="text-xs text-muted-foreground">
-                  Regulation: {data.compliance_regulation}
-                </div>
-              )}
-              {data.reason && (
-                <div className="text-xs text-amber-600 italic">{data.reason}</div>
               )}
             </div>
           </div>
@@ -325,39 +311,36 @@ function LogEntry({ event }: { event: CallEvent }) {
       const identityVerified = data.verified === true || data.compliance === 'PASSED'
       return (
         <div className={cn(
-          "group flex gap-4 p-4 transition-colors border-l-2",
-          identityVerified 
-            ? "bg-green-50/30 hover:bg-green-50/50 border-green-500" 
-            : "bg-red-50/30 hover:bg-red-50/50 border-red-500"
+          "group flex gap-3 p-4 transition-colors border-l-2",
+          identityVerified ? "border-blue-500" : "border-red-500 bg-red-50/30"
         )}>
-          <div className="w-20 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+          <div className="w-16 font-mono text-[10px] text-neutral-400 shrink-0 text-right pt-1">
             {timestamp}
           </div>
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <Shield className={cn("w-4 h-4", identityVerified ? "text-green-600" : "text-red-600")} />
-              <span className="text-sm font-medium text-foreground">Identity Verification</span>
-              <Badge className={identityVerified ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
-                {identityVerified ? '✓ VERIFIED' : '✗ FAILED'}
+              <div className={cn(
+                "w-5 h-5 rounded-md flex items-center justify-center",
+                identityVerified ? "bg-blue-500/20" : "bg-red-500/20"
+              )}>
+                <Shield className={cn("w-3 h-3", identityVerified ? "text-blue-600" : "text-red-500")} />
+              </div>
+              <span className="text-xs font-medium text-neutral-700">Identity Verified</span>
+              <Badge className={cn("text-[10px]", identityVerified ? "bg-blue-100 text-blue-600" : "bg-red-100 text-red-600")}>
+                {identityVerified ? '✓ Passed' : '✗ Failed'}
               </Badge>
             </div>
-            <div className={cn(
-              "border rounded-lg p-3 space-y-2 text-sm",
-              identityVerified ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
-            )}>
+            <div className={glassyInnerCard}>
               {data.method && (
-                <div><span className="text-muted-foreground">Method:</span> {data.method.replace(/_/g, ' ')}</div>
+                <div className="text-xs"><span className="text-neutral-500">Method:</span> <span className="text-neutral-700">{data.method.replace(/_/g, ' ')}</span></div>
               )}
               {data.customer_id && (
-                <div><span className="text-muted-foreground">Customer ID:</span> <span className="font-mono">{data.customer_id}</span></div>
-              )}
-              {!identityVerified && data.security_action && (
-                <div className="text-xs text-red-600 font-medium">{data.security_action}</div>
+                <div className="text-xs"><span className="text-neutral-500">Customer:</span> <span className="font-mono text-neutral-700">{data.customer_id}</span></div>
               )}
               {identityVerified && (
-                <div className="text-xs text-green-600 flex items-center gap-1">
+                <div className="text-[11px] text-blue-600 flex items-center gap-1">
                   <CheckCircle className="w-3 h-3" />
-                  Customer identity confirmed - proceeding with request
+                  Proceeding with request
                 </div>
               )}
             </div>
@@ -368,29 +351,31 @@ function LogEntry({ event }: { event: CallEvent }) {
     // Query Phase
     case 'querying':
       return (
-        <div className="group flex gap-4 p-4 hover:bg-neutral-50 transition-colors">
-          <div className="w-20 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+        <div className="group flex gap-3 p-4 hover:bg-white/30 transition-colors">
+          <div className="w-16 font-mono text-[10px] text-neutral-400 shrink-0 text-right pt-1">
             {timestamp}
           </div>
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <Database className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-medium text-foreground">Database Query</span>
+              <div className="w-5 h-5 rounded-md bg-blue-500/20 flex items-center justify-center">
+                <Database className="w-3 h-3 text-blue-600" />
+              </div>
+              <span className="text-xs font-medium text-neutral-700">Database Query</span>
             </div>
             {data.systems && (
-              <div className="text-xs text-muted-foreground mb-2">
+              <div className="text-[11px] text-neutral-500">
                 Systems: {data.systems.join(', ')}
               </div>
             )}
             {data.sql && (
-              <div className="font-mono text-xs bg-neutral-900 text-green-400 p-3 rounded-md overflow-x-auto">
+              <div className="font-mono text-[10px] bg-neutral-800 text-blue-300 p-2.5 rounded-lg overflow-x-auto">
                 {data.sql}
               </div>
             )}
             {data.queries && Array.isArray(data.queries) && (
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {data.queries.map((query: string, idx: number) => (
-                  <div key={idx} className="font-mono text-xs bg-neutral-900 text-green-400 p-3 rounded-md overflow-x-auto">
+                  <div key={idx} className="font-mono text-[10px] bg-neutral-800 text-blue-300 p-2.5 rounded-lg overflow-x-auto">
                     {query}
                   </div>
                 ))}
@@ -403,26 +388,24 @@ function LogEntry({ event }: { event: CallEvent }) {
     // Results Phase
     case 'results':
       return (
-        <div className="group flex gap-4 p-4 hover:bg-neutral-50 transition-colors">
-          <div className="w-20 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+        <div className="group flex gap-3 p-4 hover:bg-white/30 transition-colors">
+          <div className="w-16 font-mono text-[10px] text-neutral-400 shrink-0 text-right pt-1">
             {timestamp}
           </div>
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-medium text-foreground">Query Results</span>
+              <div className="w-5 h-5 rounded-md bg-blue-500/20 flex items-center justify-center">
+                <CheckCircle className="w-3 h-3 text-blue-600" />
+              </div>
+              <span className="text-xs font-medium text-neutral-700">Query Results</span>
             </div>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-1 text-sm">
+            <div className={glassyInnerCard}>
               {Object.entries(data).map(([key, value]) => {
                 if (typeof value === 'object' && value !== null) return null
                 return (
-                  <div key={key} className="flex gap-2">
-                    <span className="text-muted-foreground">{key.replace(/_/g, ' ')}:</span>
-                    {typeof value === 'boolean' ? (
-                      <Badge variant={value ? "default" : "secondary"}>{value ? 'Yes' : 'No'}</Badge>
-                    ) : (
-                      <span className="font-medium">{String(value)}</span>
-                    )}
+                  <div key={key} className="flex gap-2 text-xs">
+                    <span className="text-neutral-500">{key.replace(/_/g, ' ')}:</span>
+                    <span className="font-medium text-neutral-700">{String(value)}</span>
                   </div>
                 )
               })}
@@ -434,41 +417,40 @@ function LogEntry({ event }: { event: CallEvent }) {
     // Action Phase
     case 'action':
       return (
-        <div className="group flex gap-4 p-4 bg-blue-50/30 hover:bg-blue-50/50 transition-colors border-l-2 border-blue-500">
-          <div className="w-20 font-mono text-xs text-muted-foreground shrink-0 text-right pt-1">
+        <div className="group flex gap-3 p-4 hover:bg-white/30 transition-colors border-l-2 border-blue-500">
+          <div className="w-16 font-mono text-[10px] text-neutral-400 shrink-0 text-right pt-1">
             {timestamp}
           </div>
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium text-foreground">Action Triggered</span>
-            </div>
-            <div className="space-y-2">
+              <div className="w-5 h-5 rounded-md bg-blue-500/20 flex items-center justify-center">
+                <Zap className="w-3 h-3 text-blue-600" />
+              </div>
+              <span className="text-xs font-medium text-neutral-700">Action</span>
               {data.type && (
-                <Badge className="bg-blue-100 text-blue-700">
-                  {data.type.replace(/_/g, ' ').toUpperCase()}
+                <Badge className="bg-blue-100 text-blue-600 text-[10px]">
+                  {data.type.replace(/_/g, ' ')}
                 </Badge>
               )}
+            </div>
+            <div className={glassyInnerCard}>
               {data.description && (
-                <div className="flex items-start gap-2 text-sm">
-                  <span className="text-green-600">✓</span>
-                  <span>{data.description}</span>
+                <div className="flex items-start gap-1.5 text-xs">
+                  <span className="text-blue-600">✓</span>
+                  <span className="text-neutral-700">{data.description}</span>
                 </div>
               )}
               {data.message && (
-                <p className="text-xs font-mono text-muted-foreground">
+                <p className="text-[11px] font-mono text-neutral-500 italic">
                   &quot;{data.message}&quot;
                 </p>
               )}
               {data.actions && Array.isArray(data.actions) && (
-                <div className="space-y-2 pt-2">
+                <div className="space-y-1.5 pt-1">
                   {data.actions.map((action: any, idx: number) => (
-                    <div key={idx} className="flex items-start gap-2 text-sm border-l-2 border-blue-300 pl-3">
-                      <Badge variant="outline" className="text-xs">
-                        {action.type?.replace(/_/g, ' ').toUpperCase()}
-                      </Badge>
-                      <span className="text-green-600">✓</span>
-                      <span>{action.description}</span>
+                    <div key={idx} className="flex items-start gap-1.5 text-xs pl-2 border-l border-blue-200">
+                      <span className="text-blue-600">✓</span>
+                      <span className="text-neutral-700">{action.description}</span>
                     </div>
                   ))}
                 </div>

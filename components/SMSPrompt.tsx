@@ -149,8 +149,8 @@ export function SMSPrompt() {
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/40">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-emerald-600" />
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-base text-neutral-900">
@@ -172,8 +172,8 @@ export function SMSPrompt() {
             {/* Content */}
             <div className="p-5 space-y-4">
               {/* Info Box */}
-              <div className="bg-emerald-50/80 border border-emerald-100 rounded-xl p-3">
-                <p className="text-sm text-emerald-800 leading-relaxed">
+              <div className="bg-blue-50/80 border border-blue-100 rounded-xl p-3">
+                <p className="text-sm text-blue-800 leading-relaxed">
                   <strong>This is real!</strong> Enter your phone number to receive an actual SMS with your tracking information.
                 </p>
               </div>
@@ -189,7 +189,7 @@ export function SMSPrompt() {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   disabled={sending}
-                  className={`font-mono bg-white/60 ${error ? 'border-red-400' : 'border-white/60'} rounded-xl px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 w-full focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50`}
+                  className={`font-mono bg-white/60 ${error ? 'border-red-400' : 'border-white/60'} rounded-xl px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 w-full focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50`}
                 />
                 {error && (
                   <p className="text-xs text-red-500 mt-2">{error}</p>
@@ -212,7 +212,7 @@ export function SMSPrompt() {
               <button
                 onClick={handleSend}
                 disabled={sending || !phoneNumber}
-                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium text-white bg-neutral-900 hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send className="w-4 h-4" />
                 {sending ? 'Sending...' : 'Send SMS'}
@@ -222,7 +222,7 @@ export function SMSPrompt() {
         ) : (
           // Success State
           <div className="p-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center mx-auto mb-4">
               <Check className="w-8 h-8 text-white" />
             </div>
             <h3 className="font-semibold text-lg text-neutral-900 mb-2">
@@ -231,7 +231,7 @@ export function SMSPrompt() {
             <p className="text-sm text-neutral-500 leading-relaxed max-w-xs mx-auto">
               Check your phone - you should receive the text message in a few seconds.
             </p>
-            <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 text-xs text-neutral-500">
+            <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-xs text-blue-600">
               <MessageSquare className="w-3 h-3" />
               Delivered via Twilio
             </div>
