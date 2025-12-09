@@ -205,7 +205,7 @@ export function CallSummaryModal({ isOpen, onClose, events, callDuration }: Call
                 Information Disclosed
               </h3>
               <ul className="space-y-1">
-                {[...new Set(summary.informationProvided)].map((info, idx) => (
+                {Array.from(new Set(summary.informationProvided)).map((info, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-sm">
                     <ArrowRight className="w-3 h-3 mt-1 text-blue-500 shrink-0" />
                     <span>{info}</span>
