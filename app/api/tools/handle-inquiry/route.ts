@@ -60,17 +60,18 @@ export async function POST(request: Request) {
   console.log('[Handle Inquiry] 🚀 REQUEST RECEIVED')
   console.log('========================================')
   
-  // Log environment check
+  // Log environment check - support both env var names
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
   console.log('[Handle Inquiry] ENV CHECK:')
   console.log('  - SUPABASE_URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL)
-  console.log('  - SERVICE_ROLE_KEY exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+  console.log('  - SERVICE_KEY exists:', !!serviceKey)
   
   // Create Supabase client inside handler
   let supabase;
   try {
     supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      serviceKey!
     )
     console.log('[Handle Inquiry] ✅ Supabase client created')
   } catch (e) {

@@ -12,10 +12,11 @@ function formatDate(dateString: string) {
 }
 
 export async function POST(request: Request) {
-  // Create Supabase client inside handler
+  // Create Supabase client inside handler - support both env var names
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    serviceKey!
   )
 
   try {
