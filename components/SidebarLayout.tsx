@@ -2,6 +2,7 @@
 
 import { Brain, FileText, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
@@ -35,13 +36,14 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
       <aside className="w-64 flex-shrink-0 border-r border-neutral-200 bg-white flex flex-col">
         {/* Hims Logo Area */}
         <div className="h-16 flex items-center px-6 border-b border-neutral-100">
-          <Link href="/" className="flex items-center gap-3">
-            {/* Hims Logo - Stylized */}
-            <div className="flex items-center">
-              <span className="text-2xl font-bold tracking-tight text-neutral-900">hims</span>
-              <span className="text-2xl font-light text-neutral-400">&</span>
-              <span className="text-2xl font-bold tracking-tight text-neutral-900">hers</span>
-            </div>
+          <Link href="/" className="flex items-center">
+            <Image 
+              src="/assets/hims-brand-logo.png" 
+              alt="Hims & Hers" 
+              width={140} 
+              height={32}
+              className="h-8 w-auto"
+            />
           </Link>
         </div>
 

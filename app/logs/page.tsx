@@ -82,7 +82,7 @@ export default function CallLogsPage() {
         started_at: events[events.length - 1]?.created_at || new Date().toISOString(),
         event_count: events.length,
         verified,
-        orders_accessed: [...new Set(orders)] as string[],
+        orders_accessed: Array.from(new Set(orders)) as string[],
         actions_taken: actions,
         compliance_blocked: blocked
       })
