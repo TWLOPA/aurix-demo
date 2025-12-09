@@ -154,9 +154,9 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
               <Image 
                 src="/assets/ElevenLabs_logo.png" 
                 alt="ElevenLabs" 
-                width={120} 
-                height={24}
-                className="h-6 w-auto opacity-80"
+                width={60} 
+                height={12}
+                className="h-3 w-auto opacity-80"
               />
             </div>
           ) : (
