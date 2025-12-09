@@ -61,11 +61,11 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
           {/* Logo */}
           <div className="flex justify-center py-4">
             <Image 
-              src="/assets/hims-brand-logo.png" 
-              alt="Hims & Hers" 
-              width={160} 
+              src="/assets/Aurix Logo.png" 
+              alt="Aurix" 
+              width={140} 
               height={40}
-              className="h-10 w-auto"
+              className="h-9 w-auto"
             />
           </div>
 

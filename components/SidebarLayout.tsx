@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bot, FileText, ChevronRight, ChevronLeft, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle, Settings, Phone } from 'lucide-react'
+import { Bot, FileText, ChevronRight, ChevronLeft, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -50,155 +50,182 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
   ]
 
   return (
-    <div className="flex h-screen w-full bg-white overflow-hidden">
-      {/* Left Sidebar */}
+    <div className="flex h-screen w-full overflow-hidden">
+      {/* Left Sidebar with blue gradient */}
       <aside 
         className={cn(
-          "flex-shrink-0 border-r border-neutral-200 bg-white flex flex-col transition-all duration-300 ease-in-out",
+          "flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out relative",
           isCollapsed ? "w-16" : "w-56"
         )}
+        style={{
+          background: 'linear-gradient(180deg, #E8F4FC 0%, #D4EAF7 50%, #C7E2F4 100%)'
+        }}
       >
-        {/* Logo Area */}
-        <div className="h-14 flex items-center justify-between px-4 border-b border-neutral-100">
-          {!isCollapsed ? (
-            <Link href="/" className="flex items-center">
-              <Image 
-                src="/assets/hims-brand-logo.png" 
-                alt="Hims & Hers" 
-                width={100} 
-                height={24}
-                className="h-5 w-auto"
-              />
-            </Link>
-          ) : (
-            <Link href="/" className="mx-auto">
-              <Image 
-                src="/assets/elevenlabs-symbol.svg" 
-                alt="ElevenLabs" 
-                width={20} 
-                height={20}
-                className="opacity-70"
-              />
-            </Link>
-          )}
-          
-          {/* Collapse Toggle */}
-          {!isCollapsed && (
+        {/* Subtle radial glow */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at center top, rgba(125, 211, 252, 0.2) 0%, transparent 70%)'
+          }}
+        />
+
+        {/* Content */}
+        <div className="relative flex flex-col h-full">
+          {/* Logo Area */}
+          <div className="h-14 flex items-center justify-between px-4">
+            {!isCollapsed ? (
+              <Link href="/" className="flex items-center">
+                <Image 
+                  src="/assets/Aurix Logo.png" 
+                  alt="Aurix" 
+                  width={90} 
+                  height={24}
+                  className="h-6 w-auto"
+                />
+              </Link>
+            ) : (
+              <Link href="/" className="mx-auto">
+                <Image 
+                  src="/assets/elevenlabs-symbol.svg" 
+                  alt="Aurix" 
+                  width={20} 
+                  height={20}
+                  className="opacity-70"
+                />
+              </Link>
+            )}
+            
+            {/* Collapse Toggle */}
+            {!isCollapsed && (
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="p-1.5 rounded-lg hover:bg-white/30 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4 text-neutral-500" />
+              </button>
+            )}
+          </div>
+
+          {/* Expand button when collapsed */}
+          {isCollapsed && (
             <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-1 rounded hover:bg-neutral-100 transition-colors"
+              onClick={() => setIsCollapsed(false)}
+              className="p-2 mx-auto mt-2 rounded-lg hover:bg-white/30 transition-colors"
             >
-              <ChevronLeft className="w-4 h-4 text-neutral-400" />
+              <ChevronRight className="w-4 h-4 text-neutral-500" />
             </button>
           )}
-        </div>
 
-        {/* Expand button when collapsed */}
-        {isCollapsed && (
-          <button
-            onClick={() => setIsCollapsed(false)}
-            className="p-2 mx-auto mt-2 rounded hover:bg-neutral-100 transition-colors"
-          >
-            <ChevronRight className="w-4 h-4 text-neutral-400" />
-          </button>
-        )}
+          {/* Navigation */}
+          <nav className="flex-1 py-4 overflow-y-auto">
+            {navSections.map((section, sectionIndex) => (
+              <div key={section.title} className={cn(sectionIndex > 0 && "mt-6")}>
+                {/* Section Header */}
+                {!isCollapsed && (
+                  <div className="px-4 mb-2">
+                    <span className="text-[10px] font-medium text-neutral-400 uppercase tracking-wider">
+                      {section.title}
+                    </span>
+                  </div>
+                )}
+                
+                {/* Section Items */}
+                <div className="space-y-1 px-2">
+                  {section.items.map((item) => {
+                    const isActive = item.matches.includes(pathname)
+                    return (
+                      <Link
+                        key={item.title}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200",
+                          isCollapsed && "justify-center px-2"
+                        )}
+                        style={isActive ? {
+                          background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%)',
+                          backdropFilter: 'blur(12px)',
+                          WebkitBackdropFilter: 'blur(12px)',
+                          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+                          border: '1px solid rgba(255, 255, 255, 0.6)'
+                        } : undefined}
+                        title={isCollapsed ? item.title : undefined}
+                      >
+                        <item.icon className={cn(
+                          "w-[18px] h-[18px] shrink-0",
+                          isActive ? "text-neutral-700" : "text-neutral-500"
+                        )} />
+                        {!isCollapsed && (
+                          <span className={cn(
+                            "text-sm",
+                            isActive ? "font-medium text-neutral-800" : "text-neutral-600"
+                          )}>
+                            {item.title}
+                          </span>
+                        )}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
 
-        {/* Navigation */}
-        <nav className="flex-1 py-4 overflow-y-auto">
-          {navSections.map((section, sectionIndex) => (
-            <div key={section.title} className={cn(sectionIndex > 0 && "mt-6")}>
-              {/* Section Header */}
+            {/* Help Section */}
+            <div className={cn("mt-6", isCollapsed && "mt-4")}>
               {!isCollapsed && (
                 <div className="px-4 mb-2">
-                  <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
-                    {section.title}
+                  <span className="text-[10px] font-medium text-neutral-400 uppercase tracking-wider">
+                    Help
                   </span>
                 </div>
               )}
-              
-              {/* Section Items */}
-              <div className="space-y-0.5">
-                {section.items.map((item) => {
-                  const isActive = item.matches.includes(pathname)
-                  return (
-                    <Link
-                      key={item.title}
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 mx-2 px-3 py-2 rounded-md text-sm",
-                        "transition-colors duration-150",
-                        isActive 
-                          ? "bg-neutral-100 text-neutral-900" 
-                          : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50",
-                        isCollapsed && "justify-center mx-1 px-2"
-                      )}
-                      title={isCollapsed ? item.title : undefined}
-                    >
-                      <item.icon className={cn(
-                        "w-[18px] h-[18px] shrink-0",
-                        isActive ? "text-neutral-700" : "text-neutral-400"
-                      )} />
-                      {!isCollapsed && (
-                        <span className={isActive ? "font-medium" : "font-normal"}>
-                          {item.title}
-                        </span>
-                      )}
-                    </Link>
-                  )
-                })}
+              <div className="px-2">
+                <button
+                  onClick={() => setShowGuide(true)}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm w-full transition-all duration-200",
+                    "text-neutral-600 hover:bg-white/30",
+                    isCollapsed && "justify-center px-2"
+                  )}
+                  title={isCollapsed ? "How to Use" : undefined}
+                >
+                  <HelpCircle className="w-[18px] h-[18px] text-neutral-500 shrink-0" />
+                  {!isCollapsed && <span>How to Use</span>}
+                </button>
               </div>
             </div>
-          ))}
+          </nav>
 
-          {/* Help Section */}
-          <div className={cn("mt-6", isCollapsed && "mt-4")}>
-            {!isCollapsed && (
-              <div className="px-4 mb-2">
-                <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
-                  Help
-                </span>
+          {/* Footer - Powered by */}
+          <div className="p-3">
+            {!isCollapsed ? (
+              <div 
+                className="px-3 py-2.5 rounded-xl"
+                style={{
+                  background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.25) 100%)',
+                  border: '1px solid rgba(255, 255, 255, 0.5)'
+                }}
+              >
+                <p className="text-[10px] text-neutral-400 mb-1.5">Powered by</p>
+                <Image 
+                  src="/assets/ElevenLabs_logo.png" 
+                  alt="ElevenLabs" 
+                  width={70} 
+                  height={14}
+                  className="h-3.5 w-auto opacity-70"
+                />
+              </div>
+            ) : (
+              <div className="flex justify-center py-1">
+                <Image 
+                  src="/assets/elevenlabs-symbol.svg" 
+                  alt="ElevenLabs" 
+                  width={16} 
+                  height={16}
+                  className="opacity-50"
+                />
               </div>
             )}
-            <button
-              onClick={() => setShowGuide(true)}
-              className={cn(
-                "flex items-center gap-3 mx-2 px-3 py-2 rounded-md text-sm w-[calc(100%-16px)]",
-                "transition-colors duration-150",
-                "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50",
-                isCollapsed && "justify-center mx-1 px-2 w-[calc(100%-8px)]"
-              )}
-              title={isCollapsed ? "How to Use" : undefined}
-            >
-              <HelpCircle className="w-[18px] h-[18px] text-neutral-400 shrink-0" />
-              {!isCollapsed && <span>How to Use</span>}
-            </button>
           </div>
-        </nav>
-
-        {/* Footer - Powered by */}
-        <div className="p-3 border-t border-neutral-100">
-          {!isCollapsed ? (
-            <div className="px-2 py-1">
-              <p className="text-[10px] text-neutral-400 mb-1">Powered by</p>
-              <Image 
-                src="/assets/ElevenLabs_logo.png" 
-                alt="ElevenLabs" 
-                width={60} 
-                height={12}
-                className="h-3 w-auto opacity-60"
-              />
-            </div>
-          ) : (
-            <div className="flex justify-center py-1">
-              <Image 
-                src="/assets/elevenlabs-symbol.svg" 
-                alt="ElevenLabs" 
-                width={16} 
-                height={16}
-                className="opacity-50"
-              />
-            </div>
-          )}
         </div>
       </aside>
 
