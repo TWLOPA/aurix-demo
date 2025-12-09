@@ -1,14 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { X, Check, Info } from 'lucide-react'
-
-// Using imported supabase client
+import { X, Check, MessageSquare, Send } from 'lucide-react'
 
 interface SMSPromptData {
   message_type: string
@@ -19,10 +15,12 @@ interface SMSPromptData {
 
 export function SMSPrompt() {
   const [promptData, setPromptData] = useState<SMSPromptData | null>(null)
+  const [isVisible, setIsVisible] = useState(false) // Controls actual visibility after delay
   const [phoneNumber, setPhoneNumber] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+  const delayTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const channel = supabase
@@ -36,17 +34,29 @@ export function SMSPrompt() {
           filter: 'event_type=eq.sms_prompt'
         },
         (payload) => {
-          console.log('[SMS Prompt] Received:', payload.new)
+          console.log('[SMS Prompt] Received - waiting for agent to finish speaking...')
           const eventData = payload.new as { event_data: SMSPromptData }
           setPromptData(eventData.event_data)
           setSent(false)
           setError('')
+          
+          // Delay showing the modal by 3 seconds to let agent finish speaking
+          if (delayTimerRef.current) {
+            clearTimeout(delayTimerRef.current)
+          }
+          delayTimerRef.current = setTimeout(() => {
+            console.log('[SMS Prompt] Now showing modal')
+            setIsVisible(true)
+          }, 3000)
         }
       )
       .subscribe()
 
     return () => {
       channel.unsubscribe()
+      if (delayTimerRef.current) {
+        clearTimeout(delayTimerRef.current)
+      }
     }
   }, [])
 
@@ -98,65 +108,79 @@ export function SMSPrompt() {
   }
 
   const handleClose = () => {
-    setPromptData(null)
-    setPhoneNumber('')
-    setError('')
+    setIsVisible(false)
+    // Clear data after animation
+    setTimeout(() => {
+      setPromptData(null)
+      setPhoneNumber('')
+      setError('')
+    }, 300)
   }
 
-  if (!promptData) return null
+  const glassyCardStyle = {
+    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.85) 100%)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+    border: '1px solid rgba(255, 255, 255, 0.7)'
+  }
+
+  if (!promptData || !isVisible) return null
 
   return (
-    <>
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop - Blue gradient like the app */}
       <div 
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 animate-fade-in"
+        style={{
+          background: 'linear-gradient(180deg, rgba(232, 244, 252, 0.95) 0%, rgba(212, 234, 247, 0.95) 50%, rgba(199, 226, 244, 0.95) 100%)',
+          backdropFilter: 'blur(8px)',
+        }}
+        onClick={handleClose}
       />
 
-      {/* Modal */}
+      {/* Modal - Glassy */}
       <div 
-        className="fixed left-1/2 top-1/2 z-50 w-full max-w-md px-4 animate-scale-in"
-        style={{ transform: 'translate(-50%, -50%)' }}
+        className="relative rounded-2xl overflow-hidden max-w-md w-full mx-4 animate-scale-in"
+        style={glassyCardStyle}
       >
-        <Card 
-          className="p-6 bg-[rgba(26,26,46,0.98)] backdrop-blur-xl border-2 border-[#2A2A3E] rounded-2xl"
-          style={{ boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)' }}
-        >
-          {!sent ? (
-            <>
-              {/* Header */}
-              <div className="flex justify-between items-start mb-4">
+        {!sent ? (
+          <>
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/40">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-emerald-600" />
+                </div>
                 <div>
-                  <h3 className="font-semibold text-xl text-white/95">
+                  <h3 className="font-semibold text-base text-neutral-900">
                     Receive Real SMS
                   </h3>
-                  <p className="text-sm text-white/70 mt-1 leading-relaxed">
-                    {promptData.prompt_text}
+                  <p className="text-xs text-neutral-500">
+                    Demo feature powered by Twilio
                   </p>
                 </div>
-                <button
-                  onClick={handleClose}
-                  className="text-white/50 hover:text-white/95 transition-colors duration-200 p-1"
-                >
-                  <X className="w-5 h-5" />
-                </button>
               </div>
+              <button
+                onClick={handleClose}
+                className="p-1.5 hover:bg-white/50 rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4 text-neutral-400" />
+              </button>
+            </div>
 
+            {/* Content */}
+            <div className="p-5 space-y-4">
               {/* Info Box */}
-              <div className="bg-[#05B2DC]/10 border border-[#05B2DC] rounded-lg p-3 mb-4">
-                <div className="flex items-start gap-2">
-                  <Info className="w-4 h-4 text-[#05B2DC] mt-0.5 shrink-0" />
-                  <div className="text-sm text-white/95 leading-relaxed">
-                    <strong>This is a real demonstration!</strong>
-                    <p className="mt-1 text-white/70">
-                      The agent is sending an actual SMS to your phone. You&apos;ll receive a text message in a few seconds.
-                    </p>
-                  </div>
-                </div>
+              <div className="bg-emerald-50/80 border border-emerald-100 rounded-xl p-3">
+                <p className="text-sm text-emerald-800 leading-relaxed">
+                  <strong>This is real!</strong> Enter your phone number to receive an actual SMS with your tracking information.
+                </p>
               </div>
 
               {/* Input */}
-              <div className="mb-4">
-                <label className="block font-medium text-sm text-white/95 mb-2">
+              <div>
+                <label className="block font-medium text-sm text-neutral-700 mb-2">
                   Your Phone Number
                 </label>
                 <Input
@@ -165,58 +189,56 @@ export function SMSPrompt() {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   disabled={sending}
-                  className={`font-mono bg-[#0F0F1A] border-2 ${error ? 'border-red-500' : 'border-[#2A2A3E]'} rounded-lg px-3 py-2.5 text-sm text-white/95 placeholder:text-white/30 w-full`}
+                  className={`font-mono bg-white/60 ${error ? 'border-red-400' : 'border-white/60'} rounded-xl px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 w-full focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50`}
                 />
                 {error && (
                   <p className="text-xs text-red-500 mt-2">{error}</p>
                 )}
-                <p className="text-xs text-white/50 mt-2">
+                <p className="text-xs text-neutral-400 mt-2">
                   Include country code (e.g., +44 for UK, +1 for US)
                 </p>
               </div>
-
-              {/* Actions */}
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={handleClose}
-                  disabled={sending}
-                  className="flex-1 border-[#2A2A3E] text-white/70 hover:text-white hover:bg-white/5"
-                >
-                  Skip
-                </Button>
-                <Button
-                  onClick={handleSend}
-                  disabled={sending || !phoneNumber}
-                  className="flex-1 bg-[#05B2DC] hover:bg-[#05B2DC]/80 text-white"
-                >
-                  {sending ? 'Sending...' : 'Send SMS'}
-                </Button>
-              </div>
-            </>
-          ) : (
-            // Success State
-            <div className="text-center py-4">
-              <div className="w-16 h-16 rounded-full bg-[#05B2DC] flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-semibold text-xl text-white/95 mb-2">
-                SMS Sent!
-              </h3>
-              <p className="text-sm text-white/70 leading-relaxed">
-                Check your phone - you should receive the text message in a few seconds.
-              </p>
-              <Badge 
-                variant="outline"
-                className="mt-4 border-[#2A2A3E] text-white/70"
-              >
-                Real SMS delivered via Twilio
-              </Badge>
             </div>
-          )}
-        </Card>
+
+            {/* Footer */}
+            <div className="px-5 py-4 border-t border-white/40 flex items-center gap-2">
+              <button
+                onClick={handleClose}
+                disabled={sending}
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium text-neutral-600 bg-white/60 hover:bg-white/80 transition-colors border border-white/60"
+              >
+                Skip
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={sending || !phoneNumber}
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Send className="w-4 h-4" />
+                {sending ? 'Sending...' : 'Send SMS'}
+              </button>
+            </div>
+          </>
+        ) : (
+          // Success State
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="font-semibold text-lg text-neutral-900 mb-2">
+              SMS Sent!
+            </h3>
+            <p className="text-sm text-neutral-500 leading-relaxed max-w-xs mx-auto">
+              Check your phone - you should receive the text message in a few seconds.
+            </p>
+            <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100 text-xs text-neutral-500">
+              <MessageSquare className="w-3 h-3" />
+              Delivered via Twilio
+            </div>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   )
 }
 
