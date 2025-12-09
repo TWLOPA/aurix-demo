@@ -15,7 +15,13 @@ CREATE TABLE IF NOT EXISTS clinician_escalations (
   
   -- Compliance info
   blocked_reason TEXT NOT NULL, -- 'medical_advice_prohibited', 'requires_licensed_clinician'
-  escalation_status TEXT DEFAULT 'pending', -- 'pending', 'assigned', 'resolved'
+  escalation_status TEXT DEFAULT 'pending_customer_decision', 
+  -- 'pending_customer_decision', 'callback_scheduled', 'callback_completed', 'declined', 'resolved'
+  
+  -- Callback tracking
+  callback_requested BOOLEAN DEFAULT FALSE,
+  callback_scheduled_at TIMESTAMP,
+  callback_completed_at TIMESTAMP,
   
   -- Agent response
   agent_response TEXT, -- What the agent said when escalating
@@ -30,7 +36,14 @@ CREATE TABLE IF NOT EXISTS clinician_escalations (
 ALTER PUBLICATION supabase_realtime ADD TABLE clinician_escalations;
 
 -- Create index for efficient queries
-CREATE INDEX idx_escalations_call_sid ON clinician_escalations(call_sid);
-CREATE INDEX idx_escalations_status ON clinician_escalations(escalation_status);
-CREATE INDEX idx_escalations_created ON clinician_escalations(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_escalations_call_sid ON clinician_escalations(call_sid);
+CREATE INDEX IF NOT EXISTS idx_escalations_status ON clinician_escalations(escalation_status);
+CREATE INDEX IF NOT EXISTS idx_escalations_created ON clinician_escalations(created_at DESC);
 
+-- ============================================
+-- Add notes column to customers table
+-- ============================================
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS notes TEXT;
+
+-- Update the notes for demo customers
+UPDATE customers SET notes = 'VIP customer - high lifetime value. Requires priority handling.' WHERE customer_id = 'CUST_003';

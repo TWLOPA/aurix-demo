@@ -142,7 +142,7 @@ export async function POST(request: Request) {
 
     await sleep(500)
 
-    // Step 3: If blocked, return early with escalation
+    // Step 3: If blocked, return early with escalation OFFER (not automatic)
     if (!compliance_result.allowed) {
       console.log('[Handle Inquiry] 🚫 Request blocked by compliance - MEDICAL ESCALATION')
       
@@ -156,7 +156,7 @@ export async function POST(request: Request) {
           allowed: false,
           result: 'BLOCKED',
           reason: compliance_result.reason,
-          action: 'ESCALATE_TO_CLINICIAN',
+          action: 'OFFER_CLINICIAN_CALLBACK',
           severity: 'high',
           compliance_boundary: 'Medical advice requires licensed clinician - agent cannot provide'
         }
@@ -164,21 +164,20 @@ export async function POST(request: Request) {
 
       await sleep(500)
 
-      // Log the escalation action
+      // Log the escalation detection - NOT scheduling yet, just offering
       await supabase.from('call_events').insert({
         call_sid,
         event_type: 'action',
         event_data: {
-          type: 'clinician_escalation',
-          description: 'Medical inquiry detected - Clinician callback scheduled',
-          scheduled_within: '2 hours',
+          type: 'escalation_offer',
+          description: 'Medical inquiry detected - Offering clinician callback option',
           reason: `Customer asked: "${question_text || inquiry_type}"`,
-          status: 'SCHEDULED'
+          status: 'PENDING_CUSTOMER_DECISION'
         }
       })
 
-      // Log to clinician_escalations table for tracking
-      const escalationResponse = "I want to make sure you get accurate medical information, so I've scheduled a callback from one of our clinicians within the next 2 hours. They'll be able to discuss any concerns you have about the medication. Is there anything else about your order I can help with?"
+      // Log to clinician_escalations table - status is pending customer decision
+      const escalationResponse = "I'm not able to provide medical advice as I'm not a licensed clinician. However, I can arrange for one of our clinicians to call you back within 2 hours to discuss your question. Would you like me to schedule that callback for you?"
       
       try {
         await supabase.from('clinician_escalations').insert({
@@ -187,10 +186,11 @@ export async function POST(request: Request) {
           inquiry_type: inquiry_type || 'medical_advice',
           inquiry_text: question_text || `Customer asked about: ${inquiry_type}`,
           blocked_reason: compliance_result.reason,
-          escalation_status: 'pending',
+          escalation_status: 'pending_customer_decision',
+          callback_requested: false,
           agent_response: escalationResponse
         })
-        console.log('[Handle Inquiry] ✅ Escalation logged to clinician_escalations table')
+        console.log('[Handle Inquiry] ✅ Escalation logged - awaiting customer decision on callback')
       } catch (escalationError) {
         console.error('[Handle Inquiry] ⚠️ Failed to log escalation:', escalationError)
       }
@@ -198,6 +198,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         allowed: false,
         reason: compliance_result.reason,
+        offer_callback: true,
         response: escalationResponse
       })
     }
