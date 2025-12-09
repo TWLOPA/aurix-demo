@@ -14,35 +14,55 @@ interface ConversationPanelProps {
 
 export function ConversationPanel({ events, loading, agentSpeaking }: ConversationPanelProps) {
   const [showListening, setShowListening] = useState(false)
+  const [callDuration, setCallDuration] = useState('0:00')
   const lastMessageCountRef = useRef(0)
+  const callStartTimeRef = useRef<number | null>(null)
+
+  // Track call start time from first event
+  useEffect(() => {
+    if (events.length > 0 && !callStartTimeRef.current) {
+      callStartTimeRef.current = Date.now()
+    }
+  }, [events])
+
+  // Update timer every second
+  useEffect(() => {
+    if (!callStartTimeRef.current || events.length === 0) return
+
+    const interval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - callStartTimeRef.current!) / 1000)
+      const mins = Math.floor(elapsed / 60)
+      const secs = elapsed % 60
+      setCallDuration(`${mins}:${secs.toString().padStart(2, '0')}`)
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [events.length])
 
   // Show "Listening..." with a delay after agent stops speaking
-  // Hide it immediately when a new message arrives
   useEffect(() => {
     const messageCount = events.filter(
       e => e.event_type === 'user_spoke' || e.event_type === 'agent_spoke'
     ).length
 
-    // If a new message arrived, hide the listening indicator immediately
     if (messageCount > lastMessageCountRef.current) {
       setShowListening(false)
       lastMessageCountRef.current = messageCount
     }
 
-    // If agent just stopped speaking, show listening after a delay
     if (!agentSpeaking && messageCount > 0) {
       const timer = setTimeout(() => {
         setShowListening(true)
-      }, 1500) // 1.5 second delay before showing "Listening..."
+      }, 1500)
       
       return () => clearTimeout(timer)
     } else if (agentSpeaking) {
       setShowListening(false)
     }
   }, [agentSpeaking, events])
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [events])
@@ -55,28 +75,11 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
     )
   }
 
-  // Filter to only speech events
   const messages = events.filter(
     e => e.event_type === 'user_spoke' || e.event_type === 'agent_spoke'
   )
 
-  // Calculate call duration
-  const callStartEvent = events.find(e => e.event_type === 'call_started')
-  const callEndEvent = events.find(e => e.event_type === 'call_ended')
-  const isCallActive = callStartEvent && !callEndEvent
-
-  const getDuration = () => {
-    if (!callStartEvent) return '0:00'
-    const start = new Date(callStartEvent.created_at).getTime()
-    const end = callEndEvent 
-      ? new Date(callEndEvent.created_at).getTime() 
-      : Date.now()
-    
-    const seconds = Math.floor((end - start) / 1000)
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+  const isCallActive = events.length > 0
 
   return (
     <Card className="h-full flex flex-col border-none rounded-none bg-background shadow-none">
@@ -98,7 +101,7 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
             </Badge>
           )}
           <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded-md">
-            {getDuration()}
+            {callDuration}
           </span>
         </div>
       </div>
@@ -123,7 +126,6 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
               />
             ))}
             
-            {/* Live listening indicator - shows after agent finishes speaking */}
             {showListening && !agentSpeaking && (
               <ListeningIndicator />
             )}
@@ -149,7 +151,6 @@ function MessageBubble({
 
   return (
     <div className={`flex gap-4 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-slide-up group`}>
-      {/* Avatar */}
       <div className={`
         w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border
         ${isUser 
@@ -164,7 +165,6 @@ function MessageBubble({
         )}
       </div>
 
-      {/* Message */}
       <div className={`flex flex-col max-w-[80%] space-y-1 ${isUser ? 'items-end' : 'items-start'}`}>
         <div className="flex items-baseline gap-2">
           <span className="text-xs font-medium text-muted-foreground">
@@ -191,14 +191,11 @@ function MessageBubble({
 function ListeningIndicator() {
   return (
     <div className="flex gap-4 flex-row-reverse animate-fade-in">
-      {/* User avatar with subtle pulse */}
       <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border bg-primary/10 text-primary border-primary/20 relative">
-        {/* Subtle pulse ring */}
         <div className="absolute inset-0 rounded-full animate-pulse opacity-50 bg-primary/20" />
         <Mic className="w-4 h-4 relative z-10" />
       </div>
 
-      {/* Listening indicator */}
       <div className="flex flex-col max-w-[80%] space-y-1 items-end">
         <div className="flex items-baseline gap-2">
           <span className="text-xs font-medium text-muted-foreground">
@@ -210,7 +207,6 @@ function ListeningIndicator() {
           </span>
         </div>
         <div className="px-4 py-3 rounded-2xl rounded-tr-none text-sm shadow-sm border bg-primary/5 text-muted-foreground border-primary/20">
-          {/* Audio waveform visualization */}
           <div className="flex items-center gap-0.5 h-4">
             {[...Array(7)].map((_, i) => (
               <div

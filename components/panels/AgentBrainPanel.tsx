@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import type { CallEvent } from '@/types'
-import { Brain, Database, Zap, Shield, CheckCircle, AlertTriangle, User, Crown, Terminal } from 'lucide-react'
+import { Database, Zap, Shield, CheckCircle, Crown, Terminal } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -67,35 +67,40 @@ export function AgentBrainPanel({ events }: AgentBrainPanelProps) {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Agent Header & Orb - Fixed Top */}
-      <div className="border-b border-neutral-200 bg-background p-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-4">
-          {/* Floating Geomorph Orb - Small (No Container) */}
-          <div className="w-16 h-16">
+      {/* Header with Large Centered Orb */}
+      <div className="border-b border-neutral-200 bg-gradient-to-b from-neutral-50 to-background shrink-0">
+        {/* Orb Section */}
+        <div className="flex flex-col items-center justify-center py-8">
+          <div className="w-32 h-32 mb-4">
             <Orb 
               agentState={getOrbState()} 
-              colors={['#000000', '#000000']}
+              colors={['#000000', '#1a1a1a']}
             />
           </div>
-
-          <div>
-            <h2 className="text-lg font-semibold tracking-tight flex items-center gap-2">
-              🧠 Agent Reasoning
-              <Badge variant="outline" className="font-mono text-xs font-normal text-muted-foreground">
-                Real-time
-              </Badge>
-            </h2>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <div className={cn(
-                "w-2 h-2 rounded-full",
-                agentState === 'thinking' ? "bg-yellow-500 animate-pulse" :
-                agentState === 'talking' ? "bg-purple-500 animate-pulse" :
-                agentState === 'listening' ? "bg-blue-500 animate-pulse" :
-                "bg-neutral-300"
-              )} />
-              <span className="capitalize">{agentState || 'Idle'}</span>
-            </div>
+          
+          {/* State Indicator */}
+          <div className="flex items-center gap-2 text-sm">
+            <div className={cn(
+              "w-2 h-2 rounded-full transition-colors",
+              agentState === 'thinking' && "bg-yellow-500 animate-pulse",
+              agentState === 'talking' && "bg-purple-500 animate-pulse",
+              agentState === 'listening' && "bg-blue-500 animate-pulse",
+              (!agentState || agentState === 'idle') && "bg-neutral-300"
+            )} />
+            <span className="text-muted-foreground capitalize font-medium">
+              {agentState || 'Idle'}
+            </span>
           </div>
+        </div>
+
+        {/* Title Bar */}
+        <div className="px-6 py-3 border-t border-neutral-200 flex items-center justify-between">
+          <h2 className="text-sm font-semibold tracking-tight">
+            Agent Reasoning
+          </h2>
+          <Badge variant="outline" className="font-mono text-xs font-normal text-muted-foreground">
+            Real-time
+          </Badge>
         </div>
       </div>
 
@@ -150,7 +155,6 @@ function LogEntry({ event }: { event: CallEvent }) {
           </div>
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
-              <Brain className="w-4 h-4 text-yellow-500" />
               <span className="text-sm font-medium text-foreground">⚡ Understanding</span>
             </div>
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 space-y-1 text-sm">
@@ -193,13 +197,12 @@ function LogEntry({ event }: { event: CallEvent }) {
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
               <Shield className={cn("w-4 h-4", isAllowed ? "text-green-500" : "text-red-500")} />
-              <span className="text-sm font-medium text-foreground">🛡️ Compliance Check</span>
+              <span className="text-sm font-medium text-foreground">Compliance Check</span>
             </div>
             <div className={cn(
               "border rounded-lg p-3 space-y-2 text-sm",
               isAllowed ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
             )}>
-              {/* Check Type */}
               {data.check_type && (
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Check:</span>
@@ -207,12 +210,10 @@ function LogEntry({ event }: { event: CallEvent }) {
                 </div>
               )}
               
-              {/* Inquiry Type (for medical advice checks) */}
               {data.inquiry_type && (
                 <div><span className="text-muted-foreground">Inquiry:</span> {data.inquiry_type.replace(/_/g, ' ')}</div>
               )}
               
-              {/* Status */}
               {(data.allowed !== undefined || data.result) && (
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Status:</span>
@@ -222,12 +223,10 @@ function LogEntry({ event }: { event: CallEvent }) {
                 </div>
               )}
               
-              {/* Reason */}
               {data.reason && (
                 <div className="text-muted-foreground text-xs italic">{data.reason}</div>
               )}
               
-              {/* Action */}
               {data.action && (
                 <div className="flex items-center gap-2 pt-1">
                   <Zap className="w-3 h-3 text-blue-500" />
@@ -235,7 +234,6 @@ function LogEntry({ event }: { event: CallEvent }) {
                 </div>
               )}
               
-              {/* VIP Detection */}
               {isVIP && data.customer_ltv && (
                 <div className="mt-2 pt-2 border-t border-green-200 space-y-1">
                   <div className="flex items-center gap-2">
@@ -252,7 +250,6 @@ function LogEntry({ event }: { event: CallEvent }) {
                 </div>
               )}
               
-              {/* HIPAA Notice */}
               {data.hipaa_required && (
                 <div className="text-xs text-blue-600 flex items-center gap-1 pt-1">
                   <Shield className="w-3 h-3" />
@@ -274,7 +271,7 @@ function LogEntry({ event }: { event: CallEvent }) {
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
               <Database className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-medium text-foreground">🔍 Database Query</span>
+              <span className="text-sm font-medium text-foreground">Database Query</span>
             </div>
             {data.systems && (
               <div className="text-xs text-muted-foreground mb-2">
@@ -309,7 +306,7 @@ function LogEntry({ event }: { event: CallEvent }) {
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-medium text-foreground">✅ Query Results</span>
+              <span className="text-sm font-medium text-foreground">Query Results</span>
             </div>
             <div className="bg-green-50 border border-green-200 rounded-lg p-3 space-y-1 text-sm">
               {Object.entries(data).map(([key, value]) => {
@@ -340,7 +337,7 @@ function LogEntry({ event }: { event: CallEvent }) {
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium text-foreground">📱 Action Triggered</span>
+              <span className="text-sm font-medium text-foreground">Action Triggered</span>
             </div>
             <div className="space-y-2">
               {data.type && (
@@ -359,7 +356,6 @@ function LogEntry({ event }: { event: CallEvent }) {
                   &quot;{data.message}&quot;
                 </p>
               )}
-              {/* Multiple actions */}
               {data.actions && Array.isArray(data.actions) && (
                 <div className="space-y-2 pt-2">
                   {data.actions.map((action: any, idx: number) => (
