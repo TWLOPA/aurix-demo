@@ -84,13 +84,22 @@ export async function POST(request: Request) {
     const body = await request.json()
     console.log('[Handle Inquiry] 📥 Request body:', JSON.stringify(body, null, 2))
     
-    const { customer_phone, inquiry_type, order_id, question_text } = body
+    const { 
+      customer_phone, 
+      inquiry_type, 
+      order_id, 
+      question_text,
+      // Identity verification fields (HIPAA/GDPR compliance)
+      verification_dob,      // Date of birth: "1985-03-15"
+      verification_postcode  // Postcode on file: "SW1A 1AA"
+    } = body
     
     console.log('[Handle Inquiry] 📋 Parsed params:')
     console.log('  - customer_phone:', customer_phone)
     console.log('  - inquiry_type:', inquiry_type)
     console.log('  - order_id:', order_id)
-    console.log('  - question_text:', question_text?.substring(0, 50))
+    console.log('  - verification_dob:', verification_dob || '(not provided)')
+    console.log('  - verification_postcode:', verification_postcode || '(not provided)')
     
     // Use DEMO_SESSION_ID so the frontend can see the events
     const call_sid = 'DEMO_SESSION_ID'
@@ -104,7 +113,8 @@ export async function POST(request: Request) {
       event_data: {
         inquiry_type,
         order_id,
-        question_text: question_text?.substring(0, 100)
+        question_text: question_text?.substring(0, 100),
+        identity_provided: !!(verification_dob || verification_postcode)
       }
     })
     if (err1) console.error('[Handle Inquiry] ❌ Error inserting understanding:', err1)
@@ -152,8 +162,48 @@ export async function POST(request: Request) {
       })
     }
 
-    // Step 4: Query customer and order data
-    console.log('[Handle Inquiry] Step 4: Querying order data for:', order_id)
+    // Step 4: IDENTITY VERIFICATION CHECK (HIPAA/GDPR Compliance)
+    // Before revealing ANY health-related order information, verify identity
+    console.log('[Handle Inquiry] Step 4: Identity verification check...')
+    
+    const identityProvided = verification_dob || verification_postcode
+    
+    await supabase.from('call_events').insert({
+      call_sid,
+      event_type: 'identity_check',
+      event_data: {
+        order_id,
+        verification_method: verification_dob ? 'date_of_birth' : (verification_postcode ? 'postcode' : 'none'),
+        identity_provided: !!identityProvided,
+        compliance_regulation: 'HIPAA/GDPR',
+        reason: 'Health data requires identity verification before disclosure'
+      }
+    })
+
+    if (!identityProvided) {
+      console.log('[Handle Inquiry] 🔒 Identity verification required')
+      
+      await supabase.from('call_events').insert({
+        call_sid,
+        event_type: 'action',
+        event_data: {
+          type: 'identity_required',
+          description: 'Requesting identity verification before proceeding',
+          accepted_methods: ['Date of birth', 'Postcode on file']
+        }
+      })
+
+      return NextResponse.json({
+        verified: false,
+        identity_required: true,
+        response: "For your security and to comply with data protection regulations, I need to verify your identity before I can share any order information. Could you please confirm either your date of birth, or the postcode we have on file for you?"
+      })
+    }
+
+    await sleep(500)
+
+    // Step 5: Query customer and order data
+    console.log('[Handle Inquiry] Step 5: Querying order data for:', order_id)
     const { error: err3 } = await supabase.from('call_events').insert({
       call_sid,
       event_type: 'querying',
@@ -215,20 +265,70 @@ export async function POST(request: Request) {
       })
     }
 
-    console.log('[Handle Inquiry] ✅ Order found:', orderData.order_id)
+    // Step 6: Verify identity matches customer record
+    console.log('[Handle Inquiry] Step 6: Verifying identity against customer record...')
+    const customer = orderData.customers
+    let identityVerified = false
+    let verificationMethod = ''
 
-    // Step 5: Log results
-    console.log('[Handle Inquiry] Step 5: Logging results...')
+    if (verification_dob && customer?.date_of_birth) {
+      // Compare DOB (format: YYYY-MM-DD)
+      identityVerified = verification_dob === customer.date_of_birth
+      verificationMethod = 'date_of_birth'
+    } else if (verification_postcode && customer?.postcode) {
+      // Compare postcode (case-insensitive, ignore spaces)
+      const providedPostcode = verification_postcode.replace(/\s/g, '').toUpperCase()
+      const storedPostcode = customer.postcode.replace(/\s/g, '').toUpperCase()
+      identityVerified = providedPostcode === storedPostcode
+      verificationMethod = 'postcode'
+    }
+
+    await supabase.from('call_events').insert({
+      call_sid,
+      event_type: 'identity_verification',
+      event_data: {
+        method: verificationMethod,
+        verified: identityVerified,
+        customer_id: customer?.customer_id,
+        compliance: identityVerified ? 'PASSED' : 'FAILED'
+      }
+    })
+
+    if (!identityVerified) {
+      console.log('[Handle Inquiry] 🚫 Identity verification FAILED')
+      
+      await supabase.from('call_events').insert({
+        call_sid,
+        event_type: 'action',
+        event_data: {
+          type: 'verification_failed',
+          description: 'Identity verification did not match records',
+          security_action: 'Request alternative verification or suggest contacting support'
+        }
+      })
+
+      return NextResponse.json({
+        verified: false,
+        identity_failed: true,
+        response: "I'm sorry, but the information you provided doesn't match our records. For your security, I can't share order details without proper verification. Would you like to try a different verification method, or I can transfer you to our customer support team who can help verify your identity?"
+      })
+    }
+
+    console.log('[Handle Inquiry] ✅ Identity VERIFIED for customer:', customer?.customer_id)
+
+    // Step 7: Log results (only after identity verified)
+    console.log('[Handle Inquiry] Step 7: Logging results...')
     const { error: err4 } = await supabase.from('call_events').insert({
       call_sid,
       customer_id: orderData.customer_id,
       event_type: 'results',
       event_data: {
+        identity_verified: true,
         order_status: orderData.order_status,
         estimated_delivery: orderData.estimated_delivery,
         tracking_number: orderData.tracking_number,
         product: orderData.product_name,
-        customer_tier: orderData.customers?.vip_tier,
+        customer_tier: customer?.vip_tier,
         discreet_packaging: orderData.discreet_packaging
       }
     })
@@ -237,8 +337,8 @@ export async function POST(request: Request) {
 
     await sleep(500)
 
-    // Step 6: Take actions
-    console.log('[Handle Inquiry] Step 6: Logging action...')
+    // Step 8: Take actions
+    console.log('[Handle Inquiry] Step 8: Logging action...')
     const { error: err5 } = await supabase.from('call_events').insert({
       call_sid,
       customer_id: orderData.customer_id,
@@ -246,25 +346,26 @@ export async function POST(request: Request) {
       event_data: {
         type: 'sms',
         description: `Tracking link sent via SMS: ${orderData.tracking_number}`,
-        recipient: customer_phone || orderData.customers?.phone
+        recipient: customer_phone || customer?.phone
       }
     })
     if (err5) console.error('[Handle Inquiry] ❌ Error inserting action:', err5)
     else console.log('[Handle Inquiry] ✅ Action event inserted')
 
-    // Step 7: Return response
+    // Step 9: Return response
     const discreetNote = orderData.discreet_packaging 
       ? 'As always, it will arrive in plain, discreet packaging.' 
       : ''
 
     const response = {
+      verified: true,
       allowed: true,
       order_status: orderData.order_status,
       estimated_delivery: orderData.estimated_delivery,
       tracking_number: orderData.tracking_number,
       product_name: orderData.product_name,
       discreet_packaging: orderData.discreet_packaging,
-      response: `Your ${orderData.product_name} order is ${orderData.order_status} and will arrive on ${formatDate(orderData.estimated_delivery)}. I'm sending you a tracking link via text now. ${discreetNote}`
+      response: `Thank you for verifying your identity. Your ${orderData.product_name} order is ${orderData.order_status} and will arrive on ${formatDate(orderData.estimated_delivery)}. I'm sending you a tracking link via text now. ${discreetNote}`
     }
 
     console.log('[Handle Inquiry] 📤 SUCCESS - Returning response')

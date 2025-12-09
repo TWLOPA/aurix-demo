@@ -20,6 +20,7 @@ CREATE TABLE customers (
   email TEXT NOT NULL,
   phone TEXT NOT NULL,
   date_of_birth DATE,
+  postcode TEXT, -- For identity verification (HIPAA/GDPR)
   
   -- VIP/Loyalty data
   customer_ltv DECIMAL(10,2) DEFAULT 0,
@@ -128,9 +129,9 @@ ALTER PUBLICATION supabase_realtime ADD TABLE call_events;
 -- ============================================
 
 -- Scenario 1: Standard customer with medical question
-INSERT INTO customers (customer_id, name, email, phone, customer_ltv, order_count, vip_tier, subscription_status, security_last4_digits, date_of_birth)
+INSERT INTO customers (customer_id, name, email, phone, customer_ltv, order_count, vip_tier, subscription_status, security_last4_digits, date_of_birth, postcode)
 VALUES 
-('CUST_001', 'John Smith', 'john@example.com', '+447123456789', 850.00, 3, 'standard', 'none', '4532', '1985-03-15');
+('CUST_001', 'John Smith', 'john@example.com', '+447123456789', 850.00, 3, 'standard', 'none', '4532', '1985-03-15', 'SW1A 1AA');
 
 INSERT INTO prescriptions (prescription_id, customer_id, product_name, product_category, dosage, prescriber_name, prescription_status, refills_remaining, refill_date, expires_at)
 VALUES 
@@ -145,9 +146,9 @@ VALUES
 ('CUST_001', '4532', '08/26', 'active', '2025-02-15');
 
 -- Scenario 2: Subscription customer needing refill
-INSERT INTO customers (customer_id, name, email, phone, customer_ltv, order_count, vip_tier, subscription_status, security_last4_digits, date_of_birth, privacy_flag)
+INSERT INTO customers (customer_id, name, email, phone, customer_ltv, order_count, vip_tier, subscription_status, security_last4_digits, date_of_birth, privacy_flag, postcode)
 VALUES 
-('CUST_002', 'Michael Chen', 'michael@example.com', '+447987654321', 1200.00, 8, 'gold', 'active', '8765', '1978-07-22', 'normal');
+('CUST_002', 'Michael Chen', 'michael@example.com', '+447987654321', 1200.00, 8, 'gold', 'active', '8765', '1978-07-22', 'normal', 'EC1A 1BB');
 
 INSERT INTO prescriptions (prescription_id, customer_id, product_name, product_category, dosage, prescriber_name, prescription_status, refills_remaining, refill_date, expires_at)
 VALUES 
@@ -162,9 +163,9 @@ VALUES
 ('CUST_002', '8765', '02/25', 'active', '2025-01-28');
 
 -- Scenario 3: VIP customer with privacy concern
-INSERT INTO customers (customer_id, name, email, phone, customer_ltv, order_count, vip_tier, subscription_status, security_last4_digits, date_of_birth, privacy_flag, discreet_packaging)
+INSERT INTO customers (customer_id, name, email, phone, customer_ltv, order_count, vip_tier, subscription_status, security_last4_digits, date_of_birth, privacy_flag, discreet_packaging, postcode)
 VALUES 
-('CUST_003', 'David Miller', 'david@example.com', '+447555123456', 3200.00, 18, 'gold', 'active', '2468', '1982-11-08', 'high', true);
+('CUST_003', 'David Miller', 'david@example.com', '+447555123456', 3200.00, 18, 'gold', 'active', '2468', '1982-11-08', 'high', true, 'W1D 3QF');
 
 INSERT INTO prescriptions (prescription_id, customer_id, product_name, product_category, dosage, prescriber_name, prescription_status, refills_remaining, refill_date, expires_at)
 VALUES 
