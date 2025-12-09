@@ -40,9 +40,9 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-cloud p-8">
-      {/* Subtle gradient background */}
-      <div className="absolute inset-0 gradient-mist-rise opacity-50" />
+    <div className="flex-1 flex flex-col items-center justify-center bg-cloud p-8 relative overflow-hidden">
+      {/* Subtle gradient background - contained within this component */}
+      <div className="absolute inset-0 gradient-mist-rise opacity-50 pointer-events-none" />
       
       <div className="relative text-center space-y-8 max-w-md w-full">
         {/* Floating Orb with glow effect */}
