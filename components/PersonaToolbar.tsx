@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { ChevronDown, ChevronUp, User } from 'lucide-react'
 
 interface Scenario {
@@ -83,14 +82,14 @@ export function PersonaToolbar({ activeScenario = 1 }: PersonaToolbarProps) {
       {/* Header - Always visible */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between gap-3 p-4 hover:bg-neutral-50 transition-colors duration-200"
+        className="w-full flex items-center justify-between gap-3 p-4 hover:bg-neutral-50/50 transition-colors duration-200"
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center">
-            <User className="w-4 h-4 text-neutral-600" />
+            <User className="w-4 h-4 text-neutral-800" />
           </div>
           <div className="text-left">
-            <span className="font-semibold text-sm text-neutral-900 block">
+            <span className="font-semibold text-sm text-azure block">
               {scenario.customer_name}
             </span>
             <span className="text-[10px] text-neutral-500">
