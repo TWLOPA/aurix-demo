@@ -58,6 +58,22 @@ export default function Home() {
 
   const handleCallStart = useCallback(async (sid: string) => {
     console.log('[Page] handleCallStart called with sid:', sid)
+    
+    // Clear old events for DEMO_SESSION_ID before starting new call
+    if (sid === 'DEMO_SESSION_ID') {
+      try {
+        const { createClient } = await import('@supabase/supabase-js')
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        await supabase.from('call_events').delete().eq('call_sid', 'DEMO_SESSION_ID')
+        console.log('[Page] Cleared old DEMO_SESSION_ID events')
+      } catch (e) {
+        console.warn('[Page] Could not clear old events:', e)
+      }
+    }
+    
     setCallSid(sid)
     callSidRef.current = sid // Set ref immediately
     try {
