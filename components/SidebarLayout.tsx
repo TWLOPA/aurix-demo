@@ -1,8 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Brain, Activity, Settings, Phone, FileText, Plus, ChevronRight } from 'lucide-react'
+import { Brain, FileText, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -14,50 +12,37 @@ interface SidebarLayoutProps {
 export function SidebarLayout({ children }: SidebarLayoutProps) {
   const pathname = usePathname()
   
-  // Define navigation items based on "Head of Design" guidelines
-  // Icons must visually map to mental models:
-  // Agents → brain / message pattern
-  // Voices → wave / audio glyph (using Activity for now as closest proxy)
-  // Integrations → plug glyph (using Settings for now)
   const navItems = [
     {
-      title: 'Agents',
+      title: 'Agent',
       icon: Brain,
       href: '/',
-      matches: ['/']
+      matches: ['/'],
+      description: 'Live conversation'
     },
     {
       title: 'Call Logs',
-      icon: FileText, // Represents logs/records
-      href: '/crm',
-      matches: ['/crm']
-    },
-    {
-      title: 'Voices',
-      icon: Activity, // Waveform proxy
-      href: '#',
-      matches: []
-    },
-    {
-      title: 'Settings',
-      icon: Settings,
-      href: '#',
-      matches: []
+      icon: FileText,
+      href: '/logs',
+      matches: ['/logs'],
+      description: 'Session history'
     }
   ]
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
-      {/* Left Sidebar - ~256px width (w-64) */}
-      <aside className="w-64 flex-shrink-0 border-r border-border bg-muted/10 flex flex-col">
-        {/* Header / Logo Area */}
-        <div className="h-16 flex items-center px-6 border-b border-border/50">
-          <div className="flex items-center gap-2 font-semibold tracking-tight">
-            <div className="w-6 h-6 rounded bg-primary text-primary-foreground flex items-center justify-center">
-              <span className="text-xs font-bold">11</span>
+      {/* Left Sidebar */}
+      <aside className="w-64 flex-shrink-0 border-r border-neutral-200 bg-white flex flex-col">
+        {/* Hims Logo Area */}
+        <div className="h-16 flex items-center px-6 border-b border-neutral-100">
+          <Link href="/" className="flex items-center gap-3">
+            {/* Hims Logo - Stylized */}
+            <div className="flex items-center">
+              <span className="text-2xl font-bold tracking-tight text-neutral-900">hims</span>
+              <span className="text-2xl font-light text-neutral-400">&</span>
+              <span className="text-2xl font-bold tracking-tight text-neutral-900">hers</span>
             </div>
-            <span>ElevenLabs</span>
-          </div>
+          </Link>
         </div>
 
         {/* Navigation */}
@@ -69,42 +54,48 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 key={item.title}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors group",
+                  "flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-all group",
                   isActive 
-                    ? "bg-accent text-foreground font-medium" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                    ? "bg-neutral-100 text-neutral-900 font-medium" 
+                    : "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50"
                 )}
               >
                 <item.icon className={cn(
-                  "w-4 h-4 transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                  "w-5 h-5 transition-colors",
+                  isActive ? "text-neutral-900" : "text-neutral-400 group-hover:text-neutral-600"
                 )} />
-                {item.title}
+                <div className="flex-1">
+                  <span className="block">{item.title}</span>
+                  {isActive && (
+                    <span className="text-xs text-neutral-500 font-normal">{item.description}</span>
+                  )}
+                </div>
+                {isActive && (
+                  <ChevronRight className="w-4 h-4 text-neutral-400" />
+                )}
               </Link>
             )
           })}
         </nav>
 
-        {/* Footer / User Profile */}
-        <div className="p-4 border-t border-border/50">
-          <div className="flex items-center gap-3 px-2 py-2 rounded-md hover:bg-accent/50 cursor-pointer transition-colors">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
-              TW
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">Thomas Walsh</p>
-              <p className="text-xs text-muted-foreground truncate">Pro Plan</p>
+        {/* Footer - Powered by */}
+        <div className="p-4 border-t border-neutral-100">
+          <div className="px-3 py-2">
+            <p className="text-xs text-neutral-400 mb-2">Powered by</p>
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded bg-neutral-900 text-white flex items-center justify-center">
+                <span className="text-[10px] font-bold">11</span>
+              </div>
+              <span className="text-sm font-medium text-neutral-600">ElevenLabs</span>
             </div>
           </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-background">
+      <main className="flex-1 flex flex-col min-w-0 bg-neutral-50">
         {children}
       </main>
     </div>
   )
 }
-
-

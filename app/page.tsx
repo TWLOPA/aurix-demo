@@ -135,6 +135,19 @@ export default function Home() {
     eventsForSummaryRef.current = []
   }
 
+  const handleNewCallFromSummary = () => {
+    setShowSummary(false)
+    // Clear state then immediately start new call
+    setCallSid(null)
+    callSidRef.current = null
+    callStartTimeRef.current = null
+    eventsForSummaryRef.current = []
+    // Small delay to allow state to reset, then start new call
+    setTimeout(() => {
+      handleCallStart('DEMO_SESSION_ID')
+    }, 100)
+  }
+
   return (
     <div className="h-screen flex flex-col bg-background text-foreground font-sans">
       {/* Call Active Control Bar - Only shown when call is active */}
@@ -196,6 +209,7 @@ export default function Home() {
       <CallSummaryModal
         isOpen={showSummary}
         onClose={handleCloseSummary}
+        onNewCall={handleNewCallFromSummary}
         events={eventsForSummaryRef.current}
         callDuration={callDuration}
       />
