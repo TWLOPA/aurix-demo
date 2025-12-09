@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Brain, FileText, ChevronRight, ChevronLeft, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle } from 'lucide-react'
+import { Bot, FileText, ChevronRight, ChevronLeft, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle, Settings, Phone } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -18,49 +18,56 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
   const [showGuide, setShowGuide] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(isSimulationMode)
   
-  const navItems = [
+  const navSections = [
     {
-      title: 'Agent',
-      icon: Brain,
-      href: '/',
-      matches: ['/'],
-      description: 'Live conversation'
+      title: 'Demo',
+      items: [
+        {
+          title: 'Agent',
+          icon: Bot,
+          href: '/',
+          matches: ['/'],
+        },
+        {
+          title: 'Call Logs',
+          icon: FileText,
+          href: '/logs',
+          matches: ['/logs'],
+        },
+      ]
     },
     {
-      title: 'Call Logs',
-      icon: FileText,
-      href: '/logs',
-      matches: ['/logs'],
-      description: 'Session history'
+      title: 'Monitor',
+      items: [
+        {
+          title: 'Escalations',
+          icon: AlertTriangle,
+          href: '/escalations',
+          matches: ['/escalations'],
+        },
+      ]
     },
-    {
-      title: 'Escalations',
-      icon: AlertTriangle,
-      href: '/escalations',
-      matches: ['/escalations'],
-      description: 'Clinician reviews'
-    }
   ]
 
   return (
-    <div className="flex h-screen w-full bg-cloud overflow-hidden">
-      {/* Left Sidebar - Collapsible */}
+    <div className="flex h-screen w-full bg-white overflow-hidden">
+      {/* Left Sidebar */}
       <aside 
         className={cn(
-          "flex-shrink-0 border-r border-border bg-white flex flex-col transition-all duration-300 ease-in-out",
-          isCollapsed ? "w-16" : "w-64"
+          "flex-shrink-0 border-r border-neutral-200 bg-white flex flex-col transition-all duration-300 ease-in-out",
+          isCollapsed ? "w-16" : "w-56"
         )}
       >
         {/* Logo Area */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-border/50">
+        <div className="h-14 flex items-center justify-between px-4 border-b border-neutral-100">
           {!isCollapsed ? (
             <Link href="/" className="flex items-center">
               <Image 
                 src="/assets/hims-brand-logo.png" 
                 alt="Hims & Hers" 
-                width={140} 
-                height={32}
-                className="h-8 w-auto"
+                width={100} 
+                height={24}
+                className="h-5 w-auto"
               />
             </Link>
           ) : (
@@ -68,105 +75,127 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
               <Image 
                 src="/assets/elevenlabs-symbol.svg" 
                 alt="ElevenLabs" 
-                width={24} 
-                height={24}
-                className="opacity-80"
+                width={20} 
+                height={20}
+                className="opacity-70"
               />
             </Link>
           )}
           
           {/* Collapse Toggle */}
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className={cn(
-              "p-1.5 rounded-md hover:bg-mist transition-colors duration-200",
-              isCollapsed && "mx-auto mt-2"
-            )}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            ) : (
-              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-            )}
-          </button>
+          {!isCollapsed && (
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="p-1 rounded hover:bg-neutral-100 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4 text-neutral-400" />
+            </button>
+          )}
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-4 space-y-1">
-          {navItems.map((item) => {
-            const isActive = item.matches.includes(pathname)
-            return (
-              <Link
-                key={item.title}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm",
-                  "transition-all duration-200 ease-in-out group",
-                  isActive 
-                    ? "bg-mist text-shadow-blue font-medium" 
-                    : "text-muted-foreground hover:text-shadow-blue hover:bg-mist/50",
-                  isCollapsed && "justify-center px-2"
-                )}
-                title={isCollapsed ? item.title : undefined}
-              >
-                <item.icon className={cn(
-                  "w-5 h-5 transition-colors duration-200 shrink-0",
-                  isActive ? "text-azure" : "text-muted-foreground group-hover:text-azure"
-                )} />
-                {!isCollapsed && (
-                  <>
-                    <div className="flex-1">
-                      <span className="block">{item.title}</span>
-                      {isActive && (
-                        <span className="text-xs text-muted-foreground font-normal">{item.description}</span>
-                      )}
-                    </div>
-                    {isActive && (
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    )}
-                  </>
-                )}
-              </Link>
-            )
-          })}
-
-          {/* Guide Button */}
+        {/* Expand button when collapsed */}
+        {isCollapsed && (
           <button
-            onClick={() => setShowGuide(true)}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm w-full",
-              "transition-all duration-200 ease-in-out group",
-              "text-muted-foreground hover:text-shadow-blue hover:bg-mist/50",
-              isCollapsed && "justify-center px-2"
-            )}
-            title={isCollapsed ? "How to Use" : undefined}
+            onClick={() => setIsCollapsed(false)}
+            className="p-2 mx-auto mt-2 rounded hover:bg-neutral-100 transition-colors"
           >
-            <HelpCircle className="w-5 h-5 text-muted-foreground group-hover:text-azure transition-colors duration-200 shrink-0" />
-            {!isCollapsed && <span>How to Use</span>}
+            <ChevronRight className="w-4 h-4 text-neutral-400" />
           </button>
+        )}
+
+        {/* Navigation */}
+        <nav className="flex-1 py-4 overflow-y-auto">
+          {navSections.map((section, sectionIndex) => (
+            <div key={section.title} className={cn(sectionIndex > 0 && "mt-6")}>
+              {/* Section Header */}
+              {!isCollapsed && (
+                <div className="px-4 mb-2">
+                  <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
+                    {section.title}
+                  </span>
+                </div>
+              )}
+              
+              {/* Section Items */}
+              <div className="space-y-0.5">
+                {section.items.map((item) => {
+                  const isActive = item.matches.includes(pathname)
+                  return (
+                    <Link
+                      key={item.title}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 mx-2 px-3 py-2 rounded-md text-sm",
+                        "transition-colors duration-150",
+                        isActive 
+                          ? "bg-neutral-100 text-neutral-900" 
+                          : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50",
+                        isCollapsed && "justify-center mx-1 px-2"
+                      )}
+                      title={isCollapsed ? item.title : undefined}
+                    >
+                      <item.icon className={cn(
+                        "w-[18px] h-[18px] shrink-0",
+                        isActive ? "text-neutral-700" : "text-neutral-400"
+                      )} />
+                      {!isCollapsed && (
+                        <span className={isActive ? "font-medium" : "font-normal"}>
+                          {item.title}
+                        </span>
+                      )}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+
+          {/* Help Section */}
+          <div className={cn("mt-6", isCollapsed && "mt-4")}>
+            {!isCollapsed && (
+              <div className="px-4 mb-2">
+                <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
+                  Help
+                </span>
+              </div>
+            )}
+            <button
+              onClick={() => setShowGuide(true)}
+              className={cn(
+                "flex items-center gap-3 mx-2 px-3 py-2 rounded-md text-sm w-[calc(100%-16px)]",
+                "transition-colors duration-150",
+                "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50",
+                isCollapsed && "justify-center mx-1 px-2 w-[calc(100%-8px)]"
+              )}
+              title={isCollapsed ? "How to Use" : undefined}
+            >
+              <HelpCircle className="w-[18px] h-[18px] text-neutral-400 shrink-0" />
+              {!isCollapsed && <span>How to Use</span>}
+            </button>
+          </div>
         </nav>
 
         {/* Footer - Powered by */}
-        <div className="p-3 border-t border-border/50">
+        <div className="p-3 border-t border-neutral-100">
           {!isCollapsed ? (
-            <div className="px-3 py-2">
-              <p className="text-xs text-muted-foreground mb-2">Powered by</p>
+            <div className="px-2 py-1">
+              <p className="text-[10px] text-neutral-400 mb-1">Powered by</p>
               <Image 
                 src="/assets/ElevenLabs_logo.png" 
                 alt="ElevenLabs" 
                 width={60} 
                 height={12}
-                className="h-3 w-auto opacity-80"
+                className="h-3 w-auto opacity-60"
               />
             </div>
           ) : (
-            <div className="flex justify-center py-2">
+            <div className="flex justify-center py-1">
               <Image 
                 src="/assets/elevenlabs-symbol.svg" 
                 alt="ElevenLabs" 
-                width={20} 
-                height={20}
-                className="opacity-60"
+                width={16} 
+                height={16}
+                className="opacity-50"
               />
             </div>
           )}
@@ -174,7 +203,7 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col min-w-0 bg-cloud">
+      <main className="flex-1 flex flex-col min-w-0 bg-white">
         {children}
       </main>
 
@@ -182,85 +211,76 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
       {showGuide && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div 
-            className="absolute inset-0 bg-shadow-blue/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setShowGuide(false)}
           />
-          <div className="relative bg-white rounded-lg shadow-xl max-w-xl w-full mx-4 overflow-hidden animate-scale-in">
+          <div className="relative bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden animate-scale-in">
             {/* Header */}
-            <div className="gradient-deep-dive text-white px-6 py-6">
+            <div className="px-6 py-5 border-b border-neutral-100">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center">
-                    <HelpCircle className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold">Application Guide</h2>
-                    <p className="text-sm text-white/70">How to use the Health Support Agent</p>
-                  </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-neutral-900">Application Guide</h2>
+                  <p className="text-sm text-neutral-500 mt-0.5">How to use the Health Support Agent</p>
                 </div>
                 <button 
                   onClick={() => setShowGuide(false)}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors duration-200"
+                  className="p-1.5 hover:bg-neutral-100 rounded-md transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-5 h-5 text-neutral-400" />
                 </button>
               </div>
             </div>
 
             {/* Content */}
-            <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
+            <div className="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
               {/* What is this */}
               <div>
-                <h3 className="font-semibold text-shadow-blue mb-2">What is this?</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  This is a demonstration of an AI-powered customer service agent for health e-commerce. 
-                  It showcases transparent decision-making, compliance boundaries, and identity verification 
-                  for sensitive health data (HIPAA/GDPR).
+                <h3 className="text-sm font-medium text-neutral-900 mb-1.5">What is this?</h3>
+                <p className="text-sm text-neutral-500 leading-relaxed">
+                  A demonstration of an AI-powered customer service agent for health e-commerce, 
+                  showcasing transparent decision-making, compliance boundaries, and identity verification.
                 </p>
               </div>
 
               {/* Test Scenarios */}
               <div>
-                <h3 className="font-semibold text-shadow-blue mb-4">Test Scenarios</h3>
-                <div className="space-y-3">
-                  <div className="bg-mist rounded-lg p-4 border border-border">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Package className="w-4 h-4 text-azure" />
-                      <span className="font-medium text-sm">Order Inquiry</span>
+                <h3 className="text-sm font-medium text-neutral-900 mb-3">Test Scenarios</h3>
+                <div className="space-y-2.5">
+                  <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Package className="w-4 h-4 text-neutral-500" />
+                      <span className="text-sm font-medium text-neutral-700">Order Inquiry</span>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-2">Ask about an order status:</p>
-                    <code className="text-xs bg-white border border-border px-2 py-1 rounded block font-mono">
+                    <code className="text-xs bg-white border border-neutral-200 px-2 py-1 rounded block text-neutral-600">
                       &quot;Can you check on order 7823 for me?&quot;
                     </code>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Verify with DOB: <strong>15th March 1985</strong> or postcode: <strong>SW1A 1AA</strong>
+                    <p className="text-xs text-neutral-400 mt-1.5">
+                      Verify: DOB <strong>15th March 1985</strong> or postcode <strong>SW1A 1AA</strong>
                     </p>
                   </div>
 
-                  <div className="bg-mist rounded-lg p-4 border border-border">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Shield className="w-4 h-4 text-warning" />
-                      <span className="font-medium text-sm">Compliance Test</span>
+                  <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Shield className="w-4 h-4 text-amber-500" />
+                      <span className="text-sm font-medium text-neutral-700">Compliance Test</span>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-2">Ask a medical question:</p>
-                    <code className="text-xs bg-white border border-border px-2 py-1 rounded block font-mono">
+                    <code className="text-xs bg-white border border-neutral-200 px-2 py-1 rounded block text-neutral-600">
                       &quot;What are the side effects of this medication?&quot;
                     </code>
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-xs text-neutral-400 mt-1.5">
                       Watch the agent escalate to a clinician
                     </p>
                   </div>
 
-                  <div className="bg-mist rounded-lg p-4 border border-border">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Zap className="w-4 h-4 text-success" />
-                      <span className="font-medium text-sm">Refill Request</span>
+                  <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Zap className="w-4 h-4 text-emerald-500" />
+                      <span className="text-sm font-medium text-neutral-700">Refill Request</span>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-2">Request a prescription refill:</p>
-                    <code className="text-xs bg-white border border-border px-2 py-1 rounded block font-mono">
+                    <code className="text-xs bg-white border border-neutral-200 px-2 py-1 rounded block text-neutral-600">
                       &quot;I need to refill my prescription&quot;
                     </code>
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-xs text-neutral-400 mt-1.5">
                       Verify with last 4 card digits: <strong>4532</strong>
                     </p>
                   </div>
@@ -269,27 +289,27 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
 
               {/* Understanding the UI */}
               <div>
-                <h3 className="font-semibold text-shadow-blue mb-4">Understanding the UI</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-start gap-3">
-                    <MessageSquare className="w-4 h-4 text-muted-foreground mt-0.5" />
+                <h3 className="text-sm font-medium text-neutral-900 mb-3">Understanding the UI</h3>
+                <div className="space-y-2.5 text-sm">
+                  <div className="flex items-start gap-2.5">
+                    <MessageSquare className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
                     <div>
-                      <span className="font-medium text-shadow-blue">Live Transcript</span>
-                      <p className="text-muted-foreground">Shows the real-time conversation between you and the agent</p>
+                      <span className="font-medium text-neutral-700">Live Transcript</span>
+                      <p className="text-neutral-500 text-xs">Real-time conversation with the agent</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <Brain className="w-4 h-4 text-muted-foreground mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <Bot className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
                     <div>
-                      <span className="font-medium text-shadow-blue">Agent Reasoning</span>
-                      <p className="text-muted-foreground">Transparent view of the agent&apos;s decision-making process, database queries, and compliance checks</p>
+                      <span className="font-medium text-neutral-700">Agent Reasoning</span>
+                      <p className="text-neutral-500 text-xs">Transparent view of decision-making and compliance checks</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <FileText className="w-4 h-4 text-muted-foreground mt-0.5" />
+                  <div className="flex items-start gap-2.5">
+                    <FileText className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
                     <div>
-                      <span className="font-medium text-shadow-blue">Call Logs</span>
-                      <p className="text-muted-foreground">Review past sessions and their complete audit trails</p>
+                      <span className="font-medium text-neutral-700">Call Logs</span>
+                      <p className="text-neutral-500 text-xs">Review past sessions and audit trails</p>
                     </div>
                   </div>
                 </div>
@@ -297,9 +317,12 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
             </div>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-border bg-mist">
-              <Button onClick={() => setShowGuide(false)} className="w-full">
-                Got it, let&apos;s start
+            <div className="px-6 py-4 border-t border-neutral-100 bg-neutral-50">
+              <Button 
+                onClick={() => setShowGuide(false)} 
+                className="w-full bg-neutral-900 hover:bg-neutral-800 text-white"
+              >
+                Got it
               </Button>
             </div>
           </div>
