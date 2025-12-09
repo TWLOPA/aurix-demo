@@ -1,6 +1,6 @@
 # AURIX - Voice AI Customer Success Platform
 
-A real-time voice AI customer success agent demonstration platform built with Next.js, ElevenLabs, Anthropic Claude, and Supabase.
+A real-time voice AI customer success agent demonstration platform built with Next.js, ElevenLabs, Anthropic Claude, and Supabase. Test.
 
 ## Features
 
