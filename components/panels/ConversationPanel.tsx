@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { CallEvent } from '@/types'
-import { User, Loader2, MessageSquare, Mic } from 'lucide-react'
+import { Loader2, MessageSquare, Mic } from 'lucide-react'
 import { AnimatedOrb } from '@/components/ui/animated-orb'
 
 interface ConversationPanelProps {
@@ -108,7 +108,7 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-neutral-50">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-neutral-50">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50">
             <MessageSquare className="w-12 h-12 text-muted-foreground" />
@@ -151,35 +151,27 @@ function MessageBubble({
   const isUser = role === 'user'
 
   return (
-    <div className={`flex gap-4 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-slide-up group`}>
-      {isUser ? (
-        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border bg-blue-600 text-white border-blue-600">
-          <User className="w-4 h-4" />
-        </div>
-      ) : (
+    <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-slide-up`}>
+      {/* Agent gets orb, user gets no icon */}
+      {!isUser && (
         <div className="flex-shrink-0">
-          <AnimatedOrb size={32} />
+          <AnimatedOrb size={28} />
         </div>
       )}
 
-      <div className={`flex flex-col max-w-[80%] space-y-1 ${isUser ? 'items-end' : 'items-start'}`}>
-        <div className="flex items-baseline gap-2">
-          <span className="text-xs font-medium text-muted-foreground">
-            {isUser ? 'Customer' : 'AI Agent'}
-          </span>
-          <span className="text-[10px] text-muted-foreground/50">
-            {new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </span>
-        </div>
+      <div className={`flex flex-col max-w-[75%] space-y-0.5 ${isUser ? 'items-end' : 'items-start'}`}>
         <div className={`
-          p-4 rounded-2xl text-sm leading-relaxed shadow-sm
+          px-4 py-3 rounded-2xl text-sm leading-relaxed
           ${isUser 
-            ? 'bg-blue-600 text-white rounded-tr-none' 
-            : 'bg-neutral-900 text-white rounded-tl-none'
+            ? 'bg-neutral-200/80 text-neutral-600 rounded-tr-md' 
+            : 'bg-neutral-900 text-white rounded-tl-md'
           }
         `}>
           {content}
         </div>
+        <span className="text-[10px] text-neutral-400 px-1">
+          {new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </span>
       </div>
     </div>
   )
@@ -187,32 +179,17 @@ function MessageBubble({
 
 function ListeningIndicator() {
   return (
-    <div className="flex gap-4 flex-row-reverse animate-fade-in">
-      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border bg-blue-100 text-blue-600 border-blue-200 relative">
-        <div className="absolute inset-0 rounded-full animate-pulse opacity-50 bg-blue-200" />
-        <Mic className="w-4 h-4 relative z-10" />
-      </div>
-
-      <div className="flex flex-col max-w-[80%] space-y-1 items-end">
-        <div className="flex items-baseline gap-2">
-          <span className="text-xs font-medium text-muted-foreground">
-            Your turn
-          </span>
-          <span className="text-[10px] text-blue-500 font-medium flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-            Listening...
-          </span>
-        </div>
-        <div className="px-4 py-3 rounded-2xl rounded-tr-none text-sm shadow-sm bg-blue-50 text-blue-600 border border-blue-100">
-          <div className="flex items-center gap-0.5 h-4">
-            {[...Array(7)].map((_, i) => (
+    <div className="flex gap-3 flex-row-reverse animate-fade-in">
+      <div className="flex flex-col max-w-[75%] space-y-0.5 items-end">
+        <div className="flex items-center gap-2 px-4 py-3 rounded-2xl rounded-tr-md bg-neutral-200/50">
+          <span className="text-xs text-neutral-500">Listening</span>
+          <div className="flex items-center gap-0.5">
+            {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="w-1 bg-blue-400 rounded-full animate-pulse"
+                className="w-1 h-1 bg-neutral-400 rounded-full animate-pulse"
                 style={{
-                  height: `${Math.random() * 12 + 4}px`,
-                  animationDelay: `${i * 100}ms`,
-                  animationDuration: '0.8s'
+                  animationDelay: `${i * 150}ms`,
                 }}
               />
             ))}
