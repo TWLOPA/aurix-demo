@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Brain, FileText, ChevronRight, HelpCircle, X, MessageSquare, Shield, Zap, Package } from 'lucide-react'
+import { Brain, FileText, ChevronRight, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -30,6 +30,13 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
       href: '/logs',
       matches: ['/logs'],
       description: 'Session history'
+    },
+    {
+      title: 'Escalations',
+      icon: AlertTriangle,
+      href: '/escalations',
+      matches: ['/escalations'],
+      description: 'Clinician reviews'
     }
   ]
 

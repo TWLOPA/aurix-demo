@@ -6,6 +6,10 @@ import { ConversationPanel } from '@/components/panels/ConversationPanel'
 import { AgentBrainPanel } from '@/components/panels/AgentBrainPanel'
 import { MobileTabs } from '@/components/MobileTabs'
 import { CallSummaryModal } from '@/components/CallSummaryModal'
+import { CostCalculator } from '@/components/CostCalculator'
+import { PersonaToolbar } from '@/components/PersonaToolbar'
+import { PlatformFeatures } from '@/components/PlatformFeatures'
+import { SMSPrompt } from '@/components/SMSPrompt'
 import { useCallEvents } from '@/hooks/useCallEvents'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
@@ -174,7 +178,12 @@ export default function Home() {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden flex-col lg:flex-row bg-neutral-50/50">
         {!callActive && !showSummary ? (
-          <WaitingState onCallStart={handleCallStart} />
+          <>
+            {/* Landing Page with Persona Toolbar and Platform Features */}
+            <PersonaToolbar mode="landing" />
+            <WaitingState onCallStart={handleCallStart} />
+            <PlatformFeatures />
+          </>
         ) : callActive ? (
           <>
              {/* Mobile: Tabs */}
@@ -198,12 +207,18 @@ export default function Home() {
                 <AgentBrainPanel events={events} />
               </div>
             </div>
+
+            {/* SMS Prompt Modal - shown during call when agent triggers SMS */}
+            <SMSPrompt />
           </>
         ) : (
           // Show waiting state in background when summary is displayed
           <WaitingState onCallStart={handleCallStart} />
         )}
       </div>
+
+      {/* Cost Calculator - Always visible */}
+      <CostCalculator isActive={callActive} />
 
       {/* Call Summary Modal */}
       <CallSummaryModal

@@ -145,6 +145,8 @@ export async function POST(request: Request) {
     // Step 3: If blocked, return early with escalation
     if (!compliance_result.allowed) {
       console.log('[Handle Inquiry] 🚫 Request blocked by compliance')
+      
+      // Log action to call_events
       await supabase.from('call_events').insert({
         call_sid,
         event_type: 'action',
@@ -155,10 +157,28 @@ export async function POST(request: Request) {
         }
       })
 
+      // Log to clinician_escalations table for tracking
+      const escalationResponse = "I want to make sure you get accurate medical information, so I've scheduled a callback from one of our clinicians within the next 2 hours. They'll be able to discuss any concerns you have about the medication. Is there anything else about your order I can help with?"
+      
+      try {
+        await supabase.from('clinician_escalations').insert({
+          call_sid,
+          customer_id: null, // Unknown at this point
+          inquiry_type: inquiry_type || 'medical_advice',
+          inquiry_text: question_text || `Customer asked about: ${inquiry_type}`,
+          blocked_reason: compliance_result.reason,
+          escalation_status: 'pending',
+          agent_response: escalationResponse
+        })
+        console.log('[Handle Inquiry] ✅ Escalation logged to clinician_escalations table')
+      } catch (escalationError) {
+        console.error('[Handle Inquiry] ⚠️ Failed to log escalation:', escalationError)
+      }
+
       return NextResponse.json({
         allowed: false,
         reason: compliance_result.reason,
-        response: "I want to make sure you get accurate medical information, so I've scheduled a callback from one of our clinicians within the next 2 hours. They'll be able to discuss any concerns you have about the medication. Is there anything else about your order I can help with?"
+        response: escalationResponse
       })
     }
 
@@ -351,6 +371,19 @@ export async function POST(request: Request) {
     })
     if (err5) console.error('[Handle Inquiry] ❌ Error inserting action:', err5)
     else console.log('[Handle Inquiry] ✅ Action event inserted')
+
+    // Trigger SMS prompt for frontend (real SMS demonstration)
+    await supabase.from('call_events').insert({
+      call_sid,
+      event_type: 'sms_prompt',
+      event_data: {
+        message_type: 'tracking',
+        order_id: orderData.order_id,
+        tracking_number: orderData.tracking_number,
+        prompt_text: 'Agent is sending you a tracking link via SMS. Enter your phone number to receive the actual text message.'
+      }
+    })
+    console.log('[Handle Inquiry] ✅ SMS prompt event inserted')
 
     // Step 9: Return response
     const discreetNote = orderData.discreet_packaging 
