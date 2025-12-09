@@ -144,10 +144,37 @@ export async function POST(request: Request) {
 
     if (error || !orderData) {
       console.log('[Handle Inquiry] Order not found:', error)
+      
+      // Log the failed lookup - IMPORTANT for transparency
+      await supabase.from('call_events').insert({
+        call_sid,
+        event_type: 'results',
+        event_data: {
+          order_id,
+          status: 'NOT_FOUND',
+          error: 'Order not found in database',
+          suggestion: 'Verify order number format (ORD_XXXX)'
+        }
+      })
+
+      await sleep(300)
+
+      // Log action - offer to help
+      await supabase.from('call_events').insert({
+        call_sid,
+        event_type: 'action',
+        event_data: {
+          type: 'customer_assistance',
+          description: 'Offering alternative lookup methods',
+          options: ['Search by phone number', 'Search by email', 'Recent orders']
+        }
+      })
+
       return NextResponse.json({ 
-        error: 'Order not found',
-        response: `I couldn't find an order with that number. Could you please verify the order ID?`
-      }, { status: 404 })
+        found: false,
+        order_id,
+        response: `I couldn't find an order with ID ${order_id}. Let me help you - could you provide your phone number or email address so I can look up your recent orders? Alternatively, order numbers are usually in the format ORD followed by 4 digits, like ORD-7823.`
+      })
     }
 
     // Step 5: Log results
