@@ -15,16 +15,18 @@ interface SMSPromptData {
 
 export function SMSPrompt() {
   const [promptData, setPromptData] = useState<SMSPromptData | null>(null)
-  const [isVisible, setIsVisible] = useState(false) // Controls actual visibility after delay
+  const [isVisible, setIsVisible] = useState(false) // Controls actual visibility
   const [phoneNumber, setPhoneNumber] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
-  const delayTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const pendingPromptRef = useRef<SMSPromptData | null>(null) // Store pending prompt until agent mentions SMS
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const channel = supabase
-      .channel('sms_prompts')
+      .channel('sms_prompts_and_speech')
+      // Listen for SMS prompt events - store but don't show yet
       .on(
         'postgres_changes',
         {
@@ -34,31 +36,62 @@ export function SMSPrompt() {
           filter: 'event_type=eq.sms_prompt'
         },
         (payload) => {
-          console.log('[SMS Prompt] Received - waiting for agent to finish speaking...')
+          console.log('[SMS Prompt] Received - waiting for agent to mention SMS in chat...')
           const eventData = payload.new as { event_data: SMSPromptData }
-          setPromptData(eventData.event_data)
+          pendingPromptRef.current = eventData.event_data
           setSent(false)
           setError('')
           
-          // Delay showing the modal by 3 seconds to let agent finish speaking
-          if (delayTimerRef.current) {
-            clearTimeout(delayTimerRef.current)
+          // Fallback: if agent doesn't mention SMS within 10s, show anyway
+          if (timeoutRef.current) clearTimeout(timeoutRef.current)
+          timeoutRef.current = setTimeout(() => {
+            if (pendingPromptRef.current && !isVisible) {
+              console.log('[SMS Prompt] Fallback timeout - showing modal')
+              setPromptData(pendingPromptRef.current)
+              setIsVisible(true)
+              pendingPromptRef.current = null
+            }
+          }, 10000)
+        }
+      )
+      // Listen for agent speech - check if they mention SMS/text
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'call_events',
+          filter: 'event_type=eq.agent_spoke'
+        },
+        (payload) => {
+          const eventData = payload.new as { event_data: { text: string } }
+          const spokenText = eventData.event_data?.text?.toLowerCase() || ''
+          
+          // Check if agent mentioned SMS-related keywords
+          const smsKeywords = ['text', 'sms', 'message', 'send you', 'tracking link', 'phone']
+          const mentionedSMS = smsKeywords.some(keyword => spokenText.includes(keyword))
+          
+          if (mentionedSMS && pendingPromptRef.current && !isVisible) {
+            console.log('[SMS Prompt] Agent mentioned SMS - showing modal now')
+            // Small delay after agent speaks to let them finish
+            setTimeout(() => {
+              if (pendingPromptRef.current) {
+                setPromptData(pendingPromptRef.current)
+                setIsVisible(true)
+                pendingPromptRef.current = null
+                if (timeoutRef.current) clearTimeout(timeoutRef.current)
+              }
+            }, 1500)
           }
-          delayTimerRef.current = setTimeout(() => {
-            console.log('[SMS Prompt] Now showing modal')
-            setIsVisible(true)
-          }, 3000)
         }
       )
       .subscribe()
 
     return () => {
       channel.unsubscribe()
-      if (delayTimerRef.current) {
-        clearTimeout(delayTimerRef.current)
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
-  }, [])
+  }, [isVisible])
 
   const handleSend = async () => {
     if (!phoneNumber) {

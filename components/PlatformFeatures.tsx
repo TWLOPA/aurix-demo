@@ -31,7 +31,7 @@ export function PlatformFeatures() {
               Powered by
             </Badge>
             <span className="font-semibold text-sm text-white/95">
-              ElevenLabs Enterprise
+              ElevenLabs
             </span>
           </div>
           {isExpanded ? (
@@ -49,43 +49,38 @@ export function PlatformFeatures() {
         >
           <div className="px-5 pb-5 flex flex-col gap-3">
             <FeatureItem 
-              text="Multimodal AI" 
-              subtext="Voice + SMS in a single session"
+              text="Multimodal Interactions" 
+              subtext="Voice + SMS seamlessly in one session"
             />
             <FeatureItem 
-              text="Sub-100ms latency" 
-              subtext="Natural conversation flow"
+              text="Transparent AI" 
+              subtext="Watch agent reasoning in real-time"
             />
             <FeatureItem 
-              text="RAG-powered retrieval" 
-              subtext="Grounded in your data"
+              text="RAG Integration" 
+              subtext="Retrieval from orders, Rx & billing data"
             />
             <FeatureItem 
-              text="Multi-system integration" 
-              subtext="CRM, billing, prescriptions unified"
+              text="Identity Verification" 
+              subtext="HIPAA-compliant DOB/postcode checks"
             />
             <FeatureItem 
-              text="Workflow orchestration" 
-              subtext="Multi-step verification & routing"
+              text="Compliance Guardrails" 
+              subtext="Medical queries escalate to clinicians"
             />
             <FeatureItem 
-              text="HIPAA/SOC 2 compliant" 
-              subtext="Enterprise-grade security"
+              text="Multi-System Query" 
+              subtext="CRM, prescriptions, billing unified"
             />
             <FeatureItem 
-              text="Bring your own LLM" 
-              subtext="Claude, GPT-4, or proprietary"
+              text="Audit Trail" 
+              subtext="Every decision logged & reviewable"
             />
 
             <div className="mt-2 pt-4 border-t border-white/20">
-              <a 
-                href="https://elevenlabs.io/conversational-ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-white/70 hover:text-white/95 transition-colors duration-300 inline-flex items-center gap-1"
-              >
-                Learn more about ElevenLabs Platform →
-              </a>
+              <span className="text-xs text-white/50">
+                Built for healthcare compliance & enterprise security
+              </span>
             </div>
           </div>
         </div>
