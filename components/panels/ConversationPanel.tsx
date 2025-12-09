@@ -108,7 +108,7 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-background/50">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-neutral-50">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50">
             <MessageSquare className="w-12 h-12 text-muted-foreground" />
@@ -153,7 +153,7 @@ function MessageBubble({
   return (
     <div className={`flex gap-4 ${isUser ? 'flex-row-reverse' : 'flex-row'} animate-slide-up group`}>
       {isUser ? (
-        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border bg-primary text-primary-foreground border-primary">
+        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border bg-blue-600 text-white border-blue-600">
           <User className="w-4 h-4" />
         </div>
       ) : (
@@ -172,10 +172,10 @@ function MessageBubble({
           </span>
         </div>
         <div className={`
-          p-4 rounded-2xl text-sm leading-relaxed shadow-sm border
+          p-4 rounded-2xl text-sm leading-relaxed shadow-sm
           ${isUser 
-            ? 'bg-primary text-primary-foreground border-primary rounded-tr-none' 
-            : 'bg-card text-card-foreground border-border rounded-tl-none'
+            ? 'bg-blue-600 text-white rounded-tr-none' 
+            : 'bg-neutral-900 text-white rounded-tl-none'
           }
         `}>
           {content}
@@ -188,8 +188,8 @@ function MessageBubble({
 function ListeningIndicator() {
   return (
     <div className="flex gap-4 flex-row-reverse animate-fade-in">
-      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border bg-primary/10 text-primary border-primary/20 relative">
-        <div className="absolute inset-0 rounded-full animate-pulse opacity-50 bg-primary/20" />
+      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border bg-blue-100 text-blue-600 border-blue-200 relative">
+        <div className="absolute inset-0 rounded-full animate-pulse opacity-50 bg-blue-200" />
         <Mic className="w-4 h-4 relative z-10" />
       </div>
 
@@ -203,12 +203,12 @@ function ListeningIndicator() {
             Listening...
           </span>
         </div>
-        <div className="px-4 py-3 rounded-2xl rounded-tr-none text-sm shadow-sm border bg-primary/5 text-muted-foreground border-primary/20">
+        <div className="px-4 py-3 rounded-2xl rounded-tr-none text-sm shadow-sm bg-blue-50 text-blue-600 border border-blue-100">
           <div className="flex items-center gap-0.5 h-4">
             {[...Array(7)].map((_, i) => (
               <div
                 key={i}
-                className="w-1 bg-primary/40 rounded-full animate-pulse"
+                className="w-1 bg-blue-400 rounded-full animate-pulse"
                 style={{
                   height: `${Math.random() * 12 + 4}px`,
                   animationDelay: `${i * 100}ms`,

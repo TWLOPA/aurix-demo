@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChevronDown, ChevronUp, DollarSign } from 'lucide-react'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 
 interface CostCalculatorProps {
   isActive?: boolean
@@ -48,25 +48,20 @@ export function CostCalculator({ isActive = false }: CostCalculatorProps) {
         background: 'radial-gradient(ellipse at top, #ffffff 0%, #f8f9fa 100%)',
       }}
     >
-      {/* Header */}
+      {/* Header - removed dollar icon */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full flex items-center justify-between gap-3 p-4 hover:bg-neutral-50/50 transition-colors duration-200"
       >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-neutral-100 flex items-center justify-center">
-            <DollarSign className="w-4 h-4 text-neutral-800" />
-          </div>
-          <div className="text-left">
-            <span className="font-semibold text-sm text-azure block">
-              Cost Comparison
+        <div className="text-left">
+          <span className="font-semibold text-sm text-neutral-900 block">
+            Cost Comparison
+          </span>
+          {isActive && (
+            <span className="text-[10px] text-neutral-500">
+              {formatTime(seconds)} elapsed
             </span>
-            {isActive && (
-              <span className="text-[10px] text-neutral-500">
-                {formatTime(seconds)} elapsed
-              </span>
-            )}
-          </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {isActive && (
@@ -89,24 +84,24 @@ export function CostCalculator({ isActive = false }: CostCalculatorProps) {
         }`}
       >
         <div className="px-4 pb-4 space-y-3">
-          {/* AI Cost */}
+          {/* AI Cost - neutral colors */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-azure" />
+              <div className="w-2 h-2 rounded-full bg-neutral-400" />
               <span className="text-sm text-neutral-600">AI Agent</span>
             </div>
-            <span className="font-medium text-sm text-azure">
+            <span className="text-sm text-neutral-600">
               {formatCost(aiCost)}
             </span>
           </div>
 
-          {/* Human Cost */}
+          {/* Human Cost - neutral colors */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-neutral-400" />
+              <div className="w-2 h-2 rounded-full bg-neutral-300" />
               <span className="text-sm text-neutral-600">Human Agent</span>
             </div>
-            <span className="font-medium text-sm text-neutral-500">
+            <span className="text-sm text-neutral-400">
               {formatCost(humanCost)}
             </span>
           </div>
@@ -114,19 +109,11 @@ export function CostCalculator({ isActive = false }: CostCalculatorProps) {
           {/* Divider */}
           <div className="h-px bg-neutral-200" />
 
-          {/* Savings */}
+          {/* Savings - only blue color */}
           <div className="flex items-center justify-between">
-            <span className="font-medium text-sm text-neutral-900">Savings</span>
+            <span className="text-sm text-neutral-600">Savings</span>
             <div className="text-right">
-              <div 
-                className="font-semibold text-lg"
-                style={{
-                  background: 'linear-gradient(135deg, #2563EB 0%, #EC4899 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
-                }}
-              >
+              <div className="font-semibold text-lg text-blue-600">
                 {formatCost(savings)}
               </div>
               <div className="text-[10px] text-neutral-400">

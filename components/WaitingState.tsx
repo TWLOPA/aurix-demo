@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Mic, Loader2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
@@ -68,14 +67,12 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
           </p>
         </div>
 
-        {/* Primary CTA - Premium variant for main action */}
+        {/* Primary CTA - Black button with white text */}
         <div className="pt-4">
-          <Button
+          <button
             onClick={handleStartCall}
             disabled={loading}
-            variant="premium"
-            size="lg"
-            className="gap-3 min-w-[200px] h-14 text-base rounded-pill"
+            className="inline-flex items-center justify-center gap-3 min-w-[200px] h-14 px-8 text-base font-medium rounded-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl active:scale-[0.98]"
           >
             {loading ? (
               <>
@@ -88,7 +85,7 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
                 Start Talking
               </>
             )}
-          </Button>
+          </button>
         </div>
 
         {/* Subtle hint - Caption text */}
