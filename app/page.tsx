@@ -179,8 +179,7 @@ export default function Home() {
       <div className="flex-1 flex overflow-hidden flex-col lg:flex-row bg-neutral-50/50">
         {!callActive && !showSummary ? (
           <>
-            {/* Landing Page with Persona Toolbar and Platform Features */}
-            <PersonaToolbar mode="landing" />
+            {/* Landing Page with Platform Features */}
             <WaitingState onCallStart={handleCallStart} />
             <PlatformFeatures />
           </>
@@ -198,7 +197,7 @@ export default function Home() {
             <div className="hidden lg:flex lg:flex-1 h-full">
               {/* Left Sidebar - Simulation Info */}
               <div className="w-72 shrink-0 border-r border-neutral-200 bg-neutral-50/80 p-4 space-y-4 overflow-y-auto">
-                <PersonaToolbar mode="simulation" />
+                <PersonaToolbar />
                 <CostCalculator isActive={callActive} />
               </div>
               

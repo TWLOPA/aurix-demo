@@ -106,15 +106,15 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
         {/* Footer - Powered by */}
         <div className="p-4 border-t border-border/50">
-          <div className="px-4 py-3">
-            <p className="text-xs text-muted-foreground mb-2">Powered by</p>
+          <div className="px-4 py-3 flex items-center gap-2">
             <Image 
-              src="/assets/ElevenLabs_logo.png" 
+              src="/assets/elevenlabs-symbol.svg" 
               alt="ElevenLabs" 
-              width={120} 
-              height={24}
-              className="h-6 w-auto opacity-80"
+              width={16} 
+              height={16}
+              className="opacity-60"
             />
+            <p className="text-xs text-muted-foreground">Powered by ElevenLabs</p>
           </div>
         </div>
       </aside>
