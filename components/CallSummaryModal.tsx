@@ -3,13 +3,22 @@
 import { useState, useEffect } from 'react'
 import { 
   X, CheckCircle, Clock, Shield, Zap, FileText, ArrowRight, 
-  Phone, User, Package, MessageSquare, AlertTriangle, Home,
+  Phone, Package, MessageSquare, AlertTriangle, Home,
   Copy, CheckCheck
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import type { CallEvent } from '@/types'
+
+/**
+ * CallSummaryModal - ElevenLabs UI Standards Compliant
+ * 
+ * Border Radius: 12px (lg) for modal
+ * Spacing: 24px (p-6) padding
+ * Animation: ease-in-out scale
+ * Colors: Uses approved tokens
+ */
 
 interface CallSummaryModalProps {
   isOpen: boolean
@@ -27,8 +36,6 @@ interface SummaryData {
   complianceBlocked: boolean
   escalationsScheduled: number
   informationProvided: string[]
-  customerName: string | null
-  conversationHighlights: string[]
 }
 
 export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDuration }: CallSummaryModalProps) {
@@ -45,8 +52,6 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
         complianceBlocked: false,
         escalationsScheduled: 0,
         informationProvided: [],
-        customerName: null,
-        conversationHighlights: []
       }
 
       events.forEach(event => {
@@ -99,18 +104,6 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
           case 'compliance_check':
             if (data.allowed === false) {
               summaryData.complianceBlocked = true
-            }
-            break
-
-          case 'user_spoke':
-            if (data.text && data.text.length > 20) {
-              summaryData.conversationHighlights.push(`Customer: "${data.text.substring(0, 80)}..."`)
-            }
-            break
-
-          case 'agent_spoke':
-            if (data.text && data.text.length > 30 && summaryData.conversationHighlights.length < 4) {
-              summaryData.conversationHighlights.push(`Agent: "${data.text.substring(0, 80)}..."`)
             }
             break
         }
@@ -166,61 +159,88 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      {/* Backdrop - shadow-blue with blur */}
+      <div 
+        className="absolute inset-0 bg-shadow-blue/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
       
-      {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 overflow-hidden animate-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-neutral-900 via-neutral-800 to-neutral-900 text-white px-6 py-6">
+      {/* Modal - 12px border radius, approved shadow */}
+      <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 overflow-hidden animate-scale-in">
+        {/* Header - Deep Dive gradient */}
+        <div className="gradient-deep-dive text-white px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center">
                 <FileText className="w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold">Call Summary</h2>
-                <p className="text-sm text-white/60">Session completed at {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                <h2 className="text-xl font-semibold leading-tight">Call Summary</h2>
+                <p className="text-sm text-white/70">
+                  Session completed at {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </p>
               </div>
             </div>
             <button 
               onClick={onClose}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="p-2 hover:bg-white/10 rounded-md transition-colors duration-200 ease-in-out"
+              aria-label="Close"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Content */}
+        {/* Content - 24px padding, 24px gap */}
         <div className="p-6 space-y-6 max-h-[55vh] overflow-y-auto">
-          {/* Quick Stats Row */}
+          {/* Quick Stats Row - 16px gap */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-neutral-50 rounded-xl p-4 text-center">
-              <Clock className="w-5 h-5 mx-auto mb-2 text-neutral-500" />
-              <p className="text-2xl font-bold font-mono">{formatDuration(callDuration)}</p>
+            {/* Duration */}
+            <div className="bg-mist rounded-lg p-4 text-center">
+              <Clock className="w-5 h-5 mx-auto mb-2 text-muted-foreground" />
+              <p className="text-2xl font-semibold font-mono text-shadow-blue">
+                {formatDuration(callDuration)}
+              </p>
               <p className="text-xs text-muted-foreground">Duration</p>
             </div>
-            <div className="bg-neutral-50 rounded-xl p-4 text-center">
-              <Zap className="w-5 h-5 mx-auto mb-2 text-neutral-500" />
-              <p className="text-2xl font-bold font-mono">{summary?.actionsPerformed.length || 0}</p>
+            
+            {/* Actions */}
+            <div className="bg-mist rounded-lg p-4 text-center">
+              <Zap className="w-5 h-5 mx-auto mb-2 text-muted-foreground" />
+              <p className="text-2xl font-semibold font-mono text-shadow-blue">
+                {summary?.actionsPerformed.length || 0}
+              </p>
               <p className="text-xs text-muted-foreground">Actions</p>
             </div>
-            <div className={`rounded-xl p-4 text-center ${summary?.customerVerified ? 'bg-green-50' : 'bg-amber-50'}`}>
-              <Shield className={`w-5 h-5 mx-auto mb-2 ${summary?.customerVerified ? 'text-green-600' : 'text-amber-600'}`} />
-              <p className={`text-sm font-bold ${summary?.customerVerified ? 'text-green-700' : 'text-amber-700'}`}>
+            
+            {/* Verification Status */}
+            <div className={`rounded-lg p-4 text-center ${
+              summary?.customerVerified 
+                ? 'bg-success/10' 
+                : 'bg-warning/10'
+            }`}>
+              <Shield className={`w-5 h-5 mx-auto mb-2 ${
+                summary?.customerVerified 
+                  ? 'text-success' 
+                  : 'text-warning'
+              }`} />
+              <p className={`text-sm font-semibold ${
+                summary?.customerVerified 
+                  ? 'text-success' 
+                  : 'text-warning'
+              }`}>
                 {summary?.customerVerified ? 'Verified' : 'Unverified'}
               </p>
               <p className="text-xs text-muted-foreground">Identity</p>
             </div>
           </div>
 
-          <Separator />
+          <Separator className="bg-border" />
 
           {/* Meeting Notes Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-neutral-900 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-shadow-blue flex items-center gap-2">
                 <MessageSquare className="w-4 h-4" />
                 Meeting Notes
               </h3>
@@ -235,15 +255,23 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
               </Button>
             </div>
 
-            <div className="bg-neutral-50 rounded-xl p-4 space-y-4 font-mono text-sm">
+            {/* Notes Content - 8px border radius, mono font */}
+            <div className="bg-mist rounded-md p-4 space-y-4 text-sm">
               {/* Verification Status */}
               <div className="flex items-start gap-3">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${summary?.customerVerified ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
-                  {summary?.customerVerified ? <CheckCircle className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
+                  summary?.customerVerified 
+                    ? 'bg-success/20 text-success' 
+                    : 'bg-warning/20 text-warning'
+                }`}>
+                  {summary?.customerVerified 
+                    ? <CheckCircle className="w-4 h-4" /> 
+                    : <AlertTriangle className="w-4 h-4" />
+                  }
                 </div>
                 <div>
-                  <p className="font-semibold text-neutral-900">Identity Verification</p>
-                  <p className="text-neutral-600">
+                  <p className="font-medium text-shadow-blue">Identity Verification</p>
+                  <p className="text-muted-foreground">
                     {summary?.customerVerified 
                       ? `Verified via ${summary.verificationMethod}` 
                       : 'Customer identity not verified during call'}
@@ -254,11 +282,11 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
               {/* Orders */}
               {summary?.ordersLookedUp && summary.ordersLookedUp.length > 0 && (
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-azure/20 text-azure flex items-center justify-center shrink-0">
                     <Package className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-semibold text-neutral-900">Orders Accessed</p>
+                    <p className="font-medium text-shadow-blue">Orders Accessed</p>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {summary.ordersLookedUp.map((order, idx) => (
                         <Badge key={idx} variant="secondary" className="font-mono text-xs">
@@ -273,12 +301,12 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
               {/* Information Provided */}
               {summary?.informationProvided && summary.informationProvided.length > 0 && (
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-electric-cyan/20 text-azure flex items-center justify-center shrink-0">
                     <ArrowRight className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-semibold text-neutral-900">Information Disclosed</p>
-                    <ul className="text-neutral-600 mt-1 space-y-0.5">
+                    <p className="font-medium text-shadow-blue">Information Disclosed</p>
+                    <ul className="text-muted-foreground mt-1 space-y-0.5">
                       {Array.from(new Set(summary.informationProvided)).map((info, idx) => (
                         <li key={idx}>• {info}</li>
                       ))}
@@ -290,14 +318,16 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
               {/* Actions */}
               {summary?.actionsPerformed && summary.actionsPerformed.length > 0 && (
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-success/20 text-success flex items-center justify-center shrink-0">
                     <Zap className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-semibold text-neutral-900">Actions Taken</p>
-                    <ul className="text-neutral-600 mt-1 space-y-0.5">
+                    <p className="font-medium text-shadow-blue">Actions Taken</p>
+                    <ul className="text-muted-foreground mt-1 space-y-0.5">
                       {summary.actionsPerformed.map((action, idx) => (
-                        <li key={idx}>• <span className="text-emerald-600 font-medium">{action.type.toUpperCase()}</span>: {action.description}</li>
+                        <li key={idx}>
+                          • <span className="text-success font-medium">{action.type.toUpperCase()}</span>: {action.description}
+                        </li>
                       ))}
                     </ul>
                   </div>
@@ -307,12 +337,14 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
               {/* Compliance Note */}
               {summary?.complianceBlocked && (
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-warning/20 text-warning flex items-center justify-center shrink-0">
                     <AlertTriangle className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-semibold text-amber-700">Compliance Alert</p>
-                    <p className="text-amber-600">Medical inquiry blocked and escalated to licensed clinician</p>
+                    <p className="font-medium text-warning">Compliance Alert</p>
+                    <p className="text-muted-foreground">
+                      Medical inquiry blocked and escalated to licensed clinician
+                    </p>
                   </div>
                 </div>
               )}
@@ -320,8 +352,8 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-neutral-200 bg-neutral-50 flex items-center justify-between">
+        {/* Footer - mist background, 16px padding */}
+        <div className="px-6 py-4 border-t border-border bg-mist flex items-center justify-between">
           <Button 
             variant="outline" 
             onClick={onClose}
@@ -332,7 +364,7 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
           </Button>
           <Button 
             onClick={onNewCall}
-            className="gap-2 bg-neutral-900 hover:bg-neutral-800"
+            className="gap-2"
           >
             <Phone className="w-4 h-4" />
             Start New Call
