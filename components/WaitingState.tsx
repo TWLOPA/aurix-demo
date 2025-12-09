@@ -64,7 +64,7 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
             Health Support Agent
           </h1>
           <p className="text-base text-muted-foreground max-w-sm mx-auto leading-relaxed">
-            AI-powered customer service with transparent decision-making and compliance boundaries
+            Multimodal AI customer service with voice, SMS, and transparent decision-making
           </p>
         </div>
 

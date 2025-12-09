@@ -27,6 +27,10 @@ export function PlatformFeatures() {
         
         <div className="flex flex-col gap-3">
           <FeatureItem 
+            text="Multimodal AI" 
+            subtext="Voice + SMS in a single session"
+          />
+          <FeatureItem 
             text="Sub-100ms latency" 
             subtext="Natural conversation flow"
           />
@@ -41,10 +45,6 @@ export function PlatformFeatures() {
           <FeatureItem 
             text="Workflow orchestration" 
             subtext="Multi-step verification & routing"
-          />
-          <FeatureItem 
-            text="Omnichannel ready" 
-            subtext="Voice, chat, and SMS"
           />
           <FeatureItem 
             text="HIPAA/SOC 2 compliant" 
