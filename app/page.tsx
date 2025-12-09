@@ -13,8 +13,10 @@ import { SMSPrompt } from '@/components/SMSPrompt'
 import { useCallEvents } from '@/hooks/useCallEvents'
 import { useConversation } from '@elevenlabs/react'
 import { insertCallEvent } from '@/lib/supabase/queries'
+import { useSidebar } from '@/lib/sidebar-context'
 
 export default function Home() {
+  const { collapse, expand } = useSidebar()
   const [callActive, setCallActive] = useState(false)
   const [callSid, setCallSid] = useState<string | null>(null)
   const [showSummary, setShowSummary] = useState(false)
@@ -45,6 +47,7 @@ export default function Home() {
       }
       setCallActive(true)
       callStartTimeRef.current = Date.now()
+      collapse() // Auto-collapse sidebar during call
     },
     onDisconnect: () => {
       console.log('[ElevenLabs] ❌ Disconnected from ElevenLabs')
@@ -135,6 +138,7 @@ export default function Home() {
     callSidRef.current = null
     callStartTimeRef.current = null
     eventsForSummaryRef.current = []
+    expand() // Expand sidebar when returning home
   }
 
   const handleNewCallFromSummary = () => {

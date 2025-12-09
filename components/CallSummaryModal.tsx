@@ -144,24 +144,37 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const glassyCardStyle = {
+    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.85) 100%)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+    border: '1px solid rgba(255, 255, 255, 0.7)'
+  }
+
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
+      {/* Backdrop - Blue gradient like the app */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(180deg, rgba(232, 244, 252, 0.95) 0%, rgba(212, 234, 247, 0.95) 50%, rgba(199, 226, 244, 0.95) 100%)',
+          backdropFilter: 'blur(8px)',
+        }}
         onClick={onClose}
       />
       
-      {/* Modal - Neutral, premium, tight */}
+      {/* Modal - Glassy premium */}
       <div 
-        className="relative rounded-xl border border-neutral-200 overflow-hidden max-w-md w-full mx-4 animate-scale-in bg-white shadow-2xl"
+        className="relative rounded-2xl overflow-hidden max-w-md w-full mx-4 animate-scale-in"
+        style={glassyCardStyle}
       >
-        {/* Header - Compact */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-100">
+        {/* Header - Glassy */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/40">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-md bg-neutral-100 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-white/60 flex items-center justify-center">
               <FileText className="w-4 h-4 text-neutral-600" />
             </div>
             <div>
@@ -173,7 +186,7 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 hover:bg-neutral-100 rounded-md transition-colors"
+            className="p-1.5 hover:bg-white/50 rounded-lg transition-colors"
             aria-label="Close"
           >
             <X className="w-4 h-4 text-neutral-400" />
@@ -185,7 +198,7 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
           {/* Quick Stats Row */}
           <div className="grid grid-cols-3 gap-2">
             {/* Duration */}
-            <div className="bg-neutral-50 rounded-lg p-2.5 text-center">
+            <div className="bg-white/50 rounded-xl p-2.5 text-center border border-white/60">
               <Clock className="w-3.5 h-3.5 mx-auto mb-1 text-neutral-400" />
               <p className="text-base font-semibold text-neutral-900">
                 {formatDuration(callDuration)}
@@ -194,7 +207,7 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
             </div>
             
             {/* Actions */}
-            <div className="bg-neutral-50 rounded-lg p-2.5 text-center">
+            <div className="bg-white/50 rounded-xl p-2.5 text-center border border-white/60">
               <Zap className="w-3.5 h-3.5 mx-auto mb-1 text-neutral-400" />
               <p className="text-base font-semibold text-neutral-900">
                 {summary?.actionsPerformed.length || 0}
@@ -203,10 +216,10 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
             </div>
             
             {/* Verification Status */}
-            <div className={`rounded-lg p-2.5 text-center ${
+            <div className={`rounded-xl p-2.5 text-center border ${
               summary?.customerVerified 
-                ? 'bg-emerald-50' 
-                : 'bg-amber-50'
+                ? 'bg-emerald-50/80 border-emerald-100' 
+                : 'bg-amber-50/80 border-amber-100'
             }`}>
               <Shield className={`w-3.5 h-3.5 mx-auto mb-1 ${
                 summary?.customerVerified 
@@ -232,7 +245,7 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
               </h3>
               <button 
                 onClick={handleCopyNotes}
-                className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium text-neutral-500 hover:bg-neutral-100 transition-colors"
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium text-neutral-500 hover:bg-white/60 transition-colors"
               >
                 {copied ? <CheckCheck className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                 {copied ? 'Copied' : 'Copy'}
@@ -240,7 +253,7 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
             </div>
 
             {/* Notes Content */}
-            <div className="bg-neutral-50 rounded-lg p-3 space-y-2.5">
+            <div className="bg-white/50 rounded-xl p-3 space-y-2.5 border border-white/60">
               {/* Verification Status */}
               <div className="flex items-start gap-2.5">
                 <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
@@ -266,14 +279,14 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
               {/* Orders */}
               {summary?.ordersLookedUp && summary.ordersLookedUp.length > 0 && (
                 <div className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 rounded-full bg-neutral-200 text-neutral-500 flex items-center justify-center shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-neutral-200/80 text-neutral-500 flex items-center justify-center shrink-0">
                     <Package className="w-3 h-3" />
                   </div>
                   <div>
                     <p className="text-xs font-medium text-neutral-700">Orders Accessed</p>
                     <div className="flex flex-wrap gap-1 mt-0.5">
                       {summary.ordersLookedUp.map((order, idx) => (
-                        <Badge key={idx} className="bg-neutral-200 text-neutral-600 border-0 text-[10px] px-1.5 py-0">
+                        <Badge key={idx} className="bg-neutral-200/80 text-neutral-600 border-0 text-[10px] px-1.5 py-0">
                           {order}
                         </Badge>
                       ))}
@@ -285,7 +298,7 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
               {/* Information Provided */}
               {summary?.informationProvided && summary.informationProvided.length > 0 && (
                 <div className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 rounded-full bg-neutral-200 text-neutral-500 flex items-center justify-center shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-neutral-200/80 text-neutral-500 flex items-center justify-center shrink-0">
                     <ArrowRight className="w-3 h-3" />
                   </div>
                   <div>
@@ -336,18 +349,18 @@ export function CallSummaryModal({ isOpen, onClose, onNewCall, events, callDurat
           </div>
         </div>
 
-        {/* Footer - Tight */}
-        <div className="px-4 py-3 border-t border-neutral-100 flex items-center gap-2">
+        {/* Footer - Glassy */}
+        <div className="px-4 py-3 border-t border-white/40 flex items-center gap-2">
           <button 
             onClick={onClose}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-neutral-600 bg-neutral-100 hover:bg-neutral-200 transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium text-neutral-600 bg-white/60 hover:bg-white/80 transition-colors border border-white/60"
           >
             <Home className="w-3.5 h-3.5" />
             Home
           </button>
           <button 
             onClick={onNewCall}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-white bg-neutral-900 hover:bg-neutral-800 transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-medium text-white bg-neutral-900 hover:bg-neutral-800 transition-colors"
           >
             <Phone className="w-3.5 h-3.5" />
             New Call

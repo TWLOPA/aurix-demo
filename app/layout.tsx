@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SidebarLayout } from "@/components/SidebarLayout";
+import { SidebarProvider } from "@/lib/sidebar-context";
 
 // Use Inter as per ElevenLabs design tokens
 const inter = Inter({ subsets: ["latin"] });
@@ -21,9 +22,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <ErrorBoundary>
-          <SidebarLayout>
-            {children}
-          </SidebarLayout>
+          <SidebarProvider>
+            <SidebarLayout>
+              {children}
+            </SidebarLayout>
+          </SidebarProvider>
         </ErrorBoundary>
       </body>
     </html>

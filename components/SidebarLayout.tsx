@@ -7,16 +7,16 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { useSidebar } from '@/lib/sidebar-context'
 
 interface SidebarLayoutProps {
   children: React.ReactNode
-  isSimulationMode?: boolean
 }
 
-export function SidebarLayout({ children, isSimulationMode = false }: SidebarLayoutProps) {
+export function SidebarLayout({ children }: SidebarLayoutProps) {
   const pathname = usePathname()
   const [showGuide, setShowGuide] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(isSimulationMode)
+  const { isCollapsed, setIsCollapsed } = useSidebar()
   
   const navSections = [
     {
