@@ -2,17 +2,7 @@
 
 import { useState } from 'react'
 import { Mic, Loader2 } from 'lucide-react'
-import dynamic from 'next/dynamic'
-
-// Dynamically import Orb to avoid SSR issues with Three.js/Canvas
-const Orb = dynamic(() => import('@/components/ui/orb').then(mod => mod.Orb), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="w-48 h-48 rounded-full bg-gradient-to-br from-azure/20 to-electric-cyan/20 animate-pulse" />
-    </div>
-  )
-})
+import Image from 'next/image'
 
 interface WaitingStateProps {
   onCallStart: (callSid: string) => void
@@ -58,7 +48,7 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
       
       {/* Glassy Container */}
       <div 
-        className="relative rounded-[32px] p-8 max-w-md w-full"
+        className="relative rounded-[32px] px-10 py-8 max-w-sm w-full"
         style={{
           background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%)',
           backdropFilter: 'blur(20px)',
@@ -68,26 +58,24 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
         }}
       >
         <div className="text-center space-y-6">
-          {/* Floating Orb with glow effect */}
-          <div className="relative flex justify-center items-center h-56 w-full">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-48 h-48 rounded-full bg-[#7DD3FC]/10 blur-3xl" />
-            </div>
-            <div className="relative w-full h-full">
-              <Orb 
-                agentState={loading ? "listening" : null} 
-                colors={['#2563EB', '#22D3EE']}
-              />
-            </div>
+          {/* Logo */}
+          <div className="flex justify-center py-4">
+            <Image 
+              src="/assets/hims-brand-logo.png" 
+              alt="Hims & Hers" 
+              width={160} 
+              height={40}
+              className="h-10 w-auto"
+            />
           </div>
 
           {/* Title & Subtitle */}
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight text-neutral-800">
+            <h1 className="text-xl font-semibold tracking-tight text-neutral-800">
               Health Support Agent
             </h1>
-            <p className="text-sm text-neutral-500 max-w-xs mx-auto leading-relaxed">
-              Multimodal AI customer service with voice, SMS, and transparent decision-making
+            <p className="text-sm text-neutral-500 leading-relaxed">
+              AI customer service with voice, SMS, and transparent decision-making
             </p>
           </div>
 
@@ -96,7 +84,7 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
             <button
               onClick={handleStartCall}
               disabled={loading}
-              className="inline-flex items-center justify-center gap-2.5 min-w-[180px] h-12 px-6 text-sm font-medium rounded-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2.5 w-full h-12 px-6 text-sm font-medium rounded-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl active:scale-[0.98]"
             >
               {loading ? (
                 <>
