@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Brain, FileText, ChevronRight, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle } from 'lucide-react'
+import { Brain, FileText, ChevronRight, ChevronLeft, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -10,11 +10,13 @@ import { Button } from '@/components/ui/button'
 
 interface SidebarLayoutProps {
   children: React.ReactNode
+  isSimulationMode?: boolean
 }
 
-export function SidebarLayout({ children }: SidebarLayoutProps) {
+export function SidebarLayout({ children, isSimulationMode = false }: SidebarLayoutProps) {
   const pathname = usePathname()
   const [showGuide, setShowGuide] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(isSimulationMode)
   
   const navItems = [
     {
@@ -42,23 +44,55 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
   return (
     <div className="flex h-screen w-full bg-cloud overflow-hidden">
-      {/* Left Sidebar - 256px width */}
-      <aside className="w-64 flex-shrink-0 border-r border-border bg-white flex flex-col">
-        {/* Logo Area - 64px height */}
-        <div className="h-16 flex items-center px-6 border-b border-border/50">
-          <Link href="/" className="flex items-center">
-            <Image 
-              src="/assets/hims-brand-logo.png" 
-              alt="Hims & Hers" 
-              width={140} 
-              height={32}
-              className="h-8 w-auto"
-            />
-          </Link>
+      {/* Left Sidebar - Collapsible */}
+      <aside 
+        className={cn(
+          "flex-shrink-0 border-r border-border bg-white flex flex-col transition-all duration-300 ease-in-out",
+          isCollapsed ? "w-16" : "w-64"
+        )}
+      >
+        {/* Logo Area */}
+        <div className="h-16 flex items-center justify-between px-4 border-b border-border/50">
+          {!isCollapsed ? (
+            <Link href="/" className="flex items-center">
+              <Image 
+                src="/assets/hims-brand-logo.png" 
+                alt="Hims & Hers" 
+                width={140} 
+                height={32}
+                className="h-8 w-auto"
+              />
+            </Link>
+          ) : (
+            <Link href="/" className="mx-auto">
+              <Image 
+                src="/assets/elevenlabs-symbol.svg" 
+                alt="ElevenLabs" 
+                width={24} 
+                height={24}
+                className="opacity-80"
+              />
+            </Link>
+          )}
+          
+          {/* Collapse Toggle */}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className={cn(
+              "p-1.5 rounded-md hover:bg-mist transition-colors duration-200",
+              isCollapsed && "mx-auto mt-2"
+            )}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            ) : (
+              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+            )}
+          </button>
         </div>
 
-        {/* Navigation - 24px padding, 4px gap */}
-        <nav className="flex-1 px-3 py-6 space-y-1">
+        {/* Navigation */}
+        <nav className="flex-1 px-2 py-4 space-y-1">
           {navItems.map((item) => {
             const isActive = item.matches.includes(pathname)
             return (
@@ -66,25 +100,31 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 key={item.title}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-lg text-sm",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm",
                   "transition-all duration-200 ease-in-out group",
                   isActive 
                     ? "bg-mist text-shadow-blue font-medium" 
-                    : "text-muted-foreground hover:text-shadow-blue hover:bg-mist/50"
+                    : "text-muted-foreground hover:text-shadow-blue hover:bg-mist/50",
+                  isCollapsed && "justify-center px-2"
                 )}
+                title={isCollapsed ? item.title : undefined}
               >
                 <item.icon className={cn(
-                  "w-5 h-5 transition-colors duration-200",
+                  "w-5 h-5 transition-colors duration-200 shrink-0",
                   isActive ? "text-azure" : "text-muted-foreground group-hover:text-azure"
                 )} />
-                <div className="flex-1">
-                  <span className="block">{item.title}</span>
-                  {isActive && (
-                    <span className="text-xs text-muted-foreground font-normal">{item.description}</span>
-                  )}
-                </div>
-                {isActive && (
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                {!isCollapsed && (
+                  <>
+                    <div className="flex-1">
+                      <span className="block">{item.title}</span>
+                      {isActive && (
+                        <span className="text-xs text-muted-foreground font-normal">{item.description}</span>
+                      )}
+                    </div>
+                    {isActive && (
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </>
                 )}
               </Link>
             )
@@ -94,28 +134,42 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
           <button
             onClick={() => setShowGuide(true)}
             className={cn(
-              "flex items-center gap-3 px-4 py-3 rounded-lg text-sm w-full",
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm w-full",
               "transition-all duration-200 ease-in-out group",
-              "text-muted-foreground hover:text-shadow-blue hover:bg-mist/50"
+              "text-muted-foreground hover:text-shadow-blue hover:bg-mist/50",
+              isCollapsed && "justify-center px-2"
             )}
+            title={isCollapsed ? "How to Use" : undefined}
           >
-            <HelpCircle className="w-5 h-5 text-muted-foreground group-hover:text-azure transition-colors duration-200" />
-            <span>How to Use</span>
+            <HelpCircle className="w-5 h-5 text-muted-foreground group-hover:text-azure transition-colors duration-200 shrink-0" />
+            {!isCollapsed && <span>How to Use</span>}
           </button>
         </nav>
 
         {/* Footer - Powered by */}
-        <div className="p-4 border-t border-border/50">
-          <div className="px-4 py-3 flex items-center gap-2">
-            <Image 
-              src="/assets/elevenlabs-symbol.svg" 
-              alt="ElevenLabs" 
-              width={16} 
-              height={16}
-              className="opacity-60"
-            />
-            <p className="text-xs text-muted-foreground">Powered by ElevenLabs</p>
-          </div>
+        <div className="p-3 border-t border-border/50">
+          {!isCollapsed ? (
+            <div className="px-3 py-2">
+              <p className="text-xs text-muted-foreground mb-2">Powered by</p>
+              <Image 
+                src="/assets/ElevenLabs_logo.png" 
+                alt="ElevenLabs" 
+                width={120} 
+                height={24}
+                className="h-6 w-auto opacity-80"
+              />
+            </div>
+          ) : (
+            <div className="flex justify-center py-2">
+              <Image 
+                src="/assets/elevenlabs-symbol.svg" 
+                alt="ElevenLabs" 
+                width={20} 
+                height={20}
+                className="opacity-60"
+              />
+            </div>
+          )}
         </div>
       </aside>
 
