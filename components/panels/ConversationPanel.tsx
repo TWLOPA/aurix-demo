@@ -68,10 +68,23 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [events])
 
+  const glassyStyle = {
+    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+    border: '1px solid rgba(255, 255, 255, 0.6)'
+  }
+
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      <div 
+        className="h-full flex items-center justify-center"
+        style={{
+          background: 'linear-gradient(180deg, #E8F4FC 0%, #D4EAF7 50%, #C7E2F4 100%)',
+        }}
+      >
+        <Loader2 className="w-8 h-8 text-azure animate-spin" />
       </div>
     )
   }
@@ -83,66 +96,73 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
   const isCallActive = events.length > 0
 
   return (
-    <Card className="h-full flex flex-col border-none rounded-none shadow-none overflow-hidden bg-white">
-      {/* Header */}
-      <div className="border-b border-neutral-200 p-4 flex items-center justify-between bg-neutral-50">
-        <div className="flex items-center gap-3">
-          <div className={`w-2.5 h-2.5 rounded-full ${isCallActive ? 'bg-green-500 animate-pulse' : 'bg-neutral-400'}`} />
-          <div className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4 text-neutral-500" />
-            <h2 className="text-sm font-semibold text-neutral-800">
-              Live Transcript
-            </h2>
+    <div 
+      className="h-full flex flex-col p-4"
+      style={{
+        background: 'linear-gradient(180deg, #E8F4FC 0%, #D4EAF7 50%, #C7E2F4 100%)',
+      }}
+    >
+      <Card 
+        className="flex-1 flex flex-col rounded-2xl overflow-hidden"
+        style={glassyStyle}
+      >
+        {/* Header */}
+        <div className="border-b border-white/40 p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`w-2.5 h-2.5 rounded-full ${isCallActive ? 'bg-green-500 animate-pulse' : 'bg-neutral-400'}`} />
+            <div className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-neutral-500" />
+              <h2 className="text-sm font-semibold text-neutral-800">
+                Live Transcript
+              </h2>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {isCallActive && (
+              <Badge className="bg-green-500/20 text-green-700 border-0 text-xs">
+                Active Call
+              </Badge>
+            )}
+            <span className="text-xs font-mono text-neutral-500 bg-white/50 px-2 py-1 rounded-md">
+              {callDuration}
+            </span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          {isCallActive && (
-            <Badge className="bg-green-500/20 text-green-700 border-0 text-xs">
-              Active Call
-            </Badge>
-          )}
-          <span className="text-xs font-mono text-neutral-500 bg-neutral-100 px-2 py-1 rounded-md">
-            {callDuration}
-          </span>
-        </div>
-      </div>
 
-      {/* Messages - White background */}
-      <div 
-        className="flex-1 overflow-y-auto p-6 space-y-4 relative bg-white"
-      >
-        
-        <div className="space-y-4">
-          {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-20">
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-neutral-50 border border-neutral-100">
-                <MessageSquare className="w-8 h-8 text-neutral-400" />
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="space-y-4">
+            {messages.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-20">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/50 border border-white/60">
+                  <MessageSquare className="w-8 h-8 text-neutral-400" />
+                </div>
+                <p className="text-sm text-neutral-500">
+                  Waiting for conversation to start...
+                </p>
               </div>
-              <p className="text-sm text-neutral-500">
-                Waiting for conversation to start...
-              </p>
-            </div>
-          ) : (
-            <>
-              {messages.map((event) => (
-                <MessageBubble
-                  key={event.id}
-                  role={event.event_type === 'user_spoke' ? 'user' : 'assistant'}
-                  content={event.event_data.text}
-                  timestamp={event.created_at}
-                />
-              ))}
-              
-              {showListening && !agentSpeaking && (
-                <ListeningIndicator />
-              )}
-              
-              <div ref={messagesEndRef} />
-            </>
-          )}
+            ) : (
+              <>
+                {messages.map((event) => (
+                  <MessageBubble
+                    key={event.id}
+                    role={event.event_type === 'user_spoke' ? 'user' : 'assistant'}
+                    content={event.event_data.text}
+                    timestamp={event.created_at}
+                  />
+                ))}
+                
+                {showListening && !agentSpeaking && (
+                  <ListeningIndicator />
+                )}
+                
+                <div ref={messagesEndRef} />
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
   )
 }
 
@@ -171,8 +191,9 @@ function MessageBubble({
           className={`px-4 py-3 text-sm leading-relaxed ${
             isUser 
               ? 'rounded-2xl rounded-tr-md bg-neutral-900 text-white' 
-              : 'rounded-2xl rounded-tl-md bg-neutral-100 text-neutral-700'
+              : 'rounded-2xl rounded-tl-md bg-white/80 text-neutral-700 border border-white/60'
           }`}
+          style={!isUser ? { boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)' } : undefined}
         >
           {content}
         </div>
@@ -188,7 +209,10 @@ function ListeningIndicator() {
   return (
     <div className="flex gap-3 flex-row-reverse animate-fade-in">
       <div className="flex flex-col max-w-[75%] space-y-1 items-end">
-        <div className="flex items-center gap-2 px-4 py-3 rounded-2xl rounded-tr-md bg-neutral-100">
+        <div 
+          className="flex items-center gap-2 px-4 py-3 rounded-2xl rounded-tr-md bg-white/60 border border-white/60"
+          style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)' }}
+        >
           <span className="text-xs text-neutral-500">Listening</span>
           <div className="flex items-center gap-0.5">
             {[...Array(3)].map((_, i) => (

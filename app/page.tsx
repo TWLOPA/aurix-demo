@@ -199,8 +199,8 @@ export default function Home() {
               </div>
               
               {/* Main Panels */}
-              <div className="flex-1 flex gap-px">
-                <div className="w-1/2 border-r border-neutral-200 bg-white h-full">
+              <div className="flex-1 flex">
+                <div className="w-1/2 h-full">
                   <ConversationPanel 
                     events={events} 
                     loading={loading} 
