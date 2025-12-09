@@ -196,7 +196,7 @@ export default function Home() {
             {/* Desktop: Three-column layout with sidebar */}
             <div className="hidden lg:flex lg:flex-1 h-full">
               {/* Left Sidebar - Simulation Info */}
-              <div className="w-72 shrink-0 border-r border-neutral-200 bg-white p-4 space-y-4 overflow-y-auto">
+              <div className="w-72 shrink-0 border-r border-neutral-200 bg-neutral-50 p-4 space-y-4 overflow-y-auto">
                 <PersonaToolbar />
                 <CostCalculator isActive={callActive} />
               </div>
