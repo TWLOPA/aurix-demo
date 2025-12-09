@@ -69,7 +69,7 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
             {!isCollapsed ? (
               <Link href="/" className="flex items-center">
                 <Image 
-                  src="/assets/Aurix Logo.png" 
+                  src="/assets/AL.png" 
                   alt="Aurix" 
                   width={90} 
                   height={24}
@@ -79,11 +79,11 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
             ) : (
               <Link href="/" className="mx-auto">
                 <Image 
-                  src="/assets/elevenlabs-symbol.svg" 
+                  src="/assets/AL.png" 
                   alt="Aurix" 
-                  width={20} 
-                  height={20}
-                  className="opacity-70"
+                  width={24} 
+                  height={24}
+                  className="h-6 w-auto"
                 />
               </Link>
             )}
@@ -92,7 +92,7 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
             {!isCollapsed && (
               <button
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="p-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+                className="p-1.5 rounded-md hover:bg-neutral-100 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4 text-neutral-400" />
               </button>
@@ -103,7 +103,7 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
           {isCollapsed && (
             <button
               onClick={() => setIsCollapsed(false)}
-              className="p-2 mx-auto mt-2 rounded-lg hover:bg-neutral-100 transition-colors"
+              className="p-2 mx-auto mt-2 rounded-md hover:bg-neutral-100 transition-colors"
             >
               <ChevronRight className="w-4 h-4 text-neutral-400" />
             </button>
@@ -131,7 +131,7 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
                         key={item.title}
                         href={item.href}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200",
+                          "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200",
                           isActive 
                             ? "bg-neutral-100/80 shadow-sm" 
                             : "hover:bg-neutral-50",
@@ -171,7 +171,7 @@ export function SidebarLayout({ children, isSimulationMode = false }: SidebarLay
                 <button
                   onClick={() => setShowGuide(true)}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm w-full transition-all duration-200",
+                    "flex items-center gap-3 px-3 py-2 rounded-md text-sm w-full transition-all duration-200",
                     "text-neutral-600 hover:bg-neutral-50",
                     isCollapsed && "justify-center px-2"
                   )}
