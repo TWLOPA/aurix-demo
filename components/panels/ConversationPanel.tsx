@@ -108,7 +108,7 @@ export function ConversationPanel({ events, loading, agentSpeaking }: Conversati
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-neutral-50">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-white">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50">
             <MessageSquare className="w-12 h-12 text-muted-foreground" />

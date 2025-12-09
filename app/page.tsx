@@ -156,7 +156,7 @@ export default function Home() {
     <div className="h-screen flex flex-col bg-background text-foreground font-sans">
       {/* Call Active Control Bar - Only shown when call is active */}
       {callActive && (
-        <div className="bg-background border-b border-neutral-200 px-4 py-2 flex items-center justify-between shrink-0">
+        <div className="bg-white border-b border-neutral-200 px-4 py-2 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
              <div className="flex items-center gap-2 text-sm font-medium text-neutral-600 bg-neutral-100 px-3 py-1 rounded-full">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -176,7 +176,7 @@ export default function Home() {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden flex-col lg:flex-row bg-neutral-50/50">
+      <div className="flex-1 flex overflow-hidden flex-col lg:flex-row bg-white">
         {!callActive && !showSummary ? (
           <>
             {/* Landing Page with Platform Features */}
@@ -196,7 +196,7 @@ export default function Home() {
             {/* Desktop: Three-column layout with sidebar */}
             <div className="hidden lg:flex lg:flex-1 h-full">
               {/* Left Sidebar - Simulation Info */}
-              <div className="w-72 shrink-0 border-r border-neutral-200 bg-neutral-50/80 p-4 space-y-4 overflow-y-auto">
+              <div className="w-72 shrink-0 border-r border-neutral-200 bg-white p-4 space-y-4 overflow-y-auto">
                 <PersonaToolbar />
                 <CostCalculator isActive={callActive} />
               </div>
