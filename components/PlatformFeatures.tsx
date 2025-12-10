@@ -79,7 +79,7 @@ export function PlatformFeatures() {
 
             <div className="mt-2 pt-4 border-t border-white/20">
               <span className="text-xs text-white/50">
-                Powered by ElevenLabs Conversational AI
+                Aurix Support Agent
               </span>
             </div>
           </div>
