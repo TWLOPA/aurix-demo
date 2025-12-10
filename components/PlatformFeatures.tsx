@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 export function PlatformFeatures() {
@@ -22,10 +23,16 @@ export function PlatformFeatures() {
           onClick={() => setIsExpanded(!isExpanded)}
           className="w-full flex items-center justify-between gap-3 p-4 hover:bg-white/5 transition-colors duration-200"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="font-semibold text-sm text-white/95">
               Aurix Features
             </span>
+            <Badge 
+              variant="outline"
+              className="text-[10px] px-2 py-0.5 border-white/30 text-white/70 bg-white/10"
+            >
+              Powered by ElevenLabs
+            </Badge>
           </div>
           {isExpanded ? (
             <ChevronDown className="w-4 h-4 text-white/70" />
