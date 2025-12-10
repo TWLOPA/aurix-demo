@@ -15,6 +15,52 @@ import { useConversation } from '@elevenlabs/react'
 import { insertCallEvent } from '@/lib/supabase/queries'
 import { useSidebar } from '@/lib/sidebar-context'
 
+// Smart farewell detection - detects natural call endings
+function isFarewellMessage(text: string): boolean {
+  const lowerText = text.toLowerCase().trim()
+  
+  // Must be relatively short (farewells are typically brief)
+  if (lowerText.length > 80) return false
+  
+  // Strong farewell indicators (high confidence)
+  const strongFarewells = [
+    'goodbye',
+    'bye bye',
+    'bye for now',
+    'take care',
+    'have a great day',
+    'have a good day', 
+    'have a nice day',
+    'have a wonderful day',
+    'thank you for calling',
+    'thanks for calling',
+  ]
+  
+  // Check for strong farewells
+  for (const farewell of strongFarewells) {
+    if (lowerText.includes(farewell)) {
+      // Extra check: make sure it's not mid-sentence context
+      // "take care" is fine, "take care of your medication" is not
+      if (farewell === 'take care' && lowerText.includes('take care of')) {
+        continue
+      }
+      return true
+    }
+  }
+  
+  // Combination patterns (need 2+ signals)
+  const signals = [
+    lowerText.includes('thank'),
+    lowerText.includes('bye'),
+    lowerText.includes('care'),
+    lowerText.includes('call') && lowerText.includes('again'),
+    lowerText.endsWith('.') && lowerText.length < 40, // Short final statement
+  ]
+  
+  const signalCount = signals.filter(Boolean).length
+  return signalCount >= 2
+}
+
 export default function Home() {
   const { collapse, expand } = useSidebar()
   const [callActive, setCallActive] = useState(false)
@@ -25,6 +71,7 @@ export default function Home() {
   const callSidRef = useRef<string | null>(null) // Ref to avoid closure issues
   const callStartTimeRef = useRef<number | null>(null) // Track call start time
   const eventsForSummaryRef = useRef<typeof events>([]) // Store events for summary
+  const farewellTimeoutRef = useRef<NodeJS.Timeout | null>(null) // For farewell detection
   const { events, loading } = useCallEvents(callSid)
 
   // Update events ref whenever events change
@@ -53,6 +100,11 @@ export default function Home() {
     },
     onDisconnect: () => {
       console.log('[ElevenLabs] ❌ Disconnected from ElevenLabs')
+      // Clear any farewell timeout
+      if (farewellTimeoutRef.current) {
+        clearTimeout(farewellTimeoutRef.current)
+        farewellTimeoutRef.current = null
+      }
       // Calculate duration before showing summary
       if (callStartTimeRef.current) {
         const duration = Math.floor((Date.now() - callStartTimeRef.current) / 1000)
@@ -73,6 +125,34 @@ export default function Home() {
             })
         } else {
             console.warn('[ElevenLabs] ⚠️ No callSid set, cannot insert event')
+        }
+        
+        // Smart farewell detection - only for agent messages
+        if (message.source === 'ai' || message.source === 'agent') {
+          // Clear any existing farewell timeout (conversation is continuing)
+          if (farewellTimeoutRef.current) {
+            clearTimeout(farewellTimeoutRef.current)
+            farewellTimeoutRef.current = null
+          }
+          
+          // Check if this is a farewell message
+          if (isFarewellMessage(message.message)) {
+            console.log('[ElevenLabs] 👋 Farewell detected, waiting 3s before ending...')
+            
+            // Wait 3 seconds - if no new messages, end the call
+            farewellTimeoutRef.current = setTimeout(() => {
+              console.log('[ElevenLabs] 👋 No follow-up detected, ending call gracefully')
+              conversation.endSession()
+            }, 3000)
+          }
+        } else {
+          // User spoke - cancel any pending farewell timeout
+          // (they might have more questions)
+          if (farewellTimeoutRef.current) {
+            console.log('[ElevenLabs] User spoke after farewell, cancelling auto-end')
+            clearTimeout(farewellTimeoutRef.current)
+            farewellTimeoutRef.current = null
+          }
         }
     },
     onError: (error: string) => {
