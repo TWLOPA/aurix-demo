@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
-import { ChevronDown, ChevronUp, User } from 'lucide-react'
+import { ChevronDown, ChevronUp, User, Sparkles } from 'lucide-react'
 
 interface Scenario {
   id: number
@@ -18,6 +18,7 @@ interface Scenario {
 
 interface PersonaToolbarProps {
   activeScenario?: number | null
+  showOnboardingHint?: boolean
 }
 
 const SCENARIOS: Scenario[] = [
@@ -66,25 +67,64 @@ const SCENARIOS: Scenario[] = [
   }
 ]
 
-export function PersonaToolbar({ activeScenario = 1 }: PersonaToolbarProps) {
+export function PersonaToolbar({ activeScenario = 1, showOnboardingHint = false }: PersonaToolbarProps) {
   const [isExpanded, setIsExpanded] = useState(true)
   const [selectedScenario, setSelectedScenario] = useState(activeScenario || 1)
+  const [showHint, setShowHint] = useState(false)
   
   const scenario = SCENARIOS.find(s => s.id === selectedScenario) || SCENARIOS[0]
+
+  // Show hint when call starts, auto-dismiss after 3 seconds
+  useEffect(() => {
+    if (showOnboardingHint) {
+      setShowHint(true)
+      const timer = setTimeout(() => {
+        setShowHint(false)
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [showOnboardingHint])
 
   const glassyCardStyle = {
     background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%)',
     backdropFilter: 'blur(12px)',
     WebkitBackdropFilter: 'blur(12px)',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-    border: '1px solid rgba(255, 255, 255, 0.6)'
+    boxShadow: showHint 
+      ? '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 2px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.2)'
+      : '0 4px 16px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+    border: showHint ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.6)',
+    transition: 'all 0.5s ease-in-out'
   }
 
   return (
-    <Card 
-      className="rounded-2xl overflow-hidden transition-all duration-300 ease-in-out"
-      style={glassyCardStyle}
-    >
+    <div className="relative">
+      {/* Onboarding Hint - Elegant slide-in */}
+      <div 
+        className={`absolute -bottom-12 left-0 right-0 flex justify-center transition-all duration-500 ease-out ${
+          showHint 
+            ? 'opacity-100 translate-y-0' 
+            : 'opacity-0 translate-y-2 pointer-events-none'
+        }`}
+      >
+        <div 
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
+          style={{
+            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.95) 0%, rgba(99, 102, 241, 0.95) 100%)',
+            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
+            color: 'white'
+          }}
+        >
+          <Sparkles className="w-3 h-3" />
+          <span>Use this persona for testing</span>
+        </div>
+      </div>
+
+      <Card 
+        className={`rounded-2xl overflow-hidden transition-all duration-500 ease-in-out ${
+          showHint ? 'scale-[1.02]' : 'scale-100'
+        }`}
+        style={glassyCardStyle}
+      >
       {/* Header - Always visible */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -159,6 +199,7 @@ export function PersonaToolbar({ activeScenario = 1 }: PersonaToolbarProps) {
         </div>
       </div>
     </Card>
+    </div>
   )
 }
 

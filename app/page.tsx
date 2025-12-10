@@ -21,6 +21,7 @@ export default function Home() {
   const [callSid, setCallSid] = useState<string | null>(null)
   const [showSummary, setShowSummary] = useState(false)
   const [callDuration, setCallDuration] = useState(0)
+  const [showPersonaHint, setShowPersonaHint] = useState(false)
   const callSidRef = useRef<string | null>(null) // Ref to avoid closure issues
   const callStartTimeRef = useRef<number | null>(null) // Track call start time
   const eventsForSummaryRef = useRef<typeof events>([]) // Store events for summary
@@ -48,6 +49,7 @@ export default function Home() {
       setCallActive(true)
       callStartTimeRef.current = Date.now()
       collapse() // Auto-collapse sidebar during call
+      setShowPersonaHint(true) // Show persona hint on call start
     },
     onDisconnect: () => {
       console.log('[ElevenLabs] ❌ Disconnected from ElevenLabs')
@@ -183,7 +185,7 @@ export default function Home() {
                   background: 'linear-gradient(180deg, #E8F4FC 0%, #D4EAF7 50%, #C7E2F4 100%)',
                 }}
               >
-                <PersonaToolbar />
+                <PersonaToolbar showOnboardingHint={showPersonaHint} />
                 <CostCalculator isActive={callActive} />
               </div>
               
