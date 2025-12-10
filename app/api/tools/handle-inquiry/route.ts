@@ -179,20 +179,28 @@ export async function POST(request: Request) {
       // Log to clinician_escalations table - status is pending customer decision
       const escalationResponse = "I'm not able to provide medical advice as I'm not a licensed clinician. However, I can arrange for one of our clinicians to call you back within 2 hours to discuss your question. Would you like me to schedule that callback for you?"
       
-      try {
-        await supabase.from('clinician_escalations').insert({
-          call_sid,
-          customer_id: null, // Unknown at this point
-          inquiry_type: inquiry_type || 'medical_advice',
-          inquiry_text: question_text || `Customer asked about: ${inquiry_type}`,
-          blocked_reason: compliance_result.reason,
-          escalation_status: 'pending_customer_decision',
-          callback_requested: false,
-          agent_response: escalationResponse
-        })
-        console.log('[Handle Inquiry] ✅ Escalation logged - awaiting customer decision on callback')
-      } catch (escalationError) {
-        console.error('[Handle Inquiry] ⚠️ Failed to log escalation:', escalationError)
+      // Insert escalation with detailed error logging
+      const escalationData = {
+        call_sid,
+        inquiry_type: inquiry_type || 'medical_advice',
+        inquiry_text: question_text || `Customer asked about: ${inquiry_type}`,
+        blocked_reason: compliance_result.reason,
+        escalation_status: 'pending_customer_decision',
+        agent_response: escalationResponse
+      }
+      
+      console.log('[Handle Inquiry] 📝 Inserting escalation:', JSON.stringify(escalationData))
+      
+      const { data: escalationResult, error: escalationError } = await supabase
+        .from('clinician_escalations')
+        .insert(escalationData)
+        .select()
+      
+      if (escalationError) {
+        console.error('[Handle Inquiry] ❌ Escalation insert error:', escalationError.message)
+        console.error('[Handle Inquiry] ❌ Error details:', JSON.stringify(escalationError))
+      } else {
+        console.log('[Handle Inquiry] ✅ Escalation logged successfully:', escalationResult)
       }
 
       return NextResponse.json({

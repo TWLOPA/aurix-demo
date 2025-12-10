@@ -137,13 +137,14 @@ export default function Home() {
           
           // Check if this is a farewell message
           if (isFarewellMessage(message.message)) {
-            console.log('[ElevenLabs] 👋 Farewell detected, waiting 3s before ending...')
+            console.log('[ElevenLabs] 👋 Farewell detected, waiting 5s for graceful ending...')
             
-            // Wait 3 seconds - if no new messages, end the call
+            // Wait 5 seconds for graceful ending - allows agent to finish speaking
+            // and gives natural pause before disconnect
             farewellTimeoutRef.current = setTimeout(() => {
-              console.log('[ElevenLabs] 👋 No follow-up detected, ending call gracefully')
+              console.log('[ElevenLabs] 👋 Ending call gracefully after farewell')
               conversation.endSession()
-            }, 3000)
+            }, 5000)
           }
         } else {
           // User spoke - cancel any pending farewell timeout

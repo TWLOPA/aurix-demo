@@ -60,6 +60,7 @@ export default function EscalationsPage() {
   }, [])
 
   const fetchEscalations = async () => {
+    console.log('[Escalations] Fetching escalations...')
     try {
       const { data, error } = await supabase
         .from('clinician_escalations')
@@ -67,13 +68,15 @@ export default function EscalationsPage() {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('[Escalations] Error fetching:', error)
+        console.error('[Escalations] Error fetching:', error.message)
+        console.error('[Escalations] Error details:', JSON.stringify(error))
         return
       }
 
+      console.log('[Escalations] Fetched', data?.length || 0, 'escalations:', data)
       setEscalations(data || [])
     } catch (err) {
-      console.error('[Escalations] Error:', err)
+      console.error('[Escalations] Catch error:', err)
     } finally {
       setLoading(false)
     }
