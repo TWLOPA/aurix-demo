@@ -59,12 +59,14 @@ export async function POST(request: Request) {
   console.log('========================================')
   console.log('[Handle Inquiry] 🚀 REQUEST RECEIVED')
   console.log('========================================')
+  console.log('[Handle Inquiry] Timestamp:', new Date().toISOString())
   
   // Log environment check - support both env var names
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
   console.log('[Handle Inquiry] ENV CHECK:')
   console.log('  - SUPABASE_URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL)
   console.log('  - SERVICE_KEY exists:', !!serviceKey)
+  console.log('  - SERVICE_KEY length:', serviceKey?.length || 0)
   
   // Create Supabase client inside handler
   let supabase;
@@ -124,8 +126,11 @@ export async function POST(request: Request) {
 
     // Step 2: Compliance check
     console.log('[Handle Inquiry] Step 2: Running compliance check...')
+    console.log('[Handle Inquiry] inquiry_type received:', inquiry_type)
+    console.log('[Handle Inquiry] inquiry_type type:', typeof inquiry_type)
     const compliance_result = checkCompliance(inquiry_type || 'order_status')
-    console.log('[Handle Inquiry] Compliance result:', compliance_result)
+    console.log('[Handle Inquiry] Compliance result:', JSON.stringify(compliance_result))
+    console.log('[Handle Inquiry] Is allowed?', compliance_result.allowed)
     
     const { error: err2 } = await supabase.from('call_events').insert({
       call_sid,
