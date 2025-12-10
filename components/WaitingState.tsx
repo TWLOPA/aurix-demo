@@ -72,10 +72,10 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
           {/* Title & Subtitle */}
           <div className="space-y-2">
             <h1 className="text-xl font-semibold tracking-tight text-neutral-800">
-              Health Support Agent
+              Aurix Support Agent
             </h1>
             <p className="text-sm text-neutral-500 leading-relaxed">
-              AI customer service with voice, SMS, and transparent decision-making
+              Regulated AI agent for sensitive healthcare e-commerce
             </p>
           </div>
 

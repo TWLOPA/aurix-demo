@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 export function PlatformFeatures() {
@@ -24,14 +23,8 @@ export function PlatformFeatures() {
           className="w-full flex items-center justify-between gap-3 p-4 hover:bg-white/5 transition-colors duration-200"
         >
           <div className="flex items-center gap-2">
-            <Badge 
-              variant="outline"
-              className="text-[11px] px-2 py-1 border-white/30 text-white/90 bg-white/10"
-            >
-              Powered by
-            </Badge>
             <span className="font-semibold text-sm text-white/95">
-              ElevenLabs
+              Aurix Features
             </span>
           </div>
           {isExpanded ? (
@@ -79,7 +72,7 @@ export function PlatformFeatures() {
 
             <div className="mt-2 pt-4 border-t border-white/20">
               <span className="text-xs text-white/50">
-                Built for healthcare compliance & enterprise security
+                Powered by ElevenLabs Conversational AI
               </span>
             </div>
           </div>
