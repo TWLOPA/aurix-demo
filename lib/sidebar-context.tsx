@@ -12,7 +12,8 @@ interface SidebarContextType {
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined)
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  // Sidebar is permanently collapsed
+  const [isCollapsed, setIsCollapsed] = useState(true)
 
   const collapse = useCallback(() => setIsCollapsed(true), [])
   const expand = useCallback(() => setIsCollapsed(false), [])
