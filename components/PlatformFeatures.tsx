@@ -80,13 +80,12 @@ export function PlatformFeatures({
     if (tab === activeTab || isTransitioning) return
     
     setIsTransitioning(true)
-    // Fade out, then switch, then fade in
     setTimeout(() => {
       setActiveTab(tab)
       setTimeout(() => {
         setIsTransitioning(false)
-      }, 150)
-    }, 150)
+      }, 120)
+    }, 120)
   }
 
   const currentContent = activeTab === 'problem' ? problemContent : featuresContent
@@ -94,11 +93,11 @@ export function PlatformFeatures({
   return (
     <div className="hidden lg:block fixed bottom-6 right-6 z-40">
       <Card 
-        className="rounded-2xl border-2 border-white/10 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+        className="rounded-2xl border border-white/10 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{
           background: 'linear-gradient(135deg, #0A4D68 0%, #088395 100%)',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          width: isExpanded ? '380px' : 'auto'
+          width: isExpanded ? '360px' : 'auto'
         }}
       >
         {/* Header - Always visible, clickable to toggle */}
@@ -114,13 +113,13 @@ export function PlatformFeatures({
             </span>
             <Badge 
               variant="outline"
-              className="text-[11px] px-2 py-0.5 border-white/30 text-white/70 bg-white/10"
+              className="text-[10px] px-2 py-0.5 border-white/20 text-white/60 bg-white/5 font-medium"
             >
               Powered by ElevenLabs
             </Badge>
           </div>
           <ChevronDown 
-            className={`w-4 h-4 text-white/70 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            className={`w-4 h-4 text-white/50 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
               isExpanded ? 'rotate-180' : 'rotate-0'
             }`}
           />
@@ -133,41 +132,55 @@ export function PlatformFeatures({
             isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          {/* Tab Buttons */}
-          <div className="px-5 pb-3 flex gap-2" role="tablist">
-            <button
-              role="tab"
-              aria-selected={activeTab === 'problem'}
-              aria-controls="tab-panel-problem"
-              onClick={() => handleTabChange('problem')}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#05B2DC] focus:ring-offset-2 focus:ring-offset-transparent ${
-                activeTab === 'problem'
-                  ? 'bg-white/15 text-white/95 border-b-2 border-[#05B2DC]'
-                  : 'text-white/60 hover:text-white/80 hover:bg-white/5'
-              }`}
-            >
-              The Problem
-            </button>
-            <button
-              role="tab"
-              aria-selected={activeTab === 'features'}
-              aria-controls="tab-panel-features"
-              onClick={() => handleTabChange('features')}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#05B2DC] focus:ring-offset-2 focus:ring-offset-transparent ${
-                activeTab === 'features'
-                  ? 'bg-white/15 text-white/95 border-b-2 border-[#05B2DC]'
-                  : 'text-white/60 hover:text-white/80 hover:bg-white/5'
-              }`}
-            >
-              Features
-            </button>
+          {/* Sleek Tab Bar */}
+          <div className="px-5 mb-4" role="tablist">
+            <div className="relative flex">
+              {/* Sliding indicator */}
+              <div 
+                className="absolute bottom-0 h-[2px] bg-white/90 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                style={{
+                  width: activeTab === 'problem' ? '85px' : '68px',
+                  transform: activeTab === 'problem' ? 'translateX(0)' : 'translateX(101px)'
+                }}
+              />
+              
+              {/* Tab buttons */}
+              <button
+                role="tab"
+                aria-selected={activeTab === 'problem'}
+                aria-controls="tab-panel-problem"
+                onClick={() => handleTabChange('problem')}
+                className={`relative pb-2 mr-4 text-[13px] font-medium tracking-wide transition-all duration-200 focus:outline-none ${
+                  activeTab === 'problem'
+                    ? 'text-white'
+                    : 'text-white/40 hover:text-white/70'
+                }`}
+              >
+                The Problem
+              </button>
+              <button
+                role="tab"
+                aria-selected={activeTab === 'features'}
+                aria-controls="tab-panel-features"
+                onClick={() => handleTabChange('features')}
+                className={`relative pb-2 text-[13px] font-medium tracking-wide transition-all duration-200 focus:outline-none ${
+                  activeTab === 'features'
+                    ? 'text-white'
+                    : 'text-white/40 hover:text-white/70'
+                }`}
+              >
+                Features
+              </button>
+            </div>
+            {/* Subtle separator line */}
+            <div className="h-px bg-white/10 -mt-[2px]" />
           </div>
 
           {/* Tab Content */}
           <div 
             role="tabpanel"
             id={`tab-panel-${activeTab}`}
-            className={`px-5 pb-5 flex flex-col gap-3 transition-opacity duration-150 ease-in-out ${
+            className={`px-5 pb-5 flex flex-col gap-2.5 transition-opacity duration-120 ease-out ${
               isTransitioning ? 'opacity-0' : 'opacity-100'
             }`}
           >
@@ -180,8 +193,8 @@ export function PlatformFeatures({
               />
             ))}
 
-            <div className="mt-2 pt-4 border-t border-white/20">
-              <span className="text-xs text-white/50">
+            <div className="mt-3 pt-3 border-t border-white/10">
+              <span className="text-[11px] text-white/40 tracking-wide">
                 {activeTab === 'problem' 
                   ? 'Why healthcare companies need Aurix'
                   : 'Aurix Support Agent'
@@ -205,17 +218,19 @@ function FeatureItem({
   isProblem?: boolean
 }) {
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex items-start gap-2.5 group">
       <div 
-        className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
-          isProblem ? 'bg-amber-400' : 'bg-[#05B2DC]'
+        className={`w-1 h-1 rounded-full mt-[7px] shrink-0 transition-all duration-200 ${
+          isProblem 
+            ? 'bg-amber-400/80 group-hover:bg-amber-400' 
+            : 'bg-white/60 group-hover:bg-white/90'
         }`} 
       />
       <div className="flex-1 min-w-0">
-        <div className="font-medium text-sm leading-tight text-white/95">
+        <div className="font-medium text-[13px] leading-tight text-white/90 group-hover:text-white transition-colors duration-200">
           {title}
         </div>
-        <div className="text-xs leading-[1.4] text-white/70 mt-0.5">
+        <div className="text-[11px] leading-[1.5] text-white/50 mt-0.5">
           {description}
         </div>
       </div>
