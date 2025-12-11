@@ -407,6 +407,7 @@ export async function POST(request: Request) {
     else console.log('[Handle Inquiry] ✅ Action event inserted')
 
     // Trigger SMS prompt for frontend (real SMS demonstration)
+    // Include all order details so the SMS can contain real information
     await supabase.from('call_events').insert({
       call_sid,
       event_type: 'sms_prompt',
@@ -414,7 +415,10 @@ export async function POST(request: Request) {
         message_type: 'tracking',
         order_id: orderData.order_id,
         tracking_number: orderData.tracking_number,
-        prompt_text: 'Agent is sending you a tracking link via SMS. Enter your phone number to receive the actual text message.'
+        product_name: orderData.product_name,
+        delivery_date: orderData.estimated_delivery,
+        order_status: orderData.order_status,
+        prompt_text: 'Receive your order details via SMS. Enter your phone number below.'
       }
     })
     console.log('[Handle Inquiry] ✅ SMS prompt event inserted')

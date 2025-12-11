@@ -10,6 +10,11 @@ interface SMSPromptData {
   message_type: string
   order_id?: string
   tracking_number?: string
+  product_name?: string
+  delivery_date?: string
+  order_status?: string
+  callback_reason?: string
+  callback_time?: string
   prompt_text: string
 }
 
@@ -131,6 +136,11 @@ export function SMSPrompt() {
           message_type: promptData?.message_type,
           order_id: promptData?.order_id,
           tracking_number: promptData?.tracking_number,
+          product_name: promptData?.product_name,
+          delivery_date: promptData?.delivery_date,
+          order_status: promptData?.order_status,
+          callback_reason: promptData?.callback_reason,
+          callback_time: promptData?.callback_time,
           call_sid: 'DEMO_SESSION_ID'
         })
       })

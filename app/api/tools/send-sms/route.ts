@@ -18,24 +18,39 @@ export async function POST(request: Request) {
       message_type,
       order_id,
       tracking_number,
-      call_sid
+      call_sid,
+      // Additional context for richer messages
+      product_name,
+      delivery_date,
+      order_status,
+      callback_reason,
+      callback_time
     } = await request.json()
 
     console.log(`[Send SMS] Sending to REAL number: ${recipient_phone}`)
     console.log(`[Send SMS] Message type: ${message_type}`)
     console.log(`[Send SMS] Order ID: ${order_id}`)
 
-    // Build message based on type
+    // Build message based on type - with real information, no fake URLs
     let message = ''
     
     if (message_type === 'tracking') {
-      message = `AURIX Demo: Your order ${order_id} is on its way! Track it here: https://track.demo/${tracking_number}`
+      // Format delivery date nicely
+      const formattedDate = delivery_date 
+        ? new Date(delivery_date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+        : 'soon'
+      
+      message = `Aurix: Your order ${order_id} (${product_name || 'your medication'}) is ${order_status || 'on its way'}. Expected delivery: ${formattedDate}. Tracking: ${tracking_number}. All packages arrive in plain, discreet packaging.`
+    } else if (message_type === 'callback_scheduled') {
+      message = `Aurix: Your clinician callback has been scheduled. A licensed clinician will call you ${callback_time || 'within 2 hours'} to discuss: ${callback_reason || 'your inquiry'}. Please keep your phone nearby.`
     } else if (message_type === 'verification') {
-      message = `AURIX Demo: Your verification code is: 123456`
+      message = `Aurix: Your verification code is: 123456. Do not share this code with anyone.`
     } else if (message_type === 'payment_link') {
-      message = `AURIX Demo: Update your payment method securely: https://pay.demo/update`
+      message = `Aurix: To update your payment method, please log in to your account or call our support team. We never send payment links via SMS for your security.`
+    } else if (message_type === 'refill_confirmation') {
+      message = `Aurix: Your prescription refill for ${product_name || 'your medication'} has been processed. Order ${order_id}. Expected delivery: ${delivery_date ? new Date(delivery_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) : 'within 3-5 days'}.`
     } else {
-      message = `AURIX Demo: This is a demonstration SMS from your customer service agent.`
+      message = `Aurix: Thank you for contacting us. If you have any questions, our support team is here to help.`
     }
 
     // Check if Twilio is configured
