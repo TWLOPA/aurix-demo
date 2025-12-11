@@ -298,7 +298,7 @@ MIT License. See LICENSE file for details.
 
 Built with:
 - [ElevenLabs](https://elevenlabs.io) - Conversational AI platform
-- [Anthropic Claude](https://anthropic.com) - Claude Opus 4.5 for agent reasoning
+- [Anthropic Claude](https://anthropic.com) - Claude Sonnet 4 for agent reasoning
 - [Supabase](https://supabase.com) - Database and real-time subscriptions
 - [Vercel](https://vercel.com) - Deployment platform
 - [Tailwind CSS](https://tailwindcss.com) - Styling

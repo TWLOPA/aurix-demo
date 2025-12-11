@@ -22,27 +22,33 @@ As a Forward Deployed Strategist working with enterprise customers, the ability 
 
 ## Model Selection
 
-### Why Claude Opus 4.5
+### Why Claude Sonnet 4
 
-The ElevenLabs Conversational AI platform supports multiple LLM backends. We selected Claude Opus 4.5, Anthropic's most capable model, for several reasons:
+The ElevenLabs Conversational AI platform supports multiple LLM backends. We selected Claude Sonnet 4 after evaluating the trade-offs between capability and cost:
 
-**Superior Reasoning and Instruction Following**  
-Healthcare customer service requires precise adherence to complex rules. The agent must never provide medical advice, always verify identity before disclosing information, and navigate nuanced conversational scenarios. Opus 4.5 represents the current state-of-the-art in instruction following and multi-step reasoning, significantly reducing the risk of the agent deviating from defined behaviour compared to earlier models.
+**Capability vs Cost Trade-off**  
+While Opus 4.5 offers marginally better reasoning in edge cases, Sonnet 4 provides exceptional performance at a significantly lower cost per token. For a customer service application where call volume could scale to thousands of daily interactions, this cost difference compounds dramatically. Sonnet 4 handles the complexity of healthcare customer service—compliance checks, identity verification, multi-turn conversations—without requiring the additional horsepower of the larger model.
 
-**Advanced Tool Use**  
-The agent relies heavily on webhook tools to query databases and enforce compliance. Opus 4.5 demonstrates exceptional tool-calling reliability, correctly determining when to call tools, how to structure parameters, and how to interpret complex responses. This is critical because a missed tool call means a missed compliance check or a failed database lookup. The model's improved agentic capabilities mean fewer edge cases where tool calls are skipped or malformed.
+**Production-Ready Economics**  
+A key consideration for enterprise deployments is unit economics. If each customer call costs significantly more due to model selection, the business case for AI customer service weakens. Sonnet 4 enables a compelling cost comparison against human agents while maintaining high quality. This is the kind of practical consideration that matters when advising enterprise customers on production deployments.
 
-**Latency Optimisation**  
-While Opus 4.5 is a larger model, ElevenLabs has optimised their inference infrastructure to maintain acceptable latency for voice conversations. The marginal increase in response time is offset by the significantly improved quality of responses, particularly in complex scenarios involving compliance decisions or multi-turn verification flows.
+**Strong Instruction Following**  
+Healthcare customer service requires precise adherence to complex rules. The agent must never provide medical advice, always verify identity before disclosing information, and navigate nuanced conversational scenarios. Sonnet 4 demonstrates excellent instruction following for these requirements, with the added benefit of faster response times compared to larger models.
 
-**Extended Context Window**  
-Healthcare conversations can be lengthy, especially when customers have multiple questions, need to provide verification details, or discuss complex order histories. Opus 4.5's extended context window ensures the agent maintains complete conversation context without truncation, even in extended interactions.
+**Reliable Tool Use**  
+The agent relies heavily on webhook tools to query databases and enforce compliance. Sonnet 4 shows consistent tool-calling behaviour, correctly determining when to call tools, how to structure parameters, and how to interpret responses. This reliability is critical because a missed tool call means a missed compliance check.
+
+**Optimised Latency**  
+Voice conversations are latency-sensitive. Users notice delays of even a few hundred milliseconds. Sonnet 4's smaller size translates to faster inference, creating a more natural conversational experience. In testing, response times felt immediate rather than noticeably delayed.
+
+**Sufficient Context Window**  
+Sonnet 4's context window comfortably handles extended customer service conversations, including multi-turn verification flows and customers with multiple questions. Context exhaustion was not observed in any test scenarios.
 
 **Safety and Alignment**  
-In regulated industries, the consequences of a model going off-script are significant. Opus 4.5's advanced safety training provides robust guardrails against harmful outputs, prompt injection attempts, and edge cases that could lead to compliance violations. This is not merely a nice-to-have feature—in healthcare, it is a fundamental requirement.
+Anthropic's constitutional AI training applies to Sonnet 4 as well as their larger models. The safety guarantees that matter for regulated industries—resistance to prompt injection, appropriate content filtering, consistent behaviour—are present in the Sonnet tier.
 
-**Future-Proofing**  
-By selecting the most capable available model, we ensure the demonstration represents what is actually possible with current technology. When presenting to enterprise customers, showing best-in-class capabilities sets appropriate expectations for production deployments.
+**The Right Tool for the Job**  
+Selecting Sonnet 4 over Opus 4.5 demonstrates practical engineering judgment. Using the most expensive option when a more economical choice meets requirements is not good architecture—it is waste. Part of the FDS role is helping customers make decisions that are both technically sound and economically sensible.
 
 ---
 
