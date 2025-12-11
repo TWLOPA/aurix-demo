@@ -15,8 +15,15 @@ export function useCallEvents(callSid: string | null) {
       return
     }
 
-    // Fetch existing events
+    // Clear old events immediately when callSid changes
+    setEvents([])
+    setLoading(true)
+
+    // Fetch existing events (with small delay to allow DB cleanup)
     const fetchEvents = async () => {
+      // Small delay to let any delete operations complete first
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       const { data, error } = await supabase
         .from('call_events')
         .select('*')
