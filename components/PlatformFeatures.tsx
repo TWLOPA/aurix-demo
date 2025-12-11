@@ -12,28 +12,28 @@ interface PlatformFeaturesProps {
 
 const problemContent = [
   {
-    title: "£300k Annual Waste",
-    description: "Healthcare e-commerce spends £300k/year on routine inquiries at £30/hour per agent"
+    title: "High Agent Costs",
+    description: "UK contact centres average £25-30/hour per agent for routine queries"
   },
   {
-    title: "70% Are Repetitive",
-    description: "Order status, tracking, refills - questions AI should handle"
+    title: "60-80% Repetitive",
+    description: "Order status, tracking, refills - questions that don't need humans"
   },
   {
     title: "Legal Blocks AI",
-    description: "Cannot audit decisions or prove what was said"
+    description: "Can't audit decisions or prove what was said to regulators"
   },
   {
-    title: "No Compliance Proof",
-    description: "Cannot guarantee boundaries or verify data access"
+    title: "No Compliance Trail",
+    description: "Traditional AI can't prove it stayed within boundaries"
   },
   {
-    title: "Zero Transparency",
-    description: "Black-box AI creates regulatory risk"
+    title: "Black Box Risk",
+    description: "Regulators won't approve what they can't inspect"
   },
   {
     title: "The Catch-22",
-    description: "Stuck paying humans because can't get AI past legal"
+    description: "Want to automate, but can't get AI past legal review"
   }
 ]
 
