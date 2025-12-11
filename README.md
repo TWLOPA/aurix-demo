@@ -12,12 +12,12 @@ This project was built as a technical demonstration for ElevenLabs, showcasing t
 
 | Capability | Description |
 |------------|-------------|
-| 🎤 **Voice Conversation** | Natural, real-time voice powered by ElevenLabs |
-| 🧠 **Agent Brain** | Live visualisation of AI decision-making |
-| 🔒 **Compliance Boundaries** | Automatic medical question blocking & escalation |
-| ✅ **Identity Verification** | HIPAA/GDPR-compliant verification checks |
-| 📱 **Real SMS** | Actual text messages sent to your phone |
-| 📊 **Call Summary** | Complete audit trail of every interaction |
+| **Voice Conversation** | Natural, real-time voice powered by ElevenLabs |
+| **Agent Brain** | Live visualisation of AI decision-making |
+| **Compliance Boundaries** | Automatic medical question blocking and escalation |
+| **Identity Verification** | HIPAA/GDPR-compliant verification checks |
+| **Real SMS** | Actual text messages sent to your phone |
+| **Call Summary** | Complete audit trail of every interaction |
 
 ## The Problem
 
@@ -317,20 +317,20 @@ Security. API keys and business logic stay on the server. The agent calls webhoo
 This is a **functional demonstration**, not production software. It showcases architectural patterns and capabilities that would be hardened for production deployment.
 
 **Current Scope (Demo):**
-- ✅ Three pre-configured customer scenarios
-- ✅ Simplified identity verification (DOB/postcode)
-- ✅ Single-session design (no persistent history)
-- ✅ Seed data for testing
-- ✅ Optional SMS integration (requires Twilio setup)
+- Three pre-configured customer scenarios
+- Simplified identity verification (DOB/postcode)
+- Single-session design (no persistent history)
+- Seed data for testing
+- Optional SMS integration (requires Twilio setup)
 
 **Production Requirements:**
-- 🔧 Multi-factor authentication (SMS OTP, biometrics)
-- 🔧 Customer data management and PII encryption
-- 🔧 Rate limiting and fraud detection
-- 🔧 Comprehensive monitoring and alerting
-- 🔧 Multi-region deployment and disaster recovery
-- 🔧 Audit log retention and immutability
-- 🔧 Load testing and performance optimisation
+- Multi-factor authentication (SMS OTP, biometrics)
+- Customer data management and PII encryption
+- Rate limiting and fraud detection
+- Comprehensive monitoring and alerting
+- Multi-region deployment and disaster recovery
+- Audit log retention and immutability
+- Load testing and performance optimisation
 
 **The architecture is production-ready. The implementation is demonstration-grade.**
 
