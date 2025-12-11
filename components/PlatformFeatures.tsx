@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, X } from 'lucide-react'
 
 interface PlatformFeaturesProps {
   defaultExpanded?: boolean
@@ -84,8 +84,8 @@ export function PlatformFeatures({
       setActiveTab(tab)
       setTimeout(() => {
         setIsTransitioning(false)
-      }, 120)
-    }, 120)
+      }, 100)
+    }, 100)
   }
 
   const currentContent = activeTab === 'problem' ? problemContent : featuresContent
@@ -93,94 +93,106 @@ export function PlatformFeatures({
   return (
     <div className="hidden lg:block fixed bottom-6 right-6 z-40">
       <Card 
-        className="rounded-2xl border border-white/10 overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+        className="rounded-xl border border-white/[0.08] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
         style={{
           background: 'linear-gradient(135deg, #0A4D68 0%, #088395 100%)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          width: isExpanded ? '360px' : 'auto'
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.25)',
+          width: isExpanded ? '320px' : 'auto',
+          minWidth: isExpanded ? '320px' : 'auto'
         }}
       >
-        {/* Header - Always visible, clickable to toggle */}
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full flex items-center justify-between gap-3 p-4 hover:bg-white/5 transition-colors duration-200"
-          aria-expanded={isExpanded}
-          aria-controls="platform-features-content"
+        {/* Collapsed Header - Only visible when collapsed */}
+        <div 
+          className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+            isExpanded ? 'max-h-0 opacity-0' : 'max-h-20 opacity-100'
+          }`}
         >
-          <div className="flex items-center gap-3">
-            <span className="font-semibold text-sm text-white/95">
-              Aurix Features
-            </span>
-            <Badge 
-              variant="outline"
-              className="text-[10px] px-2 py-0.5 border-white/20 text-white/60 bg-white/5 font-medium"
-            >
-              Powered by ElevenLabs
-            </Badge>
-          </div>
-          <ChevronDown 
-            className={`w-4 h-4 text-white/50 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-              isExpanded ? 'rotate-180' : 'rotate-0'
-            }`}
-          />
-        </button>
+          <button
+            onClick={() => setIsExpanded(true)}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors duration-150"
+            aria-expanded={isExpanded}
+            aria-controls="platform-features-content"
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="font-medium text-[13px] text-white/90">
+                Aurix Features
+              </span>
+              <Badge 
+                variant="outline"
+                className="text-[9px] px-1.5 py-0 border-white/15 text-white/50 bg-transparent font-normal"
+              >
+                ElevenLabs
+              </Badge>
+            </div>
+            <ChevronDown className="w-3.5 h-3.5 text-white/40" />
+          </button>
+        </div>
 
-        {/* Expandable Content */}
+        {/* Expanded Content */}
         <div 
           id="platform-features-content"
           className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-            isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+            isExpanded ? 'max-h-[480px] opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          {/* Sleek Tab Bar */}
-          <div className="px-5 mb-4" role="tablist">
-            <div className="relative flex">
-              {/* Sliding indicator */}
-              <div 
-                className="absolute bottom-0 h-[2px] bg-white/90 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                style={{
-                  width: activeTab === 'problem' ? '85px' : '68px',
-                  transform: activeTab === 'problem' ? 'translateX(0)' : 'translateX(101px)'
-                }}
-              />
-              
-              {/* Tab buttons */}
+          {/* Header with tabs and close */}
+          <div className="px-4 pt-3 pb-0">
+            <div className="flex items-center justify-between mb-3">
+              {/* Tab Bar */}
+              <div className="relative flex" role="tablist">
+                {/* Sliding indicator */}
+                <div 
+                  className="absolute bottom-0 h-[1.5px] bg-white transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  style={{
+                    width: activeTab === 'problem' ? '76px' : '58px',
+                    transform: activeTab === 'problem' ? 'translateX(0)' : 'translateX(92px)'
+                  }}
+                />
+                
+                <button
+                  role="tab"
+                  aria-selected={activeTab === 'problem'}
+                  onClick={() => handleTabChange('problem')}
+                  className={`relative pb-2 mr-4 text-[12px] font-medium transition-colors duration-150 focus:outline-none ${
+                    activeTab === 'problem'
+                      ? 'text-white'
+                      : 'text-white/35 hover:text-white/60'
+                  }`}
+                >
+                  The Problem
+                </button>
+                <button
+                  role="tab"
+                  aria-selected={activeTab === 'features'}
+                  onClick={() => handleTabChange('features')}
+                  className={`relative pb-2 text-[12px] font-medium transition-colors duration-150 focus:outline-none ${
+                    activeTab === 'features'
+                      ? 'text-white'
+                      : 'text-white/35 hover:text-white/60'
+                  }`}
+                >
+                  Features
+                </button>
+              </div>
+
+              {/* Close button */}
               <button
-                role="tab"
-                aria-selected={activeTab === 'problem'}
-                aria-controls="tab-panel-problem"
-                onClick={() => handleTabChange('problem')}
-                className={`relative pb-2 mr-4 text-[13px] font-medium tracking-wide transition-all duration-200 focus:outline-none ${
-                  activeTab === 'problem'
-                    ? 'text-white'
-                    : 'text-white/40 hover:text-white/70'
-                }`}
+                onClick={() => setIsExpanded(false)}
+                className="p-1 -mr-1 text-white/30 hover:text-white/60 transition-colors duration-150 focus:outline-none"
+                aria-label="Collapse"
               >
-                The Problem
-              </button>
-              <button
-                role="tab"
-                aria-selected={activeTab === 'features'}
-                aria-controls="tab-panel-features"
-                onClick={() => handleTabChange('features')}
-                className={`relative pb-2 text-[13px] font-medium tracking-wide transition-all duration-200 focus:outline-none ${
-                  activeTab === 'features'
-                    ? 'text-white'
-                    : 'text-white/40 hover:text-white/70'
-                }`}
-              >
-                Features
+                <X className="w-4 h-4" />
               </button>
             </div>
-            {/* Subtle separator line */}
-            <div className="h-px bg-white/10 -mt-[2px]" />
+            
+            {/* Separator */}
+            <div className="h-px bg-white/[0.06] -mx-4 px-4" />
           </div>
 
           {/* Tab Content */}
           <div 
             role="tabpanel"
-            id={`tab-panel-${activeTab}`}
-            className={`px-5 pb-5 flex flex-col gap-2.5 transition-opacity duration-120 ease-out ${
+            className={`px-4 pt-3 pb-4 flex flex-col gap-2 transition-opacity duration-100 ease-out ${
               isTransitioning ? 'opacity-0' : 'opacity-100'
             }`}
           >
@@ -193,12 +205,10 @@ export function PlatformFeatures({
               />
             ))}
 
-            <div className="mt-3 pt-3 border-t border-white/10">
-              <span className="text-[11px] text-white/40 tracking-wide">
-                {activeTab === 'problem' 
-                  ? 'Why healthcare companies need Aurix'
-                  : 'Aurix Support Agent'
-                }
+            {/* Footer */}
+            <div className="mt-2 pt-2.5 border-t border-white/[0.06] flex items-center justify-between">
+              <span className="text-[10px] text-white/30">
+                {activeTab === 'problem' ? 'The compliance gap' : 'Powered by ElevenLabs'}
               </span>
             </div>
           </div>
@@ -218,19 +228,17 @@ function FeatureItem({
   isProblem?: boolean
 }) {
   return (
-    <div className="flex items-start gap-2.5 group">
+    <div className="flex items-start gap-2.5">
       <div 
-        className={`w-1 h-1 rounded-full mt-[7px] shrink-0 transition-all duration-200 ${
-          isProblem 
-            ? 'bg-amber-400/80 group-hover:bg-amber-400' 
-            : 'bg-white/60 group-hover:bg-white/90'
+        className={`w-1 h-1 rounded-full mt-[6px] shrink-0 ${
+          isProblem ? 'bg-amber-400/70' : 'bg-white/50'
         }`} 
       />
       <div className="flex-1 min-w-0">
-        <div className="font-medium text-[13px] leading-tight text-white/90 group-hover:text-white transition-colors duration-200">
+        <div className="font-medium text-[12px] leading-tight text-white/85">
           {title}
         </div>
-        <div className="text-[11px] leading-[1.5] text-white/50 mt-0.5">
+        <div className="text-[10px] leading-[1.4] text-white/45 mt-0.5">
           {description}
         </div>
       </div>
