@@ -2,6 +2,8 @@
 
 This document explains the reasoning behind key architectural, configuration, and design decisions made in the Aurix project. It is intended for technical stakeholders who need to understand not just what was built, but why specific choices were made.
 
+As a Forward Deployed Strategist working with enterprise customers, the ability to articulate these decisions clearly is essential. This document demonstrates the kind of technical communication that bridges engineering implementation with business requirements.
+
 ---
 
 ## Table of Contents
@@ -14,29 +16,33 @@ This document explains the reasoning behind key architectural, configuration, an
 6. [Identity Verification Approach](#identity-verification-approach)
 7. [Compliance Enforcement Strategy](#compliance-enforcement-strategy)
 8. [Frontend Visualization](#frontend-visualization)
+9. [FDS Role Alignment](#fds-role-alignment)
 
 ---
 
 ## Model Selection
 
-### Why Claude 3.5 Sonnet
+### Why Claude Opus 4.5
 
-The ElevenLabs Conversational AI platform supports multiple LLM backends. We selected Claude 3.5 Sonnet for several reasons:
+The ElevenLabs Conversational AI platform supports multiple LLM backends. We selected Claude Opus 4.5, Anthropic's most capable model, for several reasons:
 
-**Instruction Following**  
-Healthcare customer service requires precise adherence to rules. The agent must never provide medical advice, always verify identity before disclosing information, and use specific phrases in specific situations. Claude 3.5 Sonnet has demonstrated strong instruction-following capabilities, reducing the risk of the agent deviating from its defined behaviour.
+**Superior Reasoning and Instruction Following**  
+Healthcare customer service requires precise adherence to complex rules. The agent must never provide medical advice, always verify identity before disclosing information, and navigate nuanced conversational scenarios. Opus 4.5 represents the current state-of-the-art in instruction following and multi-step reasoning, significantly reducing the risk of the agent deviating from defined behaviour compared to earlier models.
 
-**Tool Use Reliability**  
-The agent relies heavily on webhook tools to query databases and enforce compliance. Claude 3.5 Sonnet shows consistent tool-calling behaviour, correctly determining when to call tools and how to structure parameters. This is critical because a missed tool call means a missed compliance check or a failed database lookup.
+**Advanced Tool Use**  
+The agent relies heavily on webhook tools to query databases and enforce compliance. Opus 4.5 demonstrates exceptional tool-calling reliability, correctly determining when to call tools, how to structure parameters, and how to interpret complex responses. This is critical because a missed tool call means a missed compliance check or a failed database lookup. The model's improved agentic capabilities mean fewer edge cases where tool calls are skipped or malformed.
 
-**Latency Considerations**  
-Voice conversations are latency-sensitive. Users expect near-instant responses. Claude 3.5 Sonnet offers a strong balance between capability and speed. Larger models might provide marginally better reasoning but at the cost of noticeable delays that would degrade the conversational experience.
+**Latency Optimisation**  
+While Opus 4.5 is a larger model, ElevenLabs has optimised their inference infrastructure to maintain acceptable latency for voice conversations. The marginal increase in response time is offset by the significantly improved quality of responses, particularly in complex scenarios involving compliance decisions or multi-turn verification flows.
 
-**Context Window**  
-Healthcare conversations can be lengthy, especially when customers have multiple questions or need to provide verification details. The 200K token context window ensures the agent maintains full conversation context without truncation.
+**Extended Context Window**  
+Healthcare conversations can be lengthy, especially when customers have multiple questions, need to provide verification details, or discuss complex order histories. Opus 4.5's extended context window ensures the agent maintains complete conversation context without truncation, even in extended interactions.
 
 **Safety and Alignment**  
-In regulated industries, the consequences of a model "going off-script" are significant. Claude's constitutional AI training provides an additional layer of safety, making it less likely to generate harmful or inappropriate content even if the system prompt is somehow bypassed.
+In regulated industries, the consequences of a model going off-script are significant. Opus 4.5's advanced safety training provides robust guardrails against harmful outputs, prompt injection attempts, and edge cases that could lead to compliance violations. This is not merely a nice-to-have feature—in healthcare, it is a fundamental requirement.
+
+**Future-Proofing**  
+By selecting the most capable available model, we ensure the demonstration represents what is actually possible with current technology. When presenting to enterprise customers, showing best-in-class capabilities sets appropriate expectations for production deployments.
 
 ---
 
@@ -283,20 +289,51 @@ The glassy card effect creates visual separation between different information t
 
 ---
 
+## FDS Role Alignment
+
+This project was built as a demonstration of the skills required for a Forward Deployed Strategist role at ElevenLabs. The FDS role sits at the intersection of technical implementation, customer success, and strategic consulting. Aurix demonstrates competency across these dimensions:
+
+### Technical Implementation
+
+The project required hands-on development across the full stack: Next.js frontend, API route backends, database schema design, real-time subscriptions, and third-party integrations (ElevenLabs, Twilio, Supabase). An FDS must be able to build functional prototypes and proof-of-concepts that demonstrate platform capabilities to prospective customers.
+
+### Customer Understanding
+
+Healthcare e-commerce was chosen deliberately as a complex, regulated domain. Understanding customer requirements in such industries—compliance needs, privacy concerns, audit requirements—is essential for an FDS who will work with enterprise customers across various verticals.
+
+### Solution Architecture
+
+The decisions documented here demonstrate the ability to make architectural choices that balance competing requirements: capability vs latency, security vs convenience, flexibility vs simplicity. An FDS must be able to design solutions that are both technically sound and aligned with customer needs.
+
+### Communication
+
+This document itself demonstrates the communication skills required of an FDS. Technical decisions must be articulated clearly to stakeholders with varying levels of technical depth. The ability to explain "why" not just "what" is essential when working with customer engineering teams and executives.
+
+### Product Feedback Loop
+
+Building this demonstration surfaced insights about the ElevenLabs platform: what works well, where documentation could be clearer, which features would benefit from enhancement. An FDS serves as a critical feedback channel between customers and the product team.
+
+### Rapid Prototyping
+
+The project was built quickly, demonstrating the ability to move from concept to working demo efficiently. In the FDS role, the ability to rapidly prototype solutions is essential for customer engagements where time-to-value matters.
+
+---
+
 ## Summary
 
 Every decision in Aurix was made with specific goals in mind:
 
-- **Reliability over experimentation**: We chose proven technologies and conservative designs
+- **Best-in-class technology**: Using Claude Opus 4.5 ensures the demo represents current capabilities
+- **Reliability over experimentation**: Proven technologies and conservative designs reduce risk
 - **Compliance by architecture**: Rules are enforced in code, not just prompts
-- **Transparency as a feature**: The system shows its work, building trust
-- **Production readiness**: While this is a demo, the patterns would scale to production
-- **Developer experience**: The codebase is structured for maintainability and debugging
+- **Transparency as a feature**: The system shows its work, building trust with regulated industries
+- **Production patterns**: While this is a demo, the architecture would scale to production
+- **Developer experience**: The codebase is structured for maintainability and handoff
 
-These decisions reflect the requirements of deploying AI in regulated industries, where the cost of failure is high and trust must be earned through demonstrated reliability.
+These decisions reflect the requirements of deploying AI in regulated industries, where the cost of failure is high and trust must be earned through demonstrated reliability. They also reflect the skills required of a Forward Deployed Strategist: technical depth, customer empathy, clear communication, and strategic thinking.
 
 ---
 
 Document prepared for technical review.  
-Last updated: December 2024
+Last updated: December 2025
 

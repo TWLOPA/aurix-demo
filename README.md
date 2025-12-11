@@ -273,6 +273,19 @@ This is a demonstration, not production software. Notable limitations:
 - No persistent conversation history across sessions
 - Single demo session ID for all calls
 
+## About This Project
+
+This project was built as part of an application for the Forward Deployed Strategist (FDS) role at ElevenLabs. The FDS role requires a combination of technical implementation skills, customer understanding, solution architecture, and clear communication.
+
+Aurix demonstrates these competencies:
+
+- **Technical depth**: Full-stack implementation with Next.js, real-time databases, webhook integrations, and voice AI configuration
+- **Domain expertise**: Understanding of regulated healthcare requirements, compliance needs, and enterprise customer concerns
+- **Solution design**: Architectural decisions that balance capability, security, and user experience
+- **Communication**: Clear documentation explaining not just what was built, but why
+
+For a detailed explanation of technical decisions and their rationale, see [docs/TECHNICAL_DECISIONS.md](docs/TECHNICAL_DECISIONS.md).
+
 ## Contributing
 
 This project was built as a demonstration. If you have suggestions or find issues, please open a GitHub issue.
@@ -285,6 +298,7 @@ MIT License. See LICENSE file for details.
 
 Built with:
 - [ElevenLabs](https://elevenlabs.io) - Conversational AI platform
+- [Anthropic Claude](https://anthropic.com) - Claude Opus 4.5 for agent reasoning
 - [Supabase](https://supabase.com) - Database and real-time subscriptions
 - [Vercel](https://vercel.com) - Deployment platform
 - [Tailwind CSS](https://tailwindcss.com) - Styling
@@ -292,4 +306,5 @@ Built with:
 
 ---
 
-Built by Tom Walsh as a technical demonstration for ElevenLabs.
+Built by Tom Walsh as a demonstration for the ElevenLabs Forward Deployed Strategist role.  
+December 2025
