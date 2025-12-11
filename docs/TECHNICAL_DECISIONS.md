@@ -22,33 +22,33 @@ As a Forward Deployed Strategist working with enterprise customers, the ability 
 
 ## Model Selection
 
-### Why Claude Sonnet 4
+### Why GLM-4.5-Air
 
-The ElevenLabs Conversational AI platform supports multiple LLM backends. We selected Claude Sonnet 4 after evaluating the trade-offs between capability and cost:
+The ElevenLabs Conversational AI platform uses GLM-4.5-Air as its default LLM. This is ElevenLabs' optimised model for conversational AI applications, and our testing confirmed it handles the requirements of this healthcare customer service use case effectively.
 
-**Capability vs Cost Trade-off**  
-While Opus 4.5 offers marginally better reasoning in edge cases, Sonnet 4 provides exceptional performance at a significantly lower cost per token. For a customer service application where call volume could scale to thousands of daily interactions, this cost difference compounds dramatically. Sonnet 4 handles the complexity of healthcare customer service—compliance checks, identity verification, multi-turn conversations—without requiring the additional horsepower of the larger model.
+**Platform-Native Integration**  
+GLM-4.5-Air is deeply integrated with ElevenLabs' voice AI infrastructure. This tight coupling means optimised latency, seamless tool calling, and consistent behaviour that has been tested extensively within the platform. Using the platform's recommended model reduces integration complexity and leverages ElevenLabs' own optimisation work.
 
-**Production-Ready Economics**  
-A key consideration for enterprise deployments is unit economics. If each customer call costs significantly more due to model selection, the business case for AI customer service weakens. Sonnet 4 enables a compelling cost comparison against human agents while maintaining high quality. This is the kind of practical consideration that matters when advising enterprise customers on production deployments.
+**Voice-Optimised Performance**  
+Unlike general-purpose LLMs, GLM-4.5-Air has been tuned for conversational applications. This shows in practice: responses feel natural in spoken form, turn-taking works smoothly, and the model handles interruptions gracefully. These qualities matter enormously for voice AI but are often overlooked when selecting models based purely on benchmark scores.
 
 **Strong Instruction Following**  
-Healthcare customer service requires precise adherence to complex rules. The agent must never provide medical advice, always verify identity before disclosing information, and navigate nuanced conversational scenarios. Sonnet 4 demonstrates excellent instruction following for these requirements, with the added benefit of faster response times compared to larger models.
+Healthcare customer service requires precise adherence to complex rules. The agent must never provide medical advice, always verify identity before disclosing information, and navigate nuanced conversational scenarios. In testing, GLM-4.5-Air demonstrated reliable instruction following across all our compliance requirements.
 
 **Reliable Tool Use**  
-The agent relies heavily on webhook tools to query databases and enforce compliance. Sonnet 4 shows consistent tool-calling behaviour, correctly determining when to call tools, how to structure parameters, and how to interpret responses. This reliability is critical because a missed tool call means a missed compliance check.
+The agent relies heavily on webhook tools to query databases and enforce compliance. GLM-4.5-Air shows consistent tool-calling behaviour, correctly determining when to call tools, how to structure parameters, and how to interpret responses. This reliability is critical because a missed tool call means a missed compliance check.
 
 **Optimised Latency**  
-Voice conversations are latency-sensitive. Users notice delays of even a few hundred milliseconds. Sonnet 4's smaller size translates to faster inference, creating a more natural conversational experience. In testing, response times felt immediate rather than noticeably delayed.
+Voice conversations are latency-sensitive. Users notice delays of even a few hundred milliseconds. The "Air" designation suggests this is a latency-optimised variant, and in practice, response times felt immediate rather than noticeably delayed. This creates a natural conversational experience that would be difficult to achieve with slower models.
 
-**Sufficient Context Window**  
-Sonnet 4's context window comfortably handles extended customer service conversations, including multi-turn verification flows and customers with multiple questions. Context exhaustion was not observed in any test scenarios.
+**Cost Efficiency**  
+ElevenLabs prices conversational AI by usage, and the platform-native model is included in that pricing structure. This simplifies cost modelling for enterprise customers—there is no separate LLM billing to track or optimise. For an FDS advising customers on production deployments, this pricing simplicity is valuable.
 
-**Safety and Alignment**  
-Anthropic's constitutional AI training applies to Sonnet 4 as well as their larger models. The safety guarantees that matter for regulated industries—resistance to prompt injection, appropriate content filtering, consistent behaviour—are present in the Sonnet tier.
+**Continuous Improvement**  
+By using ElevenLabs' own model, we benefit from their ongoing improvements. As they optimise GLM-4.5-Air for conversational use cases, our agent automatically benefits without requiring configuration changes. This is a practical advantage over manually selecting and managing third-party model integrations.
 
 **The Right Tool for the Job**  
-Selecting Sonnet 4 over Opus 4.5 demonstrates practical engineering judgment. Using the most expensive option when a more economical choice meets requirements is not good architecture—it is waste. Part of the FDS role is helping customers make decisions that are both technically sound and economically sensible.
+Rather than assuming a well-known model name would be "better," we tested the platform's default and found it met all requirements. Part of the FDS role is helping customers avoid over-engineering. If the platform-native option works well, that is often the right choice—it reduces complexity, simplifies support, and aligns incentives with the platform provider.
 
 ---
 

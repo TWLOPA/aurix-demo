@@ -297,10 +297,11 @@ MIT License. See LICENSE file for details.
 ## Acknowledgments
 
 Built with:
-- [ElevenLabs](https://elevenlabs.io) - Conversational AI platform
-- [Anthropic Claude](https://anthropic.com) - Claude Sonnet 4 for agent reasoning
+- [ElevenLabs](https://elevenlabs.io) - Conversational AI platform with GLM-4.5-Air
 - [Supabase](https://supabase.com) - Database and real-time subscriptions
+- [Twilio](https://twilio.com) - SMS messaging
 - [Vercel](https://vercel.com) - Deployment platform
+- [Next.js](https://nextjs.org) - React framework
 - [Tailwind CSS](https://tailwindcss.com) - Styling
 - [shadcn/ui](https://ui.shadcn.com) - UI components
 
