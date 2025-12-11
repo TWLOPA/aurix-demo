@@ -16,7 +16,8 @@ As a Forward Deployed Strategist working with enterprise customers, the ability 
 6. [Identity Verification Approach](#identity-verification-approach)
 7. [Compliance Enforcement Strategy](#compliance-enforcement-strategy)
 8. [Frontend Visualization](#frontend-visualization)
-9. [FDS Role Alignment](#fds-role-alignment)
+9. [Production Considerations](#production-considerations)
+10. [FDS Role Alignment](#fds-role-alignment)
 
 ---
 
@@ -50,6 +51,8 @@ By using ElevenLabs' own model, we benefit from their ongoing improvements. As t
 **The Right Tool for the Job**  
 Rather than assuming a well-known model name would be "better," we tested the platform's default and found it met all requirements. Part of the FDS role is helping customers avoid over-engineering. If the platform-native option works well, that is often the right choice—it reduces complexity, simplifies support, and aligns incentives with the platform provider.
 
+In customer engagements, I would validate this choice through A/B testing with a small percentage of production traffic, but for most deployments, the platform default provides the right balance of performance, cost, and maintainability.
+
 ---
 
 ## Agent Capabilities
@@ -71,6 +74,8 @@ Each active session consumes server resources. In a production deployment with m
 We implemented smart farewell detection on the client side as a backup. The system detects phrases like "take care," "goodbye," and "thank you for calling" at the end of agent messages. After detecting a farewell, it waits 5 seconds for any follow-up before closing the connection. This delay ensures the conversation truly is over and prevents premature disconnection if the customer has additional questions.
 
 The combination of the ElevenLabs system tool and client-side detection provides redundancy. If the agent decides to end the call, great. If not, the client-side logic catches natural conversation endings.
+
+In production, we would log conversation end triggers and analyse patterns. If customers frequently say goodbye but the agent fails to end the session, that signals prompt tuning is needed. This feedback loop enables continuous improvement of the conversation experience.
 
 ### Why Enable "Skip Turn"
 
@@ -173,7 +178,11 @@ The "WHAT YOU MUST NEVER DO" section uses explicit negative instructions. Resear
 
 ### Why Not a Shorter Prompt
 
-Shorter prompts are faster to process and cheaper per token. However, healthcare customer service has too many edge cases for a minimal prompt. We prioritised reliability over cost optimisation at this stage. In production, prompt compression techniques could be explored once behaviour is validated.
+Shorter prompts are faster to process and cheaper per token. However, in healthcare customer service, reliability trumps optimisation. A 1% reduction in compliance failures is worth a 50% increase in prompt token cost.
+
+Healthcare customer service has too many edge cases for a minimal prompt. Consider the combinations: verification scenarios, different inquiry types, escalation flows, tone requirements across emotional states. Each scenario needs explicit guidance to ensure consistent behaviour.
+
+We prioritised reliability over cost optimisation at this stage. In production, prompt compression techniques could be explored once behaviour is validated across thousands of real conversations.
 
 ---
 
@@ -238,16 +247,16 @@ In production, a tiered verification approach might be appropriate: simple verif
 
 ### Server-Side Enforcement
 
-Compliance rules are enforced in the backend, not in the system prompt alone. This architectural choice provides defence in depth:
+Compliance rules are enforced in the backend, not in the system prompt alone. This is non-negotiable in regulated industries. While system prompts provide the first line of defence, they are vulnerable to prompt injection attacks and LLM reasoning failures. Server-side enforcement provides cryptographic certainty: even if the LLM hallucinates, ignores instructions, or is manipulated, the compliance check runs in deterministic code with full audit logging.
 
 **Prompt Injection Resistance**  
-If a user attempts to manipulate the agent into ignoring compliance rules, the backend will still block the request. The compliance check happens in code, not in the LLM's reasoning.
+If a user attempts to manipulate the agent into ignoring compliance rules, the backend will still block the request. The compliance check happens in code, not in the LLM's reasoning. A clever prompt injection might convince the LLM to try calling a tool with parameters designed to bypass checks, but the server validates every parameter and enforces rules regardless of how the request was constructed.
 
 **Consistency**  
-System prompt instructions can be interpreted inconsistently by the LLM. Code-based compliance checks are deterministic.
+System prompt instructions can be interpreted inconsistently by the LLM. "Never discuss side effects" might be followed 99% of the time, but a creatively phrased question could slip through. Code-based compliance checks are deterministic—a request either contains a blocked keyword or it doesn't.
 
 **Auditability**  
-Every compliance check is logged with its result, providing evidence for regulatory audits.
+Every compliance check is logged with its result, providing evidence for regulatory audits. When regulators ask "how do you know the AI never gave medical advice?", we can provide timestamped logs showing every compliance check that ran, what it evaluated, and what action was taken.
 
 ### The Escalation Flow
 
@@ -295,6 +304,35 @@ The glassy card effect creates visual separation between different information t
 
 ---
 
+## Production Considerations
+
+This demonstration was built to showcase capabilities and architectural patterns. In a production deployment, several elements would require hardening:
+
+**Identity Verification**  
+The current DOB/postcode verification would be augmented with SMS OTP for high-risk actions (address changes, refill requests). Multi-factor authentication would be mandatory for any personally identifiable health information disclosure.
+
+**Rate Limiting**  
+Tool endpoints would implement rate limiting to prevent abuse. A customer repeatedly failing identity verification would trigger fraud alerts and temporary account locks.
+
+**Encryption at Rest**  
+While Supabase encrypts data at rest, production deployments for healthcare customers often require customer-managed encryption keys (CMEK) for additional control and auditability.
+
+**Audit Retention**  
+Current event logs are stored indefinitely. Production systems require configurable retention policies (typically 7 years for HIPAA) with immutable append-only logs and cryptographic integrity verification.
+
+**Disaster Recovery**  
+Point-in-time recovery, automated backups, and cross-region replication would be configured to meet customer RTO/RPO requirements.
+
+**Load Testing**  
+The architecture would be validated under realistic load: 1,000 concurrent conversations, sustained API call rates, database connection pooling under stress.
+
+**Monitoring**  
+Production requires comprehensive observability: latency percentiles (p50, p95, p99), tool success rates, compliance check frequency, escalation patterns, and customer satisfaction correlation.
+
+These production requirements don't invalidate the demo architecture—they build on it. The fundamental design (server-side compliance, webhook tools, real-time audit trails) remains sound. The hardening is operational, not architectural.
+
+---
+
 ## FDS Role Alignment
 
 This project was built as a demonstration of the skills required for a Forward Deployed Strategist role at ElevenLabs. The FDS role sits at the intersection of technical implementation, customer success, and strategic consulting. Aurix demonstrates competency across these dimensions:
@@ -329,7 +367,7 @@ The project was built quickly, demonstrating the ability to move from concept to
 
 Every decision in Aurix was made with specific goals in mind:
 
-- **Best-in-class technology**: Using Claude Opus 4.5 ensures the demo represents current capabilities
+- **Platform-aligned technology**: Using ElevenLabs' GLM-4.5-Air ensures optimised voice performance and simplified operations
 - **Reliability over experimentation**: Proven technologies and conservative designs reduce risk
 - **Compliance by architecture**: Rules are enforced in code, not just prompts
 - **Transparency as a feature**: The system shows its work, building trust with regulated industries
