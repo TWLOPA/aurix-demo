@@ -7,7 +7,7 @@ import { ChevronDown, X } from 'lucide-react'
 
 interface PlatformFeaturesProps {
   defaultExpanded?: boolean
-  defaultTab?: 'problem' | 'features'
+  defaultTab?: 'problem' | 'solution'
 }
 
 const problemContent = [
@@ -37,46 +37,42 @@ const problemContent = [
   }
 ]
 
-const featuresContent = [
+const solutionContent = [
   {
-    title: "Sub-100ms latency",
-    description: "Natural conversation flow"
+    title: "Watch the AI Think",
+    description: "See exactly why decisions are made in real-time"
   },
   {
-    title: "RAG-powered retrieval",
-    description: "Grounded in your data"
+    title: "Every Query Logged",
+    description: "Full audit trail of database lookups and actions"
   },
   {
-    title: "Multi-system integration",
-    description: "CRM, billing, prescriptions unified"
+    title: "Guardrails in Action",
+    description: "Medical questions trigger clinician escalation"
   },
   {
-    title: "Workflow orchestration",
-    description: "Multi-step verification & routing"
+    title: "Identity Verification",
+    description: "DOB and postcode checks before sensitive data"
   },
   {
-    title: "Omnichannel ready",
-    description: "Voice, chat, and SMS"
+    title: "Live Cost Savings",
+    description: "See per-call savings vs human agent costs"
   },
   {
-    title: "HIPAA/SOC 2 compliant",
-    description: "Enterprise-grade security"
-  },
-  {
-    title: "Bring your own LLM",
-    description: "Claude, GPT-4, or proprietary"
+    title: "Multimodal Demo",
+    description: "Voice call triggers SMS follow-up seamlessly"
   }
 ]
 
 export function PlatformFeatures({
   defaultExpanded = false,
-  defaultTab = 'features'
+  defaultTab = 'solution'
 }: PlatformFeaturesProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded)
-  const [activeTab, setActiveTab] = useState<'problem' | 'features'>(defaultTab)
+  const [activeTab, setActiveTab] = useState<'problem' | 'solution'>(defaultTab)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
-  const handleTabChange = (tab: 'problem' | 'features') => {
+  const handleTabChange = (tab: 'problem' | 'solution') => {
     if (tab === activeTab || isTransitioning) return
     
     setIsTransitioning(true)
@@ -88,7 +84,7 @@ export function PlatformFeatures({
     }, 100)
   }
 
-  const currentContent = activeTab === 'problem' ? problemContent : featuresContent
+  const currentContent = activeTab === 'problem' ? problemContent : solutionContent
 
   return (
     <div className="hidden lg:block fixed bottom-6 right-6 z-40">
@@ -140,39 +136,39 @@ export function PlatformFeatures({
             <div className="flex items-center justify-between mb-3">
               {/* Tab Bar */}
               <div className="relative flex" role="tablist">
-                {/* Sliding indicator */}
-                <div 
-                  className="absolute bottom-0 h-[1.5px] bg-white transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                  style={{
-                    width: activeTab === 'problem' ? '76px' : '58px',
-                    transform: activeTab === 'problem' ? 'translateX(0)' : 'translateX(92px)'
-                  }}
-                />
-                
-                <button
-                  role="tab"
-                  aria-selected={activeTab === 'problem'}
-                  onClick={() => handleTabChange('problem')}
-                  className={`relative pb-2 mr-4 text-[12px] font-medium transition-colors duration-150 focus:outline-none ${
-                    activeTab === 'problem'
-                      ? 'text-white'
-                      : 'text-white/35 hover:text-white/60'
-                  }`}
-                >
-                  The Problem
-                </button>
-                <button
-                  role="tab"
-                  aria-selected={activeTab === 'features'}
-                  onClick={() => handleTabChange('features')}
-                  className={`relative pb-2 text-[12px] font-medium transition-colors duration-150 focus:outline-none ${
-                    activeTab === 'features'
-                      ? 'text-white'
-                      : 'text-white/35 hover:text-white/60'
-                  }`}
-                >
-                  Features
-                </button>
+              {/* Sliding indicator */}
+              <div 
+                className="absolute bottom-0 h-[1.5px] bg-white transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                style={{
+                  width: activeTab === 'problem' ? '76px' : '72px',
+                  transform: activeTab === 'problem' ? 'translateX(0)' : 'translateX(92px)'
+                }}
+              />
+              
+              <button
+                role="tab"
+                aria-selected={activeTab === 'problem'}
+                onClick={() => handleTabChange('problem')}
+                className={`relative pb-2 mr-4 text-[12px] font-medium transition-colors duration-150 focus:outline-none ${
+                  activeTab === 'problem'
+                    ? 'text-white'
+                    : 'text-white/35 hover:text-white/60'
+                }`}
+              >
+                The Problem
+              </button>
+              <button
+                role="tab"
+                aria-selected={activeTab === 'solution'}
+                onClick={() => handleTabChange('solution')}
+                className={`relative pb-2 text-[12px] font-medium transition-colors duration-150 focus:outline-none ${
+                  activeTab === 'solution'
+                    ? 'text-white'
+                    : 'text-white/35 hover:text-white/60'
+                }`}
+              >
+                The Solution
+              </button>
               </div>
 
               {/* Close button */}
@@ -208,7 +204,7 @@ export function PlatformFeatures({
             {/* Footer */}
             <div className="mt-2 pt-2.5 border-t border-white/[0.06] flex items-center justify-between">
               <span className="text-[10px] text-white/30">
-                {activeTab === 'problem' ? 'The compliance gap' : 'Powered by ElevenLabs'}
+                {activeTab === 'problem' ? 'The compliance gap' : 'Try it live above'}
               </span>
             </div>
           </div>
