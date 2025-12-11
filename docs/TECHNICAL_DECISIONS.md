@@ -17,7 +17,7 @@ As a Forward Deployed Strategist working with enterprise customers, the ability 
 7. [Compliance Enforcement Strategy](#compliance-enforcement-strategy)
 8. [Frontend Visualization](#frontend-visualization)
 9. [Production Considerations](#production-considerations)
-10. [FDS Role Alignment](#fds-role-alignment)
+10. [Role Alignment](#role-alignment)
 
 ---
 
@@ -43,13 +43,13 @@ The agent relies heavily on webhook tools to query databases and enforce complia
 Voice conversations are latency-sensitive. Users notice delays of even a few hundred milliseconds. The "Air" designation suggests this is a latency-optimised variant, and in practice, response times felt immediate rather than noticeably delayed. This creates a natural conversational experience that would be difficult to achieve with slower models.
 
 **Cost Efficiency**  
-ElevenLabs prices conversational AI by usage, and the platform-native model is included in that pricing structure. This simplifies cost modelling for enterprise customers—there is no separate LLM billing to track or optimise. For an FDS advising customers on production deployments, this pricing simplicity is valuable.
+ElevenLabs prices conversational AI by usage, and the platform-native model is included in that pricing structure. This simplifies cost modelling for enterprise customers—there is no separate LLM billing to track or optimise. When advising customers on production deployments, this pricing simplicity is valuable.
 
 **Continuous Improvement**  
 By using ElevenLabs' own model, we benefit from their ongoing improvements. As they optimise GLM-4.5-Air for conversational use cases, our agent automatically benefits without requiring configuration changes. This is a practical advantage over manually selecting and managing third-party model integrations.
 
 **The Right Tool for the Job**  
-Rather than assuming a well-known model name would be "better," we tested the platform's default and found it met all requirements. Part of the FDS role is helping customers avoid over-engineering. If the platform-native option works well, that is often the right choice—it reduces complexity, simplifies support, and aligns incentives with the platform provider.
+Rather than assuming a well-known model name would be "better," we tested the platform's default and found it met all requirements. Part of the deployed strategist role is helping customers avoid over-engineering. If the platform-native option works well, that is often the right choice—it reduces complexity, simplifies support, and aligns incentives with the platform provider.
 
 In customer engagements, I would validate this choice through A/B testing with a small percentage of production traffic, but for most deployments, the platform default provides the right balance of performance, cost, and maintainability.
 
@@ -333,33 +333,33 @@ These production requirements don't invalidate the demo architecture—they buil
 
 ---
 
-## FDS Role Alignment
+## Role Alignment
 
-This project was built as a demonstration of the skills required for a Forward Deployed Strategist role at ElevenLabs. The FDS role sits at the intersection of technical implementation, customer success, and strategic consulting. Aurix demonstrates competency across these dimensions:
+This project was built as a demonstration of the skills required for a Forward Deployed Strategist role. The role sits at the intersection of technical implementation, customer success, and strategic consulting. Aurix demonstrates competency across these dimensions:
 
 ### Technical Implementation
 
-The project required hands-on development across the full stack: Next.js frontend, API route backends, database schema design, real-time subscriptions, and third-party integrations (ElevenLabs, Twilio, Supabase). An FDS must be able to build functional prototypes and proof-of-concepts that demonstrate platform capabilities to prospective customers.
+The project required hands-on development across the full stack: Next.js frontend, API route backends, database schema design, real-time subscriptions, and third-party integrations (ElevenLabs, Twilio, Supabase). A deployed strategist must be able to build functional prototypes and proof-of-concepts that demonstrate platform capabilities to prospective customers.
 
 ### Customer Understanding
 
-Healthcare e-commerce was chosen deliberately as a complex, regulated domain. Understanding customer requirements in such industries—compliance needs, privacy concerns, audit requirements—is essential for an FDS who will work with enterprise customers across various verticals.
+Healthcare e-commerce was chosen deliberately as a complex, regulated domain. Understanding customer requirements in such industries—compliance needs, privacy concerns, audit requirements—is essential for a deployed strategist who will work with enterprise customers across various verticals.
 
 ### Solution Architecture
 
-The decisions documented here demonstrate the ability to make architectural choices that balance competing requirements: capability vs latency, security vs convenience, flexibility vs simplicity. An FDS must be able to design solutions that are both technically sound and aligned with customer needs.
+The decisions documented here demonstrate the ability to make architectural choices that balance competing requirements: capability vs latency, security vs convenience, flexibility vs simplicity. A deployed strategist must be able to design solutions that are both technically sound and aligned with customer needs.
 
 ### Communication
 
-This document itself demonstrates the communication skills required of an FDS. Technical decisions must be articulated clearly to stakeholders with varying levels of technical depth. The ability to explain "why" not just "what" is essential when working with customer engineering teams and executives.
+This document itself demonstrates the communication skills required of a deployed strategist. Technical decisions must be articulated clearly to stakeholders with varying levels of technical depth. The ability to explain "why" not just "what" is essential when working with customer engineering teams and executives.
 
 ### Product Feedback Loop
 
-Building this demonstration surfaced insights about the ElevenLabs platform: what works well, where documentation could be clearer, which features would benefit from enhancement. An FDS serves as a critical feedback channel between customers and the product team.
+Building this demonstration surfaced insights about the ElevenLabs platform: what works well, where documentation could be clearer, which features would benefit from enhancement. A deployed strategist serves as a critical feedback channel between customers and the product team.
 
 ### Rapid Prototyping
 
-The project was built quickly, demonstrating the ability to move from concept to working demo efficiently. In the FDS role, the ability to rapidly prototype solutions is essential for customer engagements where time-to-value matters.
+The project was built quickly, demonstrating the ability to move from concept to working demo efficiently. In a deployed strategist role, the ability to rapidly prototype solutions is essential for customer engagements where time-to-value matters.
 
 ---
 

@@ -338,7 +338,7 @@ For detailed production considerations, see [docs/TECHNICAL_DECISIONS.md](docs/T
 
 ## About This Project
 
-This project was built as part of an application for the Forward Deployed Strategist (FDS) role at ElevenLabs. The FDS role requires a combination of technical implementation skills, customer understanding, solution architecture, and clear communication.
+This project was built as a demonstration of Forward Deployed Strategist capabilities. The role requires a combination of technical implementation skills, customer understanding, solution architecture, and clear communication.
 
 Aurix demonstrates these competencies:
 
@@ -382,5 +382,5 @@ Built with:
 
 ---
 
-Built by Tom Walsh as a demonstration for the ElevenLabs Forward Deployed Strategist role.  
+Built by Tom Walsh as a demonstration of Forward Deployed Strategist capabilities.  
 December 2025
