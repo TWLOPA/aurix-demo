@@ -218,28 +218,20 @@ export default function Home() {
     setShowSummary(true) // Show summary modal
   }
 
-  // Toggle microphone mute - uses ElevenLabs SDK's setVolume for input
+  // Toggle microphone mute - uses ElevenLabs SDK internals
   const handleToggleMute = useCallback(async () => {
     const newMutedState = !isMuted
     setIsMuted(newMutedState)
     
     try {
-      // ElevenLabs SDK: setVolume can control input/output
-      // Setting input volume to 0 effectively mutes the microphone
+      // Cast conversation to any to access internal properties
+      const conv = conversation as unknown as Record<string, unknown>
+      
       if (newMutedState) {
-        // Mute: set input volume to 0
-        // @ts-ignore - setVolume might accept input parameter
-        conversation.setVolume({ volume: 1.0 }) // Keep output
+        // Mute: Try to access and disable the actual audio track
+        const localStream = (conv.localStream || conv._localStream || conv.mediaStream) as MediaStream | undefined
         
-        // Try to access and mute the actual audio track
-        // The SDK stores the local stream internally
-        // @ts-ignore - accessing internal state
-        const localStream = conversation.localStream || 
-                           conversation._localStream ||
-                           // @ts-ignore
-                           conversation.mediaStream
-        
-        if (localStream) {
+        if (localStream && localStream.getAudioTracks) {
           localStream.getAudioTracks().forEach((track: MediaStreamTrack) => {
             track.enabled = false
             console.log('[Page] 🎤 Disabled local audio track')
@@ -257,12 +249,7 @@ export default function Home() {
       }
       
       // Fallback: Try to find and control RTCPeerConnection senders
-      // Access the peer connection from conversation internals
-      // @ts-ignore
-      const pc = conversation.peerConnection || 
-                 conversation._peerConnection || 
-                 // @ts-ignore
-                 conversation.rtcPeerConnection
+      const pc = (conv.peerConnection || conv._peerConnection || conv.rtcPeerConnection) as RTCPeerConnection | undefined
       
       if (pc && pc.getSenders) {
         pc.getSenders().forEach((sender: RTCRtpSender) => {
