@@ -217,6 +217,17 @@
     }
   }
   
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
   /* Orb blob animation (rotation allowed to be linear per spec) */
   @keyframes orb-blob {
     0%, 100% { transform: rotate(0deg) scale(1); }
@@ -247,6 +258,10 @@
   
   .animate-scale-in {
     animation: scale-in 0.2s ease-in-out;
+  }
+  
+  .animate-slide-in-left {
+    animation: slide-in-left 0.25s ease-out;
   }
   
   .animate-orb-blob {

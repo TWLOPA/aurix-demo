@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bot, FileText, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle } from 'lucide-react'
+import { Bot, FileText, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle, Menu } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -15,6 +15,7 @@ interface SidebarLayoutProps {
 export function SidebarLayout({ children }: SidebarLayoutProps) {
   const pathname = usePathname()
   const [showGuide, setShowGuide] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   
   const navSections = [
     {
@@ -49,17 +50,133 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      {/* Left Sidebar - Permanently collapsed */}
+      {/* Mobile Menu Button - Fixed position */}
+      <button
+        onClick={() => setMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white/90 backdrop-blur-sm shadow-md border border-neutral-200/60 hover:bg-neutral-50 transition-colors"
+        aria-label="Open menu"
+      >
+        <Menu className="w-5 h-5 text-neutral-600" />
+      </button>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          
+          {/* Slide-in Menu */}
+          <aside 
+            className="absolute left-0 top-0 h-full w-64 bg-white shadow-xl animate-slide-in-left"
+            style={{
+              background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%)'
+            }}
+          >
+            {/* Header */}
+            <div className="h-14 flex items-center justify-between px-4 border-b border-neutral-100">
+              <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+                <Image 
+                  src="/assets/AL.png" 
+                  alt="Aurix" 
+                  width={80} 
+                  height={24}
+                  className="h-6 w-auto"
+                />
+              </Link>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-1.5 hover:bg-neutral-100 rounded-md transition-colors"
+              >
+                <X className="w-5 h-5 text-neutral-400" />
+              </button>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 py-4 overflow-y-auto">
+              {navSections.map((section, sectionIndex) => (
+                <div key={section.title} className={cn(sectionIndex > 0 && "mt-4")}>
+                  <div className="px-4 mb-2">
+                    <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
+                      {section.title}
+                    </span>
+                  </div>
+                  <div className="space-y-1 px-2">
+                    {section.items.map((item) => {
+                      const isActive = item.matches.includes(pathname)
+                      return (
+                        <Link
+                          key={item.title}
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
+                            isActive 
+                              ? "bg-neutral-100/80 shadow-sm" 
+                              : "hover:bg-neutral-50"
+                          )}
+                        >
+                          <item.icon className={cn(
+                            "w-5 h-5 shrink-0",
+                            isActive ? "text-neutral-700" : "text-neutral-500"
+                          )} />
+                          <span className={cn(
+                            "text-sm font-medium",
+                            isActive ? "text-neutral-900" : "text-neutral-600"
+                          )}>
+                            {item.title}
+                          </span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+
+              {/* Help Button */}
+              <div className="mt-4 px-2">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false)
+                    setShowGuide(true)
+                  }}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
+                >
+                  <HelpCircle className="w-5 h-5 text-neutral-400 shrink-0" />
+                  <span className="text-sm font-medium">How to Use</span>
+                </button>
+              </div>
+            </nav>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-neutral-100">
+              <div className="flex items-center gap-2 text-xs text-neutral-400">
+                <Image 
+                  src="/assets/elevenlabs-symbol.svg" 
+                  alt="ElevenLabs" 
+                  width={14} 
+                  height={14}
+                  className="opacity-50"
+                />
+                <span>Powered by ElevenLabs</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* Desktop Sidebar - Hidden on mobile */}
       <aside 
-        className="flex-shrink-0 flex flex-col w-16 relative border-r border-neutral-200/60"
+        className="hidden lg:flex flex-shrink-0 flex-col w-16 relative border-r border-neutral-200/60"
         style={{
           background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%)'
         }}
       >
-
         {/* Content */}
         <div className="flex flex-col h-full">
-          {/* Logo Area - Always collapsed */}
+          {/* Logo Area */}
           <div className="h-14 flex items-center justify-center px-4">
             <Link href="/" className="mx-auto">
               <Image 
