@@ -69,11 +69,52 @@ export default function Home() {
   const [callDuration, setCallDuration] = useState(0)
   const [showPersonaHint, setShowPersonaHint] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
+  const peerConnectionsRef = useRef<Set<RTCPeerConnection>>(new Set())
+  const originalSenderTrackRef = useRef<Map<RTCRtpSender, MediaStreamTrack>>(new Map())
+  const silentTrackRef = useRef<MediaStreamTrack | null>(null)
+  const audioCtxRef = useRef<AudioContext | null>(null)
   const callSidRef = useRef<string | null>(null) // Ref to avoid closure issues
   const callStartTimeRef = useRef<number | null>(null) // Track call start time
   const eventsForSummaryRef = useRef<typeof events>([]) // Store events for summary
   const farewellTimeoutRef = useRef<NodeJS.Timeout | null>(null) // For farewell detection
   const { events, loading } = useCallEvents(callSid)
+
+  // Capture RTCPeerConnections created by ElevenLabs so we can swap the outgoing mic track.
+  // This blocks input to the agent while preserving system mic for screen recording apps.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (typeof (window as any).RTCPeerConnection === 'undefined') return
+
+    const OriginalRTCPeerConnection = (window as any).RTCPeerConnection as typeof RTCPeerConnection
+    // Avoid double-patching on HMR
+    if ((OriginalRTCPeerConnection as any).__aurix_patched) return
+
+    function PatchedRTCPeerConnection(this: RTCPeerConnection, ...args: any[]) {
+      const pc = new (OriginalRTCPeerConnection as any)(...args) as RTCPeerConnection
+      peerConnectionsRef.current.add(pc)
+      pc.addEventListener('connectionstatechange', () => {
+        if (pc.connectionState === 'closed' || pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+          peerConnectionsRef.current.delete(pc)
+        }
+      })
+      return pc
+    }
+
+    // Preserve static properties
+    ;(PatchedRTCPeerConnection as any).prototype = OriginalRTCPeerConnection.prototype
+    ;(PatchedRTCPeerConnection as any).__aurix_patched = true
+    ;(PatchedRTCPeerConnection as any).__aurix_original = OriginalRTCPeerConnection
+
+    ;(window as any).RTCPeerConnection = PatchedRTCPeerConnection as any
+
+    return () => {
+      // Restore original if we can
+      const current = (window as any).RTCPeerConnection
+      if (current && (current as any).__aurix_original) {
+        ;(window as any).RTCPeerConnection = (current as any).__aurix_original
+      }
+    }
+  }, [])
 
   // Update events ref whenever events change
   useEffect(() => {
@@ -214,8 +255,82 @@ export default function Home() {
     await conversation.endSession()
     setCallActive(false)
     setIsMuted(false) // Reset mute state
+    // Best-effort: restore original sender tracks after ending.
+    const senderEntries = Array.from(originalSenderTrackRef.current.entries())
+    for (let i = 0; i < senderEntries.length; i++) {
+      const [sender, track] = senderEntries[i]
+      try {
+        await sender.replaceTrack(track)
+      } catch {}
+    }
+    originalSenderTrackRef.current.clear()
     setShowSummary(true) // Show summary modal
   }
+
+  const getSilentTrack = useCallback(() => {
+    if (silentTrackRef.current) return silentTrackRef.current
+
+    const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext
+    if (!AudioCtx) return null
+    if (!audioCtxRef.current) audioCtxRef.current = new AudioCtx()
+
+    const ctx = audioCtxRef.current!
+    const oscillator = ctx.createOscillator()
+    const gain = ctx.createGain()
+    gain.gain.value = 0 // silence
+    const destination = ctx.createMediaStreamDestination()
+    oscillator.connect(gain)
+    gain.connect(destination)
+    oscillator.start()
+
+    const track = destination.stream.getAudioTracks()[0] || null
+    silentTrackRef.current = track
+    return track
+  }, [])
+
+  const applyMuteToPeerConnections = useCallback(async (mute: boolean) => {
+    const pcs = Array.from(peerConnectionsRef.current)
+    if (pcs.length === 0) {
+      console.warn('[Page] ⚠️ No RTCPeerConnection captured yet; mute may rely on SDK only.')
+    }
+
+    const silent = mute ? getSilentTrack() : null
+
+    await Promise.all(
+      pcs.map(async (pc) => {
+        const senders = pc.getSenders?.() || []
+        await Promise.all(
+          senders.map(async (sender) => {
+            const track = sender.track
+            if (!track || track.kind !== 'audio') return
+
+            try {
+              if (mute) {
+                if (!originalSenderTrackRef.current.has(sender)) {
+                  originalSenderTrackRef.current.set(sender, track)
+                }
+                if (silent) {
+                  await sender.replaceTrack(silent)
+                } else {
+                  // Fallback: disable sender track (may affect global mic consumers)
+                  track.enabled = false
+                }
+              } else {
+                const original = originalSenderTrackRef.current.get(sender)
+                if (original) {
+                  await sender.replaceTrack(original)
+                } else {
+                  track.enabled = true
+                }
+              }
+            } catch (e) {
+              console.warn('[Page] ⚠️ Failed to replace audio track on sender:', e)
+            }
+          })
+        )
+      })
+    )
+  }, [getSilentTrack])
 
   // Toggle microphone mute - mutes input ONLY to ElevenLabs (doesn't affect external recording)
   const handleToggleMute = useCallback(() => {
@@ -225,11 +340,16 @@ export default function Home() {
     try {
       // Official ElevenLabs control (not in TS types for some versions)
       ;(conversation as any).setMicMuted?.(newMutedState)
-      console.log(`[Page] 🎤 ElevenLabs mic muted: ${newMutedState}`)
+      console.log(`[Page] 🎤 ElevenLabs setMicMuted: ${newMutedState}`)
     } catch (e) {
       console.warn('[Page] ⚠️ Could not mute mic via ElevenLabs SDK:', e)
     }
-  }, [isMuted, conversation])
+
+    // Robust fallback: swap outgoing WebRTC audio track to silence
+    applyMuteToPeerConnections(newMutedState).then(() => {
+      console.log(`[Page] 🎤 WebRTC sender track ${newMutedState ? 'silenced' : 'restored'}`)
+    })
+  }, [isMuted, conversation, applyMuteToPeerConnections])
 
   const handleCloseSummary = () => {
     setShowSummary(false)
