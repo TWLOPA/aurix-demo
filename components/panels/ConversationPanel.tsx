@@ -169,7 +169,7 @@ export function ConversationPanel({ events, loading, agentSpeaking, onEndCall, i
         {isCallActive && onEndCall && (
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
             <div 
-              className="flex items-center gap-2 p-1.5 pr-2 rounded-full"
+              className="flex items-center gap-2 p-1.5 rounded-full"
               style={{
                 background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
                 backdropFilter: 'blur(20px)',
@@ -178,11 +178,6 @@ export function ConversationPanel({ events, loading, agentSpeaking, onEndCall, i
                 border: '1px solid rgba(255, 255, 255, 0.8)'
               }}
             >
-              {/* Orb */}
-              <div className="w-10 h-10 flex items-center justify-center">
-                <AnimatedOrb size={36} />
-              </div>
-              
               {/* Mute Button */}
               {onToggleMute && (
                 <button
