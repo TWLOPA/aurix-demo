@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Bot, FileText, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle, Menu } from 'lucide-react'
+import { Bot, FileText, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle, Menu, ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { useSidebar } from '@/lib/sidebar-context'
 
 interface SidebarLayoutProps {
   children: React.ReactNode
@@ -14,6 +15,7 @@ interface SidebarLayoutProps {
 
 export function SidebarLayout({ children }: SidebarLayoutProps) {
   const pathname = usePathname()
+  const { isCollapsed, setIsCollapsed } = useSidebar()
   const [showGuide, setShowGuide] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   
@@ -169,7 +171,10 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
       {/* Desktop Sidebar - Hidden on mobile */}
       <aside 
-        className="hidden lg:flex flex-shrink-0 flex-col w-16 relative border-r border-neutral-200/60"
+        className={cn(
+          "hidden lg:flex flex-shrink-0 flex-col relative border-r border-neutral-200/60 transition-[width] duration-200 ease-in-out",
+          isCollapsed ? "w-16" : "w-64"
+        )}
         style={{
           background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%)'
         }}
@@ -177,42 +182,69 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
         {/* Content */}
         <div className="flex flex-col h-full">
           {/* Logo Area */}
-          <div className="h-14 flex items-center justify-center px-4">
-            <Link href="/" className="mx-auto">
+          <div className={cn("h-14 flex items-center border-b border-neutral-100", isCollapsed ? "justify-center px-2" : "justify-between px-3")}>
+            <Link href="/" className={cn(isCollapsed ? "" : "flex items-center gap-2")}>
               <Image 
                 src="/assets/AL.png" 
                 alt="Aurix" 
-                width={24} 
+                width={isCollapsed ? 24 : 80} 
                 height={24}
                 className="h-6 w-auto"
               />
             </Link>
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className={cn(
+                "hidden lg:flex items-center justify-center w-8 h-8 rounded-md hover:bg-neutral-100 transition-colors",
+                isCollapsed ? "absolute top-3 right-2" : ""
+              )}
+              title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {isCollapsed ? (
+                <ChevronRight className="w-4 h-4 text-neutral-500" />
+              ) : (
+                <ChevronLeft className="w-4 h-4 text-neutral-500" />
+              )}
+            </button>
           </div>
 
-          {/* Navigation - Collapsed view */}
+          {/* Navigation */}
           <nav className="flex-1 py-4 overflow-y-auto">
             {navSections.map((section, sectionIndex) => (
               <div key={section.title} className={cn(sectionIndex > 0 && "mt-4")}>
-                {/* Section Items */}
-                <div className="space-y-1 px-2">
+                {!isCollapsed && (
+                  <div className="px-4 mb-2">
+                    <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
+                      {section.title}
+                    </span>
+                  </div>
+                )}
+                <div className={cn("space-y-1", isCollapsed ? "px-2" : "px-2")}>
                   {section.items.map((item) => {
-                    const isActive = item.matches.includes(pathname)
+                    const active = item.matches.includes(pathname)
                     return (
                       <Link
                         key={item.title}
                         href={item.href}
                         className={cn(
-                          "flex items-center justify-center px-2 py-2 rounded-md transition-all duration-200",
-                          isActive 
-                            ? "bg-neutral-100/80 shadow-sm" 
-                            : "hover:bg-neutral-50"
+                          "flex items-center rounded-lg transition-all duration-200",
+                          isCollapsed ? "justify-center px-2 py-2" : "gap-3 px-3 py-2.5",
+                          active ? "bg-neutral-100/80 shadow-sm" : "hover:bg-neutral-50"
                         )}
                         title={item.title}
                       >
-                        <item.icon className={cn(
-                          "w-[18px] h-[18px] shrink-0",
-                          isActive ? "text-neutral-700" : "text-neutral-500"
-                        )} />
+                        <item.icon
+                          className={cn(
+                            isCollapsed ? "w-[18px] h-[18px]" : "w-5 h-5",
+                            active ? "text-neutral-700" : "text-neutral-500"
+                          )}
+                        />
+                        {!isCollapsed && (
+                          <span className={cn("text-sm font-medium", active ? "text-neutral-900" : "text-neutral-600")}>
+                            {item.title}
+                          </span>
+                        )}
                       </Link>
                     )
                   })}
@@ -225,10 +257,14 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
               <div className="px-2">
                 <button
                   onClick={() => setShowGuide(true)}
-                  className="flex items-center justify-center px-2 py-2 rounded-md w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
+                  className={cn(
+                    "w-full rounded-lg transition-all duration-200 hover:bg-neutral-50",
+                    isCollapsed ? "flex items-center justify-center px-2 py-2" : "flex items-center gap-3 px-3 py-2.5 text-neutral-600"
+                  )}
                   title="How to Use"
                 >
-                  <HelpCircle className="w-[18px] h-[18px] text-neutral-400 shrink-0" />
+                  <HelpCircle className={cn(isCollapsed ? "w-[18px] h-[18px]" : "w-5 h-5", "text-neutral-400 shrink-0")} />
+                  {!isCollapsed && <span className="text-sm font-medium">How to Use</span>}
                 </button>
               </div>
             </div>
@@ -236,7 +272,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
           {/* Footer - Powered by ElevenLabs */}
           <div className="p-3 border-t border-neutral-100">
-            <div className="flex justify-center py-1">
+            <div className={cn("flex items-center", isCollapsed ? "justify-center py-1" : "gap-2 px-1")}>
               <Image 
                 src="/assets/elevenlabs-symbol.svg" 
                 alt="ElevenLabs" 
@@ -244,6 +280,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 height={16}
                 className="opacity-40"
               />
+              {!isCollapsed && <span className="text-xs text-neutral-400">Powered by ElevenLabs</span>}
             </div>
           </div>
         </div>
