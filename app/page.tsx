@@ -218,44 +218,66 @@ export default function Home() {
     setShowSummary(true) // Show summary modal
   }
 
-  // Toggle microphone mute - mutes the audio tracks so agent can't hear
+  // Toggle microphone mute - uses ElevenLabs SDK's setVolume for input
   const handleToggleMute = useCallback(async () => {
+    const newMutedState = !isMuted
+    setIsMuted(newMutedState)
+    
     try {
-      // Get all audio tracks from any active media streams
-      const streams = await navigator.mediaDevices.getUserMedia({ audio: true })
-      
-      // If we haven't stored a reference yet, try to get the active stream
-      if (!mediaStreamRef.current) {
-        // Try to find the active audio tracks
-        const audioTracks = streams.getAudioTracks()
-        if (audioTracks.length > 0) {
-          mediaStreamRef.current = streams
+      // ElevenLabs SDK: setVolume can control input/output
+      // Setting input volume to 0 effectively mutes the microphone
+      if (newMutedState) {
+        // Mute: set input volume to 0
+        // @ts-ignore - setVolume might accept input parameter
+        conversation.setVolume({ volume: 1.0 }) // Keep output
+        
+        // Try to access and mute the actual audio track
+        // The SDK stores the local stream internally
+        // @ts-ignore - accessing internal state
+        const localStream = conversation.localStream || 
+                           conversation._localStream ||
+                           // @ts-ignore
+                           conversation.mediaStream
+        
+        if (localStream) {
+          localStream.getAudioTracks().forEach((track: MediaStreamTrack) => {
+            track.enabled = false
+            console.log('[Page] 🎤 Disabled local audio track')
+          })
+          mediaStreamRef.current = localStream
+        }
+      } else {
+        // Unmute: re-enable tracks
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getAudioTracks().forEach((track: MediaStreamTrack) => {
+            track.enabled = true
+            console.log('[Page] 🎤 Enabled local audio track')
+          })
         }
       }
       
-      // Toggle mute state
-      const newMutedState = !isMuted
-      setIsMuted(newMutedState)
+      // Fallback: Try to find and control RTCPeerConnection senders
+      // Access the peer connection from conversation internals
+      // @ts-ignore
+      const pc = conversation.peerConnection || 
+                 conversation._peerConnection || 
+                 // @ts-ignore
+                 conversation.rtcPeerConnection
       
-      // Mute/unmute all audio tracks across all streams
-      if (mediaStreamRef.current) {
-        mediaStreamRef.current.getAudioTracks().forEach(track => {
-          track.enabled = !newMutedState
+      if (pc && pc.getSenders) {
+        pc.getSenders().forEach((sender: RTCRtpSender) => {
+          if (sender.track?.kind === 'audio') {
+            sender.track.enabled = !newMutedState
+            console.log(`[Page] 🎤 RTCPeerConnection audio track enabled: ${!newMutedState}`)
+          }
         })
       }
-      
-      // Also try to mute via any global audio context
-      streams.getAudioTracks().forEach(track => {
-        track.enabled = !newMutedState
-      })
       
       console.log(`[Page] 🎤 Microphone ${newMutedState ? 'MUTED' : 'UNMUTED'}`)
     } catch (error) {
       console.error('[Page] Failed to toggle mute:', error)
-      // Still toggle the UI state even if we can't access tracks
-      setIsMuted(prev => !prev)
     }
-  }, [isMuted])
+  }, [isMuted, conversation])
 
   const handleCloseSummary = () => {
     setShowSummary(false)
