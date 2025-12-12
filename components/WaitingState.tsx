@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Mic, Loader2 } from 'lucide-react'
+import { Mic, Loader2, Users } from 'lucide-react'
 import Image from 'next/image'
 
 interface WaitingStateProps {
@@ -103,6 +103,25 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
           {/* Subtle hint */}
           <p className="text-xs text-neutral-400">
             Click to speak with the AI agent
+          </p>
+        </div>
+      </div>
+
+      {/* Persona hint - below main card */}
+      <div 
+        className="relative mt-6 flex items-center gap-3 px-5 py-3 rounded-xl max-w-sm"
+        style={{
+          background: 'rgba(255, 255, 255, 0.5)',
+          backdropFilter: 'blur(12px)',
+          border: '1px solid rgba(255, 255, 255, 0.4)'
+        }}
+      >
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#088395]/10">
+          <Users className="w-4 h-4 text-[#088395]" />
+        </div>
+        <div className="flex-1">
+          <p className="text-[13px] text-neutral-600 leading-snug">
+            <span className="font-medium text-neutral-700">Test personas</span> appear in the left sidebar during calls to trigger different flows
           </p>
         </div>
       </div>
