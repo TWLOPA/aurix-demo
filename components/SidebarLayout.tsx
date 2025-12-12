@@ -20,7 +20,6 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const githubRepoUrl = 'https://github.com/TWLOPA/aurix-demo'
-  const githubProfileUrl = 'https://github.com/TWLOPA'
   
   const navSections = [
     {
@@ -154,7 +153,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 </button>
               </div>
 
-            {/* GitHub Links */}
+            {/* GitHub Link */}
             <div className="mt-2 px-2">
               <a
                 href={githubRepoUrl}
@@ -164,15 +163,6 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
               >
                 <Github className="w-5 h-5 text-neutral-400 shrink-0" />
                 <span className="text-sm font-medium">Project on GitHub</span>
-              </a>
-              <a
-                href={githubProfileUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-1 flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
-              >
-                <Github className="w-5 h-5 text-neutral-300 shrink-0" />
-                <span className="text-sm font-medium">Tom Walsh</span>
               </a>
             </div>
             </nav>
@@ -207,8 +197,8 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
         {/* Content */}
         <div className="flex flex-col h-full">
           {/* Logo Area */}
-          <div className={cn("h-14 flex items-center border-b border-neutral-100", isCollapsed ? "justify-center px-2" : "justify-between px-3")}>
-            <Link href="/" className={cn(isCollapsed ? "" : "flex items-center gap-2")}>
+          <div className={cn("h-14 flex items-center border-b border-neutral-100 relative", isCollapsed ? "justify-center px-2" : "px-3")}>
+            <Link href="/" className="flex items-center">
               <Image 
                 src="/assets/AL.png" 
                 alt="Aurix" 
@@ -219,10 +209,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
             </Link>
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className={cn(
-                "hidden lg:flex items-center justify-center w-8 h-8 rounded-md hover:bg-neutral-100 transition-colors",
-                isCollapsed ? "absolute top-3 right-2" : ""
-              )}
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-md hover:bg-neutral-100 transition-colors"
               title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
@@ -294,56 +281,25 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
               </div>
             </div>
 
-            {/* GitHub Links (below How to Use) */}
+            {/* GitHub Link (below How to Use) */}
             <div className="mt-2">
               <div className="px-2">
-                {isCollapsed ? (
-                  <div className="flex flex-col gap-1">
-                    <a
-                      href={githubRepoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center px-2 py-2 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
-                      title="GitHub: aurix-demo"
-                      aria-label="Open aurix-demo on GitHub"
-                    >
-                      <Github className="w-[18px] h-[18px] text-neutral-400 shrink-0" />
-                    </a>
-                    <a
-                      href={githubProfileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center px-2 py-2 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
-                      title="GitHub: TWLOPA"
-                      aria-label="Open TWLOPA GitHub profile"
-                    >
-                      <Github className="w-[18px] h-[18px] text-neutral-300 shrink-0" />
-                    </a>
-                  </div>
-                ) : (
-                  <div className="space-y-1">
-                    <a
-                      href={githubRepoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
-                      title="Project on GitHub"
-                    >
-                      <Github className="w-5 h-5 text-neutral-400 shrink-0" />
-                      <span className="text-sm font-medium">Project on GitHub</span>
-                    </a>
-                    <a
-                      href={githubProfileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
-                      title="Tom Walsh on GitHub"
-                    >
-                      <Github className="w-5 h-5 text-neutral-300 shrink-0" />
-                      <span className="text-sm font-medium">Tom Walsh</span>
-                    </a>
-                  </div>
-                )}
+                <a
+                  href={githubRepoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "rounded-lg transition-all duration-200 hover:bg-neutral-50",
+                    isCollapsed 
+                      ? "flex items-center justify-center px-2 py-2" 
+                      : "flex items-center gap-3 px-3 py-2.5 text-neutral-600"
+                  )}
+                  title="Project on GitHub"
+                  aria-label="Open project on GitHub"
+                >
+                  <Github className={cn(isCollapsed ? "w-[18px] h-[18px]" : "w-5 h-5", "text-neutral-400 shrink-0")} />
+                  {!isCollapsed && <span className="text-sm font-medium">Project on GitHub</span>}
+                </a>
               </div>
             </div>
           </nav>
