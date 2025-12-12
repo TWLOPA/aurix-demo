@@ -69,6 +69,8 @@ export default function Home() {
   const [callDuration, setCallDuration] = useState(0)
   const [showPersonaHint, setShowPersonaHint] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
+  const [isSpeakerMuted, setIsSpeakerMuted] = useState(false)
+  const lastVolumeRef = useRef<number>(1.0)
   const peerConnectionsRef = useRef<Set<RTCPeerConnection>>(new Set())
   const originalSenderTrackRef = useRef<Map<RTCRtpSender, MediaStreamTrack>>(new Map())
   const silentTrackRef = useRef<MediaStreamTrack | null>(null)
@@ -134,6 +136,12 @@ export default function Home() {
         console.log('[ElevenLabs] 🔊 Volume set to 1.0')
       } catch (e) {
         console.warn('[ElevenLabs] Could not set volume:', e)
+      }
+      // If speaker is muted at connect-time, re-apply it
+      if (isSpeakerMuted) {
+        try {
+          conversation.setVolume({ volume: 0 })
+        } catch {}
       }
       setCallActive(true)
       callStartTimeRef.current = Date.now()
@@ -255,6 +263,8 @@ export default function Home() {
     await conversation.endSession()
     setCallActive(false)
     setIsMuted(false) // Reset mute state
+    setIsSpeakerMuted(false) // Reset speaker state
+    lastVolumeRef.current = 1.0
     // Best-effort: restore original sender tracks after ending.
     const senderEntries = Array.from(originalSenderTrackRef.current.entries())
     for (let i = 0; i < senderEntries.length; i++) {
@@ -378,6 +388,26 @@ export default function Home() {
     })
   }, [isMuted, conversation, applyMuteToPeerConnections])
 
+  // Toggle agent output volume (speaker mute) - does NOT stop the call.
+  const handleToggleSpeakerMute = useCallback(() => {
+    const newState = !isSpeakerMuted
+    setIsSpeakerMuted(newState)
+
+    try {
+      if (newState) {
+        // Store last known volume so we can restore
+        lastVolumeRef.current = 1.0
+        ;(conversation as any).setVolume?.({ volume: 0 })
+        console.log('[Page] 🔇 Speaker muted (agent audio)')
+      } else {
+        ;(conversation as any).setVolume?.({ volume: lastVolumeRef.current ?? 1.0 })
+        console.log('[Page] 🔊 Speaker unmuted (agent audio)')
+      }
+    } catch (e) {
+      console.warn('[Page] ⚠️ Could not toggle speaker mute:', e)
+    }
+  }, [isSpeakerMuted, conversation])
+
   const handleCloseSummary = () => {
     setShowSummary(false)
     setCallSid(null)
@@ -420,6 +450,8 @@ export default function Home() {
                 onEndCall={handleEndCall}
                 isMuted={isMuted}
                 onToggleMute={handleToggleMute}
+                isSpeakerMuted={isSpeakerMuted}
+                onToggleSpeakerMute={handleToggleSpeakerMute}
               />
             </div>
             
@@ -446,6 +478,8 @@ export default function Home() {
                     onEndCall={handleEndCall}
                     isMuted={isMuted}
                     onToggleMute={handleToggleMute}
+                    isSpeakerMuted={isSpeakerMuted}
+                    onToggleSpeakerMute={handleToggleSpeakerMute}
                   />
                 </div>
                 <div className="w-1/2 h-full">

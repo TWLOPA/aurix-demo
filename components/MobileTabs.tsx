@@ -12,9 +12,11 @@ interface MobileTabsProps {
   onEndCall?: () => void
   isMuted?: boolean
   onToggleMute?: () => void
+  isSpeakerMuted?: boolean
+  onToggleSpeakerMute?: () => void
 }
 
-export function MobileTabs({ events, agentSpeaking, onEndCall, isMuted, onToggleMute }: MobileTabsProps) {
+export function MobileTabs({ events, agentSpeaking, onEndCall, isMuted, onToggleMute, isSpeakerMuted, onToggleSpeakerMute }: MobileTabsProps) {
   const [activeTab, setActiveTab] = useState<'conversation' | 'brain'>('conversation')
 
   return (
@@ -46,6 +48,8 @@ export function MobileTabs({ events, agentSpeaking, onEndCall, isMuted, onToggle
             onEndCall={onEndCall}
             isMuted={isMuted}
             onToggleMute={onToggleMute}
+            isSpeakerMuted={isSpeakerMuted}
+            onToggleSpeakerMute={onToggleSpeakerMute}
           />
         ) : (
           <AgentBrainPanel events={events} />

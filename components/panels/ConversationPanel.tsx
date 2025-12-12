@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { CallEvent } from '@/types'
-import { Loader2, MessageSquare, PhoneOff, MicOff } from 'lucide-react'
+import { Loader2, MessageSquare, PhoneOff, MicOff, VolumeX } from 'lucide-react'
 import { AnimatedOrb } from '@/components/ui/animated-orb'
 
 interface ConversationPanelProps {
@@ -14,9 +14,11 @@ interface ConversationPanelProps {
   onEndCall?: () => void
   isMuted?: boolean
   onToggleMute?: () => void
+  isSpeakerMuted?: boolean
+  onToggleSpeakerMute?: () => void
 }
 
-export function ConversationPanel({ events, loading, agentSpeaking, onEndCall, isMuted, onToggleMute }: ConversationPanelProps) {
+export function ConversationPanel({ events, loading, agentSpeaking, onEndCall, isMuted, onToggleMute, isSpeakerMuted, onToggleSpeakerMute }: ConversationPanelProps) {
   const [showListening, setShowListening] = useState(false)
   const [callDuration, setCallDuration] = useState('0:00')
   const lastMessageCountRef = useRef(0)
@@ -178,6 +180,21 @@ export function ConversationPanel({ events, loading, agentSpeaking, onEndCall, i
                 border: '1px solid rgba(255, 255, 255, 0.8)'
               }}
             >
+              {/* Speaker Mute Button */}
+              {onToggleSpeakerMute && (
+                <button
+                  onClick={onToggleSpeakerMute}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 active:scale-[0.98] ${
+                    isSpeakerMuted
+                      ? 'bg-amber-500 text-white hover:bg-amber-600'
+                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
+                  title={isSpeakerMuted ? 'Unmute agent audio' : 'Mute agent audio'}
+                >
+                  <VolumeX className="w-4 h-4" />
+                </button>
+              )}
+
               {/* Mute Button */}
               {onToggleMute && (
                 <button
