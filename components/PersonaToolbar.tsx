@@ -177,6 +177,7 @@ export function PersonaToolbar({ activeScenario = 1, showOnboardingHint = false 
           {/* Quick Info */}
           <div className="grid grid-cols-2 gap-2">
             <InfoItem label="DOB" value={scenario.customer_dob} />
+            {scenario.phone && <InfoItem label="Phone" value={scenario.phone} />}
             {scenario.order_id && <InfoItem label="Order" value={scenario.order_id} />}
             {scenario.prescription_id && <InfoItem label="Rx" value={scenario.prescription_id} />}
             {scenario.verification_last4 && (
