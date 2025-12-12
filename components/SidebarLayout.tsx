@@ -197,7 +197,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
         {/* Content */}
         <div className="flex flex-col h-full">
           {/* Logo Area */}
-          <div className={cn("h-14 flex items-center border-b border-neutral-100 relative", isCollapsed ? "justify-center px-2" : "px-3")}>
+          <div className={cn("h-14 flex items-center border-b border-neutral-100", isCollapsed ? "justify-center px-2" : "justify-between px-3")}>
             <Link href="/" className="flex items-center">
               <Image 
                 src="/assets/AL.png" 
@@ -207,18 +207,16 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 className="h-6 w-auto"
               />
             </Link>
-            <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-md hover:bg-neutral-100 transition-colors"
-              title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="w-4 h-4 text-neutral-500" />
-              ) : (
+            {!isCollapsed && (
+              <button
+                onClick={() => setIsCollapsed(true)}
+                className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-neutral-100 transition-colors"
+                title="Collapse sidebar"
+                aria-label="Collapse sidebar"
+              >
                 <ChevronLeft className="w-4 h-4 text-neutral-500" />
-              )}
-            </button>
+              </button>
+            )}
           </div>
 
           {/* Navigation */}
@@ -303,6 +301,20 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
               </div>
             </div>
           </nav>
+
+          {/* Expand Button (when collapsed) */}
+          {isCollapsed && (
+            <div className="px-2 py-3 border-t border-neutral-100">
+              <button
+                onClick={() => setIsCollapsed(false)}
+                className="w-full flex items-center justify-center py-2 rounded-lg bg-neutral-100 hover:bg-neutral-200 transition-colors"
+                title="Expand sidebar"
+                aria-label="Expand sidebar"
+              >
+                <ChevronRight className="w-4 h-4 text-neutral-600" />
+              </button>
+            </div>
+          )}
 
           {/* Footer - Powered by ElevenLabs */}
           <div className="p-3 border-t border-neutral-100">
