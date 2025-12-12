@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { CallEvent } from '@/types'
-import { Loader2, MessageSquare, PhoneOff } from 'lucide-react'
+import { Loader2, MessageSquare, PhoneOff, MicOff } from 'lucide-react'
 import { AnimatedOrb } from '@/components/ui/animated-orb'
 
 interface ConversationPanelProps {
@@ -12,9 +12,11 @@ interface ConversationPanelProps {
   loading?: boolean
   agentSpeaking?: boolean
   onEndCall?: () => void
+  isMuted?: boolean
+  onToggleMute?: () => void
 }
 
-export function ConversationPanel({ events, loading, agentSpeaking, onEndCall }: ConversationPanelProps) {
+export function ConversationPanel({ events, loading, agentSpeaking, onEndCall, isMuted, onToggleMute }: ConversationPanelProps) {
   const [showListening, setShowListening] = useState(false)
   const [callDuration, setCallDuration] = useState('0:00')
   const lastMessageCountRef = useRef(0)
@@ -180,6 +182,21 @@ export function ConversationPanel({ events, loading, agentSpeaking, onEndCall }:
               <div className="w-10 h-10 flex items-center justify-center">
                 <AnimatedOrb size={36} />
               </div>
+              
+              {/* Mute Button */}
+              {onToggleMute && (
+                <button
+                  onClick={onToggleMute}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 active:scale-[0.98] ${
+                    isMuted 
+                      ? 'bg-red-500 text-white hover:bg-red-600' 
+                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                  }`}
+                  title={isMuted ? 'Unmute microphone' : 'Mute microphone'}
+                >
+                  <MicOff className="w-4 h-4" />
+                </button>
+              )}
               
               {/* End Call Button */}
               <button

@@ -68,10 +68,12 @@ export default function Home() {
   const [showSummary, setShowSummary] = useState(false)
   const [callDuration, setCallDuration] = useState(0)
   const [showPersonaHint, setShowPersonaHint] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
   const callSidRef = useRef<string | null>(null) // Ref to avoid closure issues
   const callStartTimeRef = useRef<number | null>(null) // Track call start time
   const eventsForSummaryRef = useRef<typeof events>([]) // Store events for summary
   const farewellTimeoutRef = useRef<NodeJS.Timeout | null>(null) // For farewell detection
+  const mediaStreamRef = useRef<MediaStream | null>(null) // For mute functionality
   const { events, loading } = useCallEvents(callSid)
 
   // Update events ref whenever events change
@@ -212,8 +214,48 @@ export default function Home() {
     // End the ElevenLabs session
     await conversation.endSession()
     setCallActive(false)
+    setIsMuted(false) // Reset mute state
     setShowSummary(true) // Show summary modal
   }
+
+  // Toggle microphone mute - mutes the audio tracks so agent can't hear
+  const handleToggleMute = useCallback(async () => {
+    try {
+      // Get all audio tracks from any active media streams
+      const streams = await navigator.mediaDevices.getUserMedia({ audio: true })
+      
+      // If we haven't stored a reference yet, try to get the active stream
+      if (!mediaStreamRef.current) {
+        // Try to find the active audio tracks
+        const audioTracks = streams.getAudioTracks()
+        if (audioTracks.length > 0) {
+          mediaStreamRef.current = streams
+        }
+      }
+      
+      // Toggle mute state
+      const newMutedState = !isMuted
+      setIsMuted(newMutedState)
+      
+      // Mute/unmute all audio tracks across all streams
+      if (mediaStreamRef.current) {
+        mediaStreamRef.current.getAudioTracks().forEach(track => {
+          track.enabled = !newMutedState
+        })
+      }
+      
+      // Also try to mute via any global audio context
+      streams.getAudioTracks().forEach(track => {
+        track.enabled = !newMutedState
+      })
+      
+      console.log(`[Page] 🎤 Microphone ${newMutedState ? 'MUTED' : 'UNMUTED'}`)
+    } catch (error) {
+      console.error('[Page] Failed to toggle mute:', error)
+      // Still toggle the UI state even if we can't access tracks
+      setIsMuted(prev => !prev)
+    }
+  }, [isMuted])
 
   const handleCloseSummary = () => {
     setShowSummary(false)
@@ -254,6 +296,9 @@ export default function Home() {
               <MobileTabs 
                 events={events} 
                 agentSpeaking={conversation.isSpeaking}
+                onEndCall={handleEndCall}
+                isMuted={isMuted}
+                onToggleMute={handleToggleMute}
               />
             </div>
             
@@ -278,6 +323,8 @@ export default function Home() {
                     loading={loading} 
                     agentSpeaking={conversation.isSpeaking}
                     onEndCall={handleEndCall}
+                    isMuted={isMuted}
+                    onToggleMute={handleToggleMute}
                   />
                 </div>
                 <div className="w-1/2 h-full">

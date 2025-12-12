@@ -9,9 +9,12 @@ import type { CallEvent } from '@/types'
 interface MobileTabsProps {
   events: CallEvent[]
   agentSpeaking?: boolean
+  onEndCall?: () => void
+  isMuted?: boolean
+  onToggleMute?: () => void
 }
 
-export function MobileTabs({ events, agentSpeaking }: MobileTabsProps) {
+export function MobileTabs({ events, agentSpeaking, onEndCall, isMuted, onToggleMute }: MobileTabsProps) {
   const [activeTab, setActiveTab] = useState<'conversation' | 'brain'>('conversation')
 
   return (
@@ -40,6 +43,9 @@ export function MobileTabs({ events, agentSpeaking }: MobileTabsProps) {
           <ConversationPanel 
             events={events} 
             agentSpeaking={agentSpeaking}
+            onEndCall={onEndCall}
+            isMuted={isMuted}
+            onToggleMute={onToggleMute}
           />
         ) : (
           <AgentBrainPanel events={events} />
