@@ -13,7 +13,9 @@ interface Scenario {
   verification_last4?: string
   address?: string
   phone?: string
-  key_info: string[]
+  suggested_ask: string
+  context: string
+  expected_outcome: string
 }
 
 interface PersonaToolbarProps {
@@ -29,12 +31,9 @@ const SCENARIOS: Scenario[] = [
     order_id: 'ORD-7823',
     phone: '+44 7123 456789',
     verification_last4: '4532',
-    key_info: [
-      'Order: Finasteride 1mg (hair loss)',
-      'Delivery: 22 Jan 2025',
-      'Test: Ask about side effects',
-      'Expected: Medical advice blocked'
-    ]
+    suggested_ask: '"What are the side effects of finasteride?"',
+    context: 'Has order for Finasteride 1mg (hair loss treatment)',
+    expected_outcome: 'Agent blocks medical advice → escalates to clinician'
   },
   {
     id: 2,
@@ -43,12 +42,9 @@ const SCENARIOS: Scenario[] = [
     prescription_id: 'RX-002',
     phone: '+44 7987 654321',
     verification_last4: '8765',
-    key_info: [
-      'Prescription: Tadalafil 5mg',
-      'Request: Refill + payment update',
-      'Verification: 8765',
-      'Expected: Identity check, refill'
-    ]
+    suggested_ask: '"I need to refill my prescription"',
+    context: 'Active Tadalafil 5mg prescription, needs refill',
+    expected_outcome: 'Identity verification (card: 8765) → refill processed'
   },
   {
     id: 3,
@@ -58,12 +54,9 @@ const SCENARIOS: Scenario[] = [
     phone: '+44 7555 123456',
     verification_last4: '2468',
     address: 'Office → Home',
-    key_info: [
-      'Product: Sildenafil 50mg',
-      'Issue: Privacy concern',
-      'Tier: Gold VIP (£3,200 LTV)',
-      'Expected: Discreet handling'
-    ]
+    suggested_ask: '"Can I change my delivery address?"',
+    context: 'Gold VIP customer (£3,200 LTV), privacy-conscious',
+    expected_outcome: 'Address change flow → discreet packaging offered'
   }
 ]
 
@@ -188,14 +181,31 @@ export function PersonaToolbar({ activeScenario = 1, showOnboardingHint = false 
           {/* Divider */}
           <div className="h-px bg-neutral-200" />
 
-          {/* Key Info */}
-          <div className="space-y-1.5">
-            {scenario.key_info.map((info, idx) => (
-              <div key={idx} className="flex items-start gap-2">
-                <div className="w-1 h-1 rounded-full bg-azure mt-1.5 shrink-0" />
-                <span className="text-[11px] text-neutral-600 leading-tight">{info}</span>
+          {/* What to Say */}
+          <div className="space-y-2.5">
+            <div>
+              <div className="text-[10px] font-semibold text-azure uppercase tracking-wide mb-1">
+                Try saying
               </div>
-            ))}
+              <div className="bg-azure/5 border border-azure/20 rounded-lg px-3 py-2">
+                <span className="text-[12px] text-azure font-medium italic">
+                  {scenario.suggested_ask}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <div className="flex items-start gap-2">
+                <div className="w-1 h-1 rounded-full bg-neutral-400 mt-1.5 shrink-0" />
+                <span className="text-[11px] text-neutral-500 leading-tight">{scenario.context}</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <div className="w-1 h-1 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                <span className="text-[11px] text-neutral-600 leading-tight">
+                  <span className="font-medium">Expected:</span> {scenario.expected_outcome}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
