@@ -338,9 +338,36 @@ export default function Home() {
     setIsMuted(newMutedState)
 
     try {
-      // Official ElevenLabs control (not in TS types for some versions)
-      ;(conversation as any).setMicMuted?.(newMutedState)
-      console.log(`[Page] 🎤 ElevenLabs setMicMuted: ${newMutedState}`)
+      // ElevenLabs SDK methods vary by version. Try all known APIs.
+      const conv: any = conversation as any
+      let used: string | null = null
+
+      if (typeof conv.setMicMuted === 'function') {
+        conv.setMicMuted(newMutedState)
+        used = 'setMicMuted'
+      } else if (typeof conv.muteMic === 'function') {
+        // Some versions expose muteMic() toggle-style; call only when state changes.
+        // If it's a toggle, ensure it matches desired state by checking conv.isMuted where available.
+        const before = typeof conv.isMuted === 'boolean' ? conv.isMuted : undefined
+        conv.muteMic()
+        const after = typeof conv.isMuted === 'boolean' ? conv.isMuted : undefined
+        if (before !== undefined && after !== undefined && after !== newMutedState) {
+          // Toggle again if needed
+          conv.muteMic()
+        }
+        used = 'muteMic'
+      } else if (typeof conv.toggleMute === 'function') {
+        // Same caveat as above: toggleMute() may not accept a boolean
+        const before = typeof conv.isMuted === 'boolean' ? conv.isMuted : undefined
+        conv.toggleMute()
+        const after = typeof conv.isMuted === 'boolean' ? conv.isMuted : undefined
+        if (before !== undefined && after !== undefined && after !== newMutedState) {
+          conv.toggleMute()
+        }
+        used = 'toggleMute'
+      }
+
+      console.log(`[Page] 🎤 ElevenLabs mute API used: ${used ?? 'none'}`)
     } catch (e) {
       console.warn('[Page] ⚠️ Could not mute mic via ElevenLabs SDK:', e)
     }
