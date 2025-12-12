@@ -169,9 +169,9 @@ export function ConversationPanel({ events, loading, agentSpeaking, onEndCall, i
 
         {/* Floating Action Bar */}
         {isCallActive && onEndCall && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+          <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center px-4">
             <div 
-              className="flex items-center gap-2 p-1.5 rounded-full"
+              className="flex items-center gap-2 p-1.5 rounded-full w-full max-w-md sm:w-auto"
               style={{
                 background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
                 backdropFilter: 'blur(20px)',
