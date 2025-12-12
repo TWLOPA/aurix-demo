@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bot, FileText, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle, Menu, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Bot, FileText, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle, Menu, ChevronLeft, ChevronRight, Github } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -18,6 +18,9 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
   const { isCollapsed, setIsCollapsed } = useSidebar()
   const [showGuide, setShowGuide] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const githubRepoUrl = 'https://github.com/TWLOPA/aurix-demo'
+  const githubProfileUrl = 'https://github.com/TWLOPA'
   
   const navSections = [
     {
@@ -150,6 +153,28 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                   <span className="text-sm font-medium">How to Use</span>
                 </button>
               </div>
+
+            {/* GitHub Links */}
+            <div className="mt-2 px-2">
+              <a
+                href={githubRepoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
+              >
+                <Github className="w-5 h-5 text-neutral-400 shrink-0" />
+                <span className="text-sm font-medium">Project on GitHub</span>
+              </a>
+              <a
+                href={githubProfileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
+              >
+                <Github className="w-5 h-5 text-neutral-300 shrink-0" />
+                <span className="text-sm font-medium">Tom Walsh</span>
+              </a>
+            </div>
             </nav>
 
             {/* Footer */}
@@ -266,6 +291,59 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                   <HelpCircle className={cn(isCollapsed ? "w-[18px] h-[18px]" : "w-5 h-5", "text-neutral-400 shrink-0")} />
                   {!isCollapsed && <span className="text-sm font-medium">How to Use</span>}
                 </button>
+              </div>
+            </div>
+
+            {/* GitHub Links (below How to Use) */}
+            <div className="mt-2">
+              <div className="px-2">
+                {isCollapsed ? (
+                  <div className="flex flex-col gap-1">
+                    <a
+                      href={githubRepoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center px-2 py-2 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
+                      title="GitHub: aurix-demo"
+                      aria-label="Open aurix-demo on GitHub"
+                    >
+                      <Github className="w-[18px] h-[18px] text-neutral-400 shrink-0" />
+                    </a>
+                    <a
+                      href={githubProfileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center px-2 py-2 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
+                      title="GitHub: TWLOPA"
+                      aria-label="Open TWLOPA GitHub profile"
+                    >
+                      <Github className="w-[18px] h-[18px] text-neutral-300 shrink-0" />
+                    </a>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <a
+                      href={githubRepoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
+                      title="Project on GitHub"
+                    >
+                      <Github className="w-5 h-5 text-neutral-400 shrink-0" />
+                      <span className="text-sm font-medium">Project on GitHub</span>
+                    </a>
+                    <a
+                      href={githubProfileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg w-full transition-all duration-200 text-neutral-600 hover:bg-neutral-50"
+                      title="Tom Walsh on GitHub"
+                    >
+                      <Github className="w-5 h-5 text-neutral-300 shrink-0" />
+                      <span className="text-sm font-medium">Tom Walsh</span>
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </nav>
