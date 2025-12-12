@@ -73,30 +73,7 @@ export default function Home() {
   const callStartTimeRef = useRef<number | null>(null) // Track call start time
   const eventsForSummaryRef = useRef<typeof events>([]) // Store events for summary
   const farewellTimeoutRef = useRef<NodeJS.Timeout | null>(null) // For farewell detection
-  const mediaStreamRef = useRef<MediaStream | null>(null) // For mute functionality
   const { events, loading } = useCallEvents(callSid)
-
-  // Patch getUserMedia to capture the stream ElevenLabs uses
-  useEffect(() => {
-    const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices)
-    
-    navigator.mediaDevices.getUserMedia = async (constraints) => {
-      const stream = await originalGetUserMedia(constraints)
-      
-      // If this has audio, store it for mute control
-      if (constraints && (constraints === true || (typeof constraints === 'object' && constraints.audio))) {
-        console.log('[Page] 🎤 Captured audio stream from getUserMedia')
-        mediaStreamRef.current = stream
-      }
-      
-      return stream
-    }
-    
-    // Cleanup: restore original on unmount
-    return () => {
-      navigator.mediaDevices.getUserMedia = originalGetUserMedia
-    }
-  }, [])
 
   // Update events ref whenever events change
   useEffect(() => {
@@ -240,21 +217,19 @@ export default function Home() {
     setShowSummary(true) // Show summary modal
   }
 
-  // Toggle microphone mute - disables audio tracks on the captured stream
+  // Toggle microphone mute - mutes input ONLY to ElevenLabs (doesn't affect external recording)
   const handleToggleMute = useCallback(() => {
     const newMutedState = !isMuted
     setIsMuted(newMutedState)
-    
-    if (mediaStreamRef.current) {
-      mediaStreamRef.current.getAudioTracks().forEach((track) => {
-        track.enabled = !newMutedState
-        console.log(`[Page] 🎤 Audio track enabled: ${!newMutedState}`)
-      })
-      console.log(`[Page] 🎤 Microphone ${newMutedState ? 'MUTED' : 'UNMUTED'}`)
-    } else {
-      console.warn('[Page] ⚠️ No audio stream captured yet - mute may not work')
+
+    try {
+      // Official ElevenLabs control (not in TS types for some versions)
+      ;(conversation as any).setMicMuted?.(newMutedState)
+      console.log(`[Page] 🎤 ElevenLabs mic muted: ${newMutedState}`)
+    } catch (e) {
+      console.warn('[Page] ⚠️ Could not mute mic via ElevenLabs SDK:', e)
     }
-  }, [isMuted])
+  }, [isMuted, conversation])
 
   const handleCloseSummary = () => {
     setShowSummary(false)
