@@ -373,7 +373,21 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
             </div>
 
             {/* Content */}
-            <div className="p-6 space-y-5 max-h-[60vh] overflow-y-auto">
+            <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+              {/* Video Walkthrough */}
+              <div>
+                <h3 className="text-sm font-medium text-neutral-900 mb-2">Watch the Walkthrough</h3>
+                <div className="relative w-full rounded-lg overflow-hidden bg-neutral-100" style={{ paddingBottom: '56.25%' }}>
+                  <iframe
+                    src="https://www.tella.tv/video/aurix-welcome-1-bcev/embed?b=0&title=0&a=1&loop=0&autoPlay=false&t=0&muted=0&wt=0"
+                    className="absolute inset-0 w-full h-full"
+                    allowFullScreen
+                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                    style={{ border: 'none' }}
+                  />
+                </div>
+              </div>
+
               {/* What is this */}
               <div>
                 <h3 className="text-sm font-medium text-neutral-900 mb-1.5">What is this?</h3>
