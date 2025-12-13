@@ -266,8 +266,8 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
               /* Expanded: Grouped sections */
               <>
                 {navSections.map((section, sectionIndex) => (
-                  <div key={section.title} className={cn(sectionIndex > 0 && "mt-4")}>
-                    <div className="px-4 mb-2">
+                  <div key={section.title} className={cn(sectionIndex > 0 && "mt-2")}>
+                    <div className="px-4 mb-1">
                       <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
                         {section.title}
                       </span>
@@ -302,7 +302,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                 ))}
 
                 {/* Help Section - Expanded */}
-                <div className="mt-4">
+                <div className="mt-2">
                   <div className="px-2 space-y-1">
                     <button
                       onClick={() => setShowGuide(true)}
