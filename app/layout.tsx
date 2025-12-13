@@ -4,7 +4,7 @@ import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SidebarLayout } from "@/components/SidebarLayout";
 import { SidebarProvider } from "@/lib/sidebar-context";
-import { Analytics } from "@vercel/analytics/react";
+import { Analytics } from "@vercel/analytics/next";
 
 // Use Inter as per ElevenLabs design tokens
 const inter = Inter({ subsets: ["latin"] });
