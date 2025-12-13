@@ -4,6 +4,7 @@ import "./globals.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SidebarLayout } from "@/components/SidebarLayout";
 import { SidebarProvider } from "@/lib/sidebar-context";
+import { Analytics } from "@vercel/analytics/react";
 
 // Use Inter as per ElevenLabs design tokens
 const inter = Inter({ subsets: ["latin"] });
@@ -28,6 +29,7 @@ export default function RootLayout({
             </SidebarLayout>
           </SidebarProvider>
         </ErrorBoundary>
+        <Analytics />
       </body>
     </html>
   );
