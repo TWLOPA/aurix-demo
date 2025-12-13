@@ -221,7 +221,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
           {/* Navigation */}
           <nav className="flex-1 py-4 overflow-y-auto">
             {navSections.map((section, sectionIndex) => (
-              <div key={section.title} className={cn(sectionIndex > 0 && "mt-4")}>
+              <div key={section.title} className={cn(sectionIndex > 0 && !isCollapsed && "mt-4")}>
                 {!isCollapsed && (
                   <div className="px-4 mb-2">
                     <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
@@ -229,7 +229,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                     </span>
                   </div>
                 )}
-                <div className={cn("space-y-1", isCollapsed ? "px-2" : "px-2")}>
+                <div className={cn("space-y-1", "px-2")}>
                   {section.items.map((item) => {
                     const active = item.matches.includes(pathname)
                     return (
@@ -262,8 +262,8 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
             ))}
 
             {/* Help Section */}
-            <div className="mt-4">
-              <div className="px-2">
+            <div className={cn(isCollapsed ? "mt-1" : "mt-4")}>
+              <div className={cn("px-2", isCollapsed ? "space-y-1" : "space-y-1")}>
                 <button
                   onClick={() => setShowGuide(true)}
                   className={cn(
@@ -275,12 +275,8 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                   <HelpCircle className={cn(isCollapsed ? "w-[18px] h-[18px]" : "w-5 h-5", "text-neutral-400 shrink-0")} />
                   {!isCollapsed && <span className="text-sm font-medium">How to Use</span>}
                 </button>
-              </div>
-            </div>
 
-            {/* GitHub Link (below How to Use) */}
-            <div className="mt-2">
-              <div className="px-2">
+                {/* GitHub Link */}
                 <a
                   href={githubRepoUrl}
                   target="_blank"
