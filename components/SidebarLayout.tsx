@@ -220,81 +220,113 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
           {/* Navigation */}
           <nav className="flex-1 py-4 overflow-y-auto">
-            {navSections.map((section, sectionIndex) => (
-              <div key={section.title} className={cn(sectionIndex > 0 && !isCollapsed && "mt-4")}>
-                {!isCollapsed && (
-                  <div className="px-4 mb-2">
-                    <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
-                      {section.title}
-                    </span>
-                  </div>
-                )}
-                <div className={cn("space-y-1", "px-2")}>
-                  {section.items.map((item) => {
-                    const active = item.matches.includes(pathname)
-                    return (
-                      <Link
-                        key={item.title}
-                        href={item.href}
+            {isCollapsed ? (
+              /* Collapsed: Single flat list with even spacing */
+              <div className="px-2 space-y-1">
+                {navSections.flatMap(section => section.items).map((item) => {
+                  const active = item.matches.includes(pathname)
+                  return (
+                    <Link
+                      key={item.title}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center justify-center rounded-lg transition-all duration-200 px-2 py-2.5",
+                        active ? "bg-neutral-100/80 shadow-sm" : "hover:bg-neutral-50"
+                      )}
+                      title={item.title}
+                    >
+                      <item.icon
                         className={cn(
-                          "flex items-center rounded-lg transition-all duration-200",
-                          isCollapsed ? "justify-center px-2 py-2" : "gap-3 px-3 py-2.5",
-                          active ? "bg-neutral-100/80 shadow-sm" : "hover:bg-neutral-50"
+                          "w-[18px] h-[18px]",
+                          active ? "text-neutral-700" : "text-neutral-500"
                         )}
-                        title={item.title}
-                      >
-                        <item.icon
-                          className={cn(
-                            isCollapsed ? "w-[18px] h-[18px]" : "w-5 h-5",
-                            active ? "text-neutral-700" : "text-neutral-500"
-                          )}
-                        />
-                        {!isCollapsed && (
-                          <span className={cn("text-sm font-medium", active ? "text-neutral-900" : "text-neutral-600")}>
-                            {item.title}
-                          </span>
-                        )}
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
-
-            {/* Help Section */}
-            <div className={cn(isCollapsed ? "mt-1" : "mt-4")}>
-              <div className={cn("px-2", isCollapsed ? "space-y-1" : "space-y-1")}>
+                      />
+                    </Link>
+                  )
+                })}
                 <button
                   onClick={() => setShowGuide(true)}
-                  className={cn(
-                    "w-full rounded-lg transition-all duration-200 hover:bg-neutral-50",
-                    isCollapsed ? "flex items-center justify-center px-2 py-2" : "flex items-center gap-3 px-3 py-2.5 text-neutral-600"
-                  )}
+                  className="w-full flex items-center justify-center rounded-lg transition-all duration-200 hover:bg-neutral-50 px-2 py-2.5"
                   title="How to Use"
                 >
-                  <HelpCircle className={cn(isCollapsed ? "w-[18px] h-[18px]" : "w-5 h-5", "text-neutral-400 shrink-0")} />
-                  {!isCollapsed && <span className="text-sm font-medium">How to Use</span>}
+                  <HelpCircle className="w-[18px] h-[18px] text-neutral-400" />
                 </button>
-
-                {/* GitHub Link */}
                 <a
                   href={githubRepoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={cn(
-                    "rounded-lg transition-all duration-200 hover:bg-neutral-50",
-                    isCollapsed 
-                      ? "flex items-center justify-center px-2 py-2" 
-                      : "flex items-center gap-3 px-3 py-2.5 text-neutral-600"
-                  )}
+                  className="flex items-center justify-center rounded-lg transition-all duration-200 hover:bg-neutral-50 px-2 py-2.5"
                   title="Project on GitHub"
                   aria-label="Open project on GitHub"
                 >
-                  <Github className={cn(isCollapsed ? "w-[18px] h-[18px]" : "w-5 h-5", "text-neutral-400 shrink-0")} />
-                  {!isCollapsed && <span className="text-sm font-medium">Project on GitHub</span>}
+                  <Github className="w-[18px] h-[18px] text-neutral-400" />
                 </a>
               </div>
-            </div>
+            ) : (
+              /* Expanded: Grouped sections */
+              <>
+                {navSections.map((section, sectionIndex) => (
+                  <div key={section.title} className={cn(sectionIndex > 0 && "mt-4")}>
+                    <div className="px-4 mb-2">
+                      <span className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
+                        {section.title}
+                      </span>
+                    </div>
+                    <div className="space-y-1 px-2">
+                      {section.items.map((item) => {
+                        const active = item.matches.includes(pathname)
+                        return (
+                          <Link
+                            key={item.title}
+                            href={item.href}
+                            className={cn(
+                              "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
+                              active ? "bg-neutral-100/80 shadow-sm" : "hover:bg-neutral-50"
+                            )}
+                            title={item.title}
+                          >
+                            <item.icon
+                              className={cn(
+                                "w-5 h-5",
+                                active ? "text-neutral-700" : "text-neutral-500"
+                              )}
+                            />
+                            <span className={cn("text-sm font-medium", active ? "text-neutral-900" : "text-neutral-600")}>
+                              {item.title}
+                            </span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Help Section - Expanded */}
+                <div className="mt-4">
+                  <div className="px-2 space-y-1">
+                    <button
+                      onClick={() => setShowGuide(true)}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-neutral-50 text-neutral-600"
+                      title="How to Use"
+                    >
+                      <HelpCircle className="w-5 h-5 text-neutral-400 shrink-0" />
+                      <span className="text-sm font-medium">How to Use</span>
+                    </button>
+                    <a
+                      href={githubRepoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 hover:bg-neutral-50 text-neutral-600"
+                      title="Project on GitHub"
+                      aria-label="Open project on GitHub"
+                    >
+                      <Github className="w-5 h-5 text-neutral-400 shrink-0" />
+                      <span className="text-sm font-medium">Project on GitHub</span>
+                    </a>
+                  </div>
+                </div>
+              </>
+            )}
           </nav>
 
           {/* Expand Button (when collapsed) */}
