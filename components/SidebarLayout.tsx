@@ -15,8 +15,7 @@ interface SidebarLayoutProps {
 
 export function SidebarLayout({ children }: SidebarLayoutProps) {
   const pathname = usePathname()
-  const { isCollapsed, setIsCollapsed } = useSidebar()
-  const [showGuide, setShowGuide] = useState(false)
+  const { isCollapsed, setIsCollapsed, showGuide, setShowGuide } = useSidebar()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const githubRepoUrl = 'https://github.com/TWLOPA/aurix-demo'
@@ -199,13 +198,23 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
           {/* Logo Area */}
           <div className={cn("h-14 flex items-center border-b border-neutral-100", isCollapsed ? "justify-center px-2" : "justify-between px-3")}>
             <Link href="/" className="flex items-center">
-              <Image 
-                src="/assets/AL.png" 
-                alt="Aurix" 
-                width={isCollapsed ? 24 : 80} 
-                height={24}
-                className="h-6 w-auto"
-              />
+              {isCollapsed ? (
+                <Image 
+                  src="/assets/elevenlabs-symbol.svg" 
+                  alt="Aurix" 
+                  width={24} 
+                  height={24}
+                  className="w-6 h-6"
+                />
+              ) : (
+                <Image 
+                  src="/assets/AL.png" 
+                  alt="Aurix" 
+                  width={120} 
+                  height={32}
+                  className="h-8 w-auto"
+                />
+              )}
             </Link>
             {!isCollapsed && (
               <button

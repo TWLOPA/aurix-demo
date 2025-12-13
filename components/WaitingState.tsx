@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Mic, Loader2, Users } from 'lucide-react'
+import { Mic, Loader2, Users, HelpCircle } from 'lucide-react'
 import Image from 'next/image'
+import { useSidebar } from '@/lib/sidebar-context'
 
 interface WaitingStateProps {
   onCallStart: (callSid: string) => void
@@ -10,6 +11,7 @@ interface WaitingStateProps {
 
 export function WaitingState({ onCallStart }: WaitingStateProps) {
   const [loading, setLoading] = useState(false)
+  const { openGuide } = useSidebar()
 
   const handleStartCall = async () => {
     console.log('[WaitingState] Start button clicked')
@@ -100,10 +102,14 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
             </button>
           </div>
 
-          {/* Subtle hint */}
-          <p className="text-xs text-neutral-400">
-            Click to speak with the AI agent
-          </p>
+          {/* Guide link */}
+          <button
+            onClick={openGuide}
+            className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>How to use this demo</span>
+          </button>
         </div>
       </div>
 
