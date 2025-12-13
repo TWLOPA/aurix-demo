@@ -374,9 +374,9 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
             {/* Content */}
             <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-              {/* Video Walkthrough */}
+              {/* Welcome Video */}
               <div>
-                <h3 className="text-sm font-medium text-neutral-900 mb-2">Watch the Walkthrough</h3>
+                <h3 className="text-sm font-medium text-neutral-900 mb-2">Welcome</h3>
                 <div className="relative w-full rounded-lg overflow-hidden bg-neutral-100" style={{ paddingBottom: '56.25%' }}>
                   <iframe
                     src="https://www.tella.tv/video/aurix-welcome-1-bcev/embed?b=0&title=0&a=1&loop=0&autoPlay=false&t=0&muted=0&wt=0"

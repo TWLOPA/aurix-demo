@@ -108,7 +108,7 @@ export function WaitingState({ onCallStart }: WaitingStateProps) {
             className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
           >
             <HelpCircle className="w-3.5 h-3.5" />
-            <span>How to use this demo</span>
+            <span>Watch intro & guide</span>
           </button>
         </div>
       </div>
