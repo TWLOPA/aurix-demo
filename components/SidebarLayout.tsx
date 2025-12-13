@@ -198,23 +198,13 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
           {/* Logo Area */}
           <div className={cn("h-14 flex items-center border-b border-neutral-100", isCollapsed ? "justify-center px-2" : "justify-between px-3")}>
             <Link href="/" className="flex items-center">
-              {isCollapsed ? (
-                <Image 
-                  src="/assets/elevenlabs-symbol.svg" 
-                  alt="Aurix" 
-                  width={24} 
-                  height={24}
-                  className="w-6 h-6"
-                />
-              ) : (
-                <Image 
-                  src="/assets/AL.png" 
-                  alt="Aurix" 
-                  width={120} 
-                  height={32}
-                  className="h-8 w-auto"
-                />
-              )}
+              <Image 
+                src="/assets/AL.png" 
+                alt="Aurix" 
+                width={isCollapsed ? 32 : 120} 
+                height={isCollapsed ? 32 : 32}
+                className={isCollapsed ? "h-7 w-auto" : "h-8 w-auto"}
+              />
             </Link>
             {!isCollapsed && (
               <button
