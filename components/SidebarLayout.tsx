@@ -327,8 +327,8 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
           {/* Footer - Powered by ElevenLabs */}
           <div className="p-3 border-t border-neutral-100">
-            <div className={cn("flex items-center", isCollapsed ? "justify-center py-1" : "gap-2 px-1")}>
-              {isCollapsed ? (
+            {isCollapsed ? (
+              <div className="flex items-center justify-center py-1">
                 <Image 
                   src="/assets/elevenlabs-symbol.svg" 
                   alt="ElevenLabs" 
@@ -336,19 +336,19 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
                   height={16}
                   className="opacity-40"
                 />
-              ) : (
-                <>
-                  <Image 
-                    src="/assets/ElevenLabs_logo.png" 
-                    alt="ElevenLabs" 
-                    width={80} 
-                    height={16}
-                    className="h-4 w-auto opacity-50"
-                  />
-                  <span className="text-xs text-neutral-400">Powered by</span>
-                </>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-start gap-1 px-1">
+                <span className="text-[10px] text-neutral-400">Powered by</span>
+                <Image 
+                  src="/assets/ElevenLabs_logo.png" 
+                  alt="ElevenLabs" 
+                  width={100} 
+                  height={20}
+                  className="h-5 w-auto opacity-60"
+                />
+              </div>
+            )}
           </div>
         </div>
       </aside>
