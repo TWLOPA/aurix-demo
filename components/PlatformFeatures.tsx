@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { ChevronDown, X } from 'lucide-react'
 
 interface PlatformFeaturesProps {
@@ -93,8 +92,7 @@ export function PlatformFeatures({
         style={{
           background: 'linear-gradient(135deg, #0A4D68 0%, #088395 100%)',
           boxShadow: '0 4px 24px rgba(0, 0, 0, 0.25)',
-          width: isExpanded ? '320px' : 'auto',
-          minWidth: isExpanded ? '320px' : 'auto'
+          width: '320px'
         }}
       >
         {/* Collapsed Header - Only visible when collapsed */}
@@ -111,14 +109,8 @@ export function PlatformFeatures({
           >
             <div className="flex items-center gap-2.5">
               <span className="font-medium text-[13px] text-white/90">
-                Aurix Features
+                Problem & Solution
               </span>
-              <Badge 
-                variant="outline"
-                className="text-[9px] px-1.5 py-0 border-white/15 text-white/50 bg-transparent font-normal"
-              >
-                ElevenLabs
-              </Badge>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-white/40" />
           </button>
@@ -204,7 +196,7 @@ export function PlatformFeatures({
             {/* Footer */}
             <div className="mt-2 pt-2.5 border-t border-white/[0.06] flex items-center justify-between">
               <span className="text-[10px] text-white/30">
-                {activeTab === 'problem' ? 'The compliance gap' : 'Try it live above'}
+                {activeTab === 'problem' ? 'The compliance gap' : 'Powered by ElevenLabs'}
               </span>
             </div>
           </div>

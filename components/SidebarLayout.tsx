@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bot, FileText, HelpCircle, X, MessageSquare, Shield, Zap, Package, AlertTriangle, Menu, ChevronLeft, ChevronRight, Github } from 'lucide-react'
+import { Bot, FileText, HelpCircle, X, MessageSquare, Shield, AlertTriangle, Menu, ChevronLeft, ChevronRight, Github } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -367,79 +367,67 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
               <div>
                 <h3 className="text-sm font-medium text-neutral-900 mb-1.5">What is this?</h3>
                 <p className="text-sm text-neutral-500 leading-relaxed">
-                  A demonstration of an AI-powered customer service agent for health e-commerce, 
-                  showcasing transparent decision-making, compliance boundaries, and identity verification.
+                  An AI voice agent for regulated healthcare e-commerce. Watch it handle orders, 
+                  enforce compliance boundaries, and escalate medical questions - all with full transparency.
                 </p>
               </div>
 
-              {/* Test Scenarios */}
+              {/* How to Demo */}
               <div>
-                <h3 className="text-sm font-medium text-neutral-900 mb-3">Test Scenarios</h3>
+                <h3 className="text-sm font-medium text-neutral-900 mb-3">How to Demo</h3>
                 <div className="space-y-2.5">
                   <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <Package className="w-4 h-4 text-neutral-500" />
-                      <span className="text-sm font-medium text-neutral-700">Order Inquiry</span>
+                      <Bot className="w-4 h-4 text-[#088395]" />
+                      <span className="text-sm font-medium text-neutral-700">1. Select a Persona</span>
                     </div>
-                    <code className="text-xs bg-white border border-neutral-200 px-2 py-1 rounded block text-neutral-600">
-                      &quot;Can you check on order 7823 for me?&quot;
-                    </code>
-                    <p className="text-xs text-neutral-400 mt-1.5">
-                      Verify: DOB <strong>15th March 1985</strong> or postcode <strong>SW1A 1AA</strong>
+                    <p className="text-xs text-neutral-500">
+                      Use the persona cards in the sidebar to see suggested phrases and expected outcomes
+                    </p>
+                  </div>
+
+                  <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <MessageSquare className="w-4 h-4 text-[#088395]" />
+                      <span className="text-sm font-medium text-neutral-700">2. Start Talking</span>
+                    </div>
+                    <p className="text-xs text-neutral-500">
+                      Click the orb to connect, then say the suggested phrase from the persona card
                     </p>
                   </div>
 
                   <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100">
                     <div className="flex items-center gap-2 mb-1.5">
                       <Shield className="w-4 h-4 text-amber-500" />
-                      <span className="text-sm font-medium text-neutral-700">Compliance Test</span>
+                      <span className="text-sm font-medium text-neutral-700">3. Watch the Agent Think</span>
                     </div>
-                    <code className="text-xs bg-white border border-neutral-200 px-2 py-1 rounded block text-neutral-600">
-                      &quot;What are the side effects of this medication?&quot;
-                    </code>
-                    <p className="text-xs text-neutral-400 mt-1.5">
-                      Watch the agent escalate to a clinician
-                    </p>
-                  </div>
-
-                  <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-100">
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <Zap className="w-4 h-4 text-emerald-500" />
-                      <span className="text-sm font-medium text-neutral-700">Refill Request</span>
-                    </div>
-                    <code className="text-xs bg-white border border-neutral-200 px-2 py-1 rounded block text-neutral-600">
-                      &quot;I need to refill my prescription&quot;
-                    </code>
-                    <p className="text-xs text-neutral-400 mt-1.5">
-                      Verify with last 4 card digits: <strong>4532</strong>
+                    <p className="text-xs text-neutral-500">
+                      The right panel shows real-time reasoning, database queries, and compliance checks
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Understanding the UI */}
+              {/* Demo Controls */}
               <div>
-                <h3 className="text-sm font-medium text-neutral-900 mb-3">Understanding the UI</h3>
-                <div className="space-y-2.5 text-sm">
+                <h3 className="text-sm font-medium text-neutral-900 mb-3">Demo Controls</h3>
+                <div className="space-y-2 text-sm">
                   <div className="flex items-start gap-2.5">
-                    <MessageSquare className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
+                    <div className="w-4 h-4 rounded bg-red-500/10 flex items-center justify-center mt-0.5 shrink-0">
+                      <div className="w-2 h-2 rounded-sm bg-red-500" />
+                    </div>
                     <div>
-                      <span className="font-medium text-neutral-700">Live Transcript</span>
-                      <p className="text-neutral-500 text-xs">Real-time conversation with the agent</p>
+                      <span className="font-medium text-neutral-700">Mic Mute</span>
+                      <p className="text-neutral-500 text-xs">Mute your mic to narrate without the agent hearing</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <Bot className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
-                    <div>
-                      <span className="font-medium text-neutral-700">Agent Reasoning</span>
-                      <p className="text-neutral-500 text-xs">Transparent view of decision-making and compliance checks</p>
+                    <div className="w-4 h-4 rounded bg-amber-500/10 flex items-center justify-center mt-0.5 shrink-0">
+                      <div className="w-2 h-2 rounded-sm bg-amber-500" />
                     </div>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <FileText className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
                     <div>
-                      <span className="font-medium text-neutral-700">Call Logs</span>
-                      <p className="text-neutral-500 text-xs">Review past sessions and audit trails</p>
+                      <span className="font-medium text-neutral-700">Speaker Mute</span>
+                      <p className="text-neutral-500 text-xs">Silence agent audio while you explain what&apos;s happening</p>
                     </div>
                   </div>
                 </div>
